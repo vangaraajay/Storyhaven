@@ -1,14 +1,16 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import type { ChatMessage } from "@/lib/friends";
 import {
+  pollChatMessagesAction,
   sendDmAction,
   sendGroupMessageAction,
   type FriendsActionState,
 } from "./actions";
 
-const initial: FriendsActionState = { error: null };
+const initial: FriendsActionState = { error: null, message: null };
+const POLL_MS = 2500;
 
 type ChatPanelProps =
   | {
@@ -27,9 +29,66 @@ type ChatPanelProps =
       messages: ChatMessage[];
     };
 
+function threadKey(props: ChatPanelProps): string {
+  return props.kind === "dm" ? `dm:${props.friendshipId}` : `group:${props.groupId}`;
+}
+
 export default function ChatPanel(props: ChatPanelProps) {
   const action = props.kind === "dm" ? sendDmAction : sendGroupMessageAction;
   const [state, formAction, pending] = useActionState(action, initial);
+  const [messages, setMessages] = useState(props.messages);
+  const formRef = useRef<HTMLFormElement>(null);
+  const threadRef = useRef<HTMLDivElement>(null);
+  const key = threadKey(props);
+  const lastMessageId = messages[messages.length - 1]?.id ?? "empty";
+
+  useEffect(() => {
+    setMessages(props.messages);
+  }, [key, props.messages]);
+
+  useEffect(() => {
+    if (state.message) {
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === state.message!.id)) return prev;
+        return [...prev, state.message!];
+      });
+      formRef.current?.reset();
+    }
+  }, [state.message]);
+
+  const friendshipId = props.kind === "dm" ? props.friendshipId : null;
+  const groupId = props.kind === "group" ? props.groupId : null;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function poll() {
+      const result = await pollChatMessagesAction(
+        friendshipId
+          ? { kind: "dm", friendshipId }
+          : { kind: "group", groupId: groupId! },
+      );
+      if (cancelled || result.error) return;
+      setMessages(result.messages);
+    }
+
+    const id = window.setInterval(poll, POLL_MS);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [key, friendshipId, groupId]);
+
+  // Keep the thread pinned to the newest messages (bottom), not the top.
+  useEffect(() => {
+    const thread = threadRef.current;
+    if (!thread) return;
+    const pin = () => {
+      thread.scrollTop = thread.scrollHeight;
+    };
+    pin();
+    requestAnimationFrame(pin);
+  }, [key, lastMessageId, messages.length]);
 
   return (
     <section className="friends-chat">
@@ -37,11 +96,11 @@ export default function ChatPanel(props: ChatPanelProps) {
         <h2>{props.title}</h2>
       </header>
 
-      <div className="friends-chat-thread">
-        {props.messages.length === 0 ? (
+      <div ref={threadRef} className="friends-chat-thread">
+        {messages.length === 0 ? (
           <p className="friends-muted">No messages yet. Say hello.</p>
         ) : (
-          props.messages.map((message) => {
+          messages.map((message) => {
             const mine = message.sender_id === props.myId;
             return (
               <div
@@ -60,7 +119,7 @@ export default function ChatPanel(props: ChatPanelProps) {
         )}
       </div>
 
-      <form action={formAction} className="friends-chat-compose">
+      <form ref={formRef} action={formAction} className="friends-chat-compose">
         {props.kind === "dm" ? (
           <>
             <input type="hidden" name="friendshipId" value={props.friendshipId} />

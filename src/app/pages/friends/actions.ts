@@ -5,19 +5,25 @@ import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import {
   acceptFriendRequest,
+  assertDmAccess,
+  assertGroupMember,
   cancelFriendRequest,
   createGroup,
   declineFriendRequest,
+  listDmMessages,
+  listGroupMessages,
   searchProfilesByName,
   sendDmMessage,
   sendFriendRequest,
   sendGroupMessage,
+  type ChatMessage,
   type MatchCandidate,
 } from "@/lib/friends";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
 
 export type FriendsActionState = {
   error: string | null;
+  message?: ChatMessage | null;
 };
 
 async function requireProfileId(): Promise<string> {
@@ -142,18 +148,17 @@ export async function sendDmAction(
   const profileId = await requireProfileId();
   const friendshipId = String(formData.get("friendshipId") ?? "").trim();
   const body = String(formData.get("body") ?? "");
-  const otherId = String(formData.get("otherId") ?? "").trim();
 
   try {
-    await sendDmMessage(friendshipId, profileId, body);
+    const message = await sendDmMessage(friendshipId, profileId, body);
+    revalidateFriends();
+    return { error: null, message };
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to send message.",
+      message: null,
     };
   }
-
-  revalidateFriends();
-  redirect(`/pages/friends?with=${encodeURIComponent(otherId)}`);
 }
 
 export async function sendGroupMessageAction(
@@ -165,15 +170,51 @@ export async function sendGroupMessageAction(
   const body = String(formData.get("body") ?? "");
 
   try {
-    await sendGroupMessage(groupId, profileId, body);
+    const message = await sendGroupMessage(groupId, profileId, body);
+    revalidateFriends();
+    return { error: null, message };
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to send message.",
+      message: null,
     };
   }
+}
 
-  revalidateFriends();
-  redirect(`/pages/friends?group=${encodeURIComponent(groupId)}`);
+export async function pollChatMessagesAction(input: {
+  kind: "dm" | "group";
+  friendshipId?: string;
+  groupId?: string;
+}): Promise<{ error: string | null; messages: ChatMessage[] }> {
+  const profileId = await requireProfileId();
+
+  try {
+    if (input.kind === "dm") {
+      const friendshipId = input.friendshipId?.trim() ?? "";
+      if (!friendshipId) {
+        return { error: "Missing chat.", messages: [] };
+      }
+      await assertDmAccess(friendshipId, profileId);
+      const messages = await listDmMessages(friendshipId);
+      return { error: null, messages };
+    }
+
+    const groupId = input.groupId?.trim() ?? "";
+    if (!groupId) {
+      return { error: "Missing group.", messages: [] };
+    }
+    const isMember = await assertGroupMember(groupId, profileId);
+    if (!isMember) {
+      return { error: "Not a group member.", messages: [] };
+    }
+    const messages = await listGroupMessages(groupId);
+    return { error: null, messages };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Failed to load messages.",
+      messages: [],
+    };
+  }
 }
 
 export async function createGroupAction(

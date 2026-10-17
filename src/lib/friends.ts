@@ -640,6 +640,38 @@ export async function getAcceptedFriendshipBetween(
   return friendship;
 }
 
+export async function assertDmAccess(
+  friendshipId: string,
+  profileId: string,
+): Promise<Friendship> {
+  const supabase = createServiceSupabaseClient();
+  const { data, error } = await supabase
+    .from("friendships")
+    .select("*")
+    .eq("id", friendshipId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to load friendship: ${error.message}`);
+  }
+  if (!data) {
+    throw new Error("Friendship not found.");
+  }
+
+  const friendship = data as Friendship;
+  if (friendship.status !== "accepted") {
+    throw new Error("You can only view messages with accepted friends.");
+  }
+  if (
+    friendship.requester_id !== profileId &&
+    friendship.addressee_id !== profileId
+  ) {
+    throw new Error("You are not part of this friendship.");
+  }
+
+  return friendship;
+}
+
 export async function listDmMessages(
   friendshipId: string,
   limit = 100,
