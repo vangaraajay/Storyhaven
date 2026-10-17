@@ -13,6 +13,7 @@ interface PostCardProps {
   isLoggedIn: boolean;
   currentProfileId: string | null;
   onSelectBook?: (book: string) => void;
+  onDelete?: (id: string) => void;
 }
 
 function timeAgo(dateStr: string): string {
@@ -35,6 +36,7 @@ export default function PostCard({
   isLoggedIn,
   currentProfileId,
   onSelectBook,
+  onDelete,
 }: PostCardProps) {
   const authorName = post.profile?.display_name || "Anonymous";
   const isOwner = Boolean(
@@ -100,7 +102,13 @@ export default function PostCard({
               {post.comments_count} {post.comments_count === 1 ? "comment" : "comments"}
             </span>
           </Link>
-          {isOwner && <DeleteControl kind="post" postId={post.id} />}
+          {isOwner && (
+            <DeleteControl
+              kind="post"
+              postId={post.id}
+              onDeleted={() => onDelete?.(post.id)}
+            />
+          )}
         </div>
       </div>
     </article>

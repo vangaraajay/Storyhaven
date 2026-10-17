@@ -16,6 +16,13 @@ import {
   type BookStatus,
 } from "@/lib/logging";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
+import { searchMediaCover, type MediaType } from "@/lib/media-search";
+import {
+  listCatalogFeed,
+  type CatalogMode,
+  type CatalogMediaType,
+  type CatalogFeedResponse,
+} from "@/lib/catalog";
 
 export type LoggingFormState = {
   error: string | null;
@@ -215,3 +222,21 @@ export async function deleteAlbumAction(formData: FormData): Promise<void> {
   await deleteAlbumLog(profileId, id);
   revalidatePath("/pages/library");
 }
+
+export async function fetchMediaCoverAction(
+  type: MediaType,
+  title: string,
+): Promise<string | null> {
+  await requireProfileId();
+  return searchMediaCover(type, title);
+}
+
+export async function getCatalogFeedAction(
+  mode: CatalogMode,
+  category: CatalogMediaType,
+  page: number,
+): Promise<CatalogFeedResponse> {
+  const profileId = await requireProfileId();
+  return listCatalogFeed(profileId, mode, category, page);
+}
+

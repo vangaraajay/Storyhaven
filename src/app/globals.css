@@ -1,4 +1,5 @@
 @import "./pages/forum/forum.css";
+@import "./pages/library/catalog.css";
 
 :root {
   color-scheme: dark;
