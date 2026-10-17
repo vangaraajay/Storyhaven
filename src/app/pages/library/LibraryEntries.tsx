@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import type { AlbumLog, BookLog, MovieLog } from "@/lib/logging";
 import {
@@ -30,6 +31,12 @@ function BookEntry({ book }: { book: BookLog }) {
           {book.status ? ` — ${book.status}` : ""}
           {book.liked ? " — liked" : ""}
         </p>
+        <Link
+          href={`/pages/forum?mode=per_book&book=${encodeURIComponent(book.name)}`}
+          className="text-xs text-amber-300 hover:underline inline-block mr-3"
+        >
+          💬 Discuss in Forum →
+        </Link>
         <button type="button" onClick={() => setEditing(true)}>
           Update
         </button>

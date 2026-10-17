@@ -1,0 +1,96 @@
+"use client";
+
+import Link from "next/link";
+import VoteControls from "@/components/forum/VoteControls";
+import MediaBadge from "@/components/forum/MediaBadge";
+import MarkdownRenderer from "@/components/forum/MarkdownRenderer";
+import type { ForumPost } from "@/lib/forum";
+
+interface PostCardProps {
+  post: ForumPost;
+  isLoggedIn: boolean;
+  onSelectBook?: (book: string) => void;
+}
+
+function timeAgo(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return date.toLocaleDateString();
+}
+
+export default function PostCard({ post, isLoggedIn, onSelectBook }: PostCardProps) {
+  const authorName = post.profile?.display_name || "Anonymous";
+
+  return (
+    <article className="forum-post-card">
+      {/* Left Vote Column */}
+      <div className="forum-vote-gutter">
+        <VoteControls
+          targetType="post"
+          targetId={post.id}
+          initialScore={post.score}
+          initialUserVote={post.user_vote}
+          isLoggedIn={isLoggedIn}
+          layout="vertical"
+        />
+      </div>
+
+      {/* Main Post Content */}
+      <div className="forum-post-main">
+        {/* Meta Header */}
+        <div className="forum-post-meta">
+          <div className="forum-avatar">
+            {authorName.charAt(0).toUpperCase()}
+          </div>
+
+          <span>
+            Posted by <span style={{ color: "var(--forum-text-primary)", fontWeight: 600 }}>{authorName}</span>
+          </span>
+
+          <span style={{ color: "var(--forum-text-muted)" }}>•</span>
+          <span>{timeAgo(post.created_at)}</span>
+
+          {/* Media flair badge */}
+          <MediaBadge
+            type={post.media_type}
+            title={post.media_title}
+            onClick={
+              post.media_type === "book" && post.media_title && onSelectBook
+                ? () => onSelectBook(post.media_title!)
+                : undefined
+            }
+          />
+        </div>
+
+        {/* Post Title */}
+        <Link href={`/pages/forum/${post.id}`} className="forum-post-title-link">
+          <h2 className="forum-post-title">{post.title}</h2>
+        </Link>
+
+        {/* Content Snippet */}
+        <div className="forum-post-snippet">
+          <MarkdownRenderer content={post.content} />
+        </div>
+
+        {/* Footer Actions */}
+        <div className="forum-post-footer">
+          <Link href={`/pages/forum/${post.id}`} className="forum-comment-count-btn">
+            <span>💬</span>
+            <span>
+              {post.comments_count} {post.comments_count === 1 ? "comment" : "comments"}
+            </span>
+          </Link>
+        </div>
+      </div>
+    </article>
+  );
+}
