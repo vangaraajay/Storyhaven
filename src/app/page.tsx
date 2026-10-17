@@ -1,89 +1,49 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
-import { getProfile, isProfileComplete, type Profile } from "@/lib/profiles";
+import { getProfile, isProfileComplete } from "@/lib/profiles";
+import HavenHome, { type HavenAuth } from "./haven/HavenHome";
 
-async function AuthStatus() {
+async function Haven() {
   let session = null;
   try {
     session = await auth0.getSession();
   } catch {
-    // Auth0 not configured or domain unresolved in local dev
+    redirect("/pages/login");
   }
+
   const user = session?.user;
-
   if (!user) {
-    return (
-      <>
-        <p>Not signed in</p>
-        <p>
-          <a href="/auth/login">Log in</a>
-        </p>
-        <p>
-          <a href="/auth/login?screen_hint=signup">Create account</a>
-        </p>
-      </>
-    );
+    redirect("/pages/login");
   }
 
-  let profile: Profile | null = null;
-  let profileError: string | null = null;
+  const auth: HavenAuth = {
+    isLoggedIn: true,
+    displayName: user.name ?? user.nickname ?? user.email ?? null,
+    needsProfile: true,
+  };
 
   try {
-    profile = await getProfile(user);
-  } catch (error) {
-    profileError =
-      error instanceof Error ? error.message : "Failed to load profile.";
+    const profile = await getProfile(user);
+    auth.needsProfile = !isProfileComplete(profile);
+    auth.displayName = profile?.display_name ?? auth.displayName;
+  } catch {
+    // Profile fetch failed; still allow the haven once logged in.
   }
 
-  if (profileError) {
-    return (
-      <>
-        <p>Signed in as {user.email ?? user.name ?? user.sub}</p>
-        <p>Profile error: {profileError}</p>
-        <p>
-          <Link href="/pages/profile-creation">Create profile</Link>
-        </p>
-        <p>
-          <a href="/auth/logout">Log out</a>
-        </p>
-      </>
-    );
-  }
-
-  if (!isProfileComplete(profile)) {
-    redirect("/pages/profile-creation");
-  }
-
-  return (
-    <>
-      <p>Signed in as {profile?.display_name ?? user.email ?? user.sub}</p>
-      <p>Email: {profile?.email ?? user.email ?? "—"}</p>
-      <p>Profile id: {profile?.id}</p>
-      <p>
-        <a href="/auth/logout">Log out</a>
-      </p>
-    </>
-  );
+  return <HavenHome auth={auth} />;
 }
 
 export default function Home() {
   return (
-    <main>
-      <h1>Storyhaven</h1>
-      <Suspense fallback={<p>Checking session…</p>}>
-        <AuthStatus />
-      </Suspense>
-      <p>
-        <Link href="/phaser">Phaser</Link>
-      </p>
-      <p>
-        <Link href="/pages">Basic page</Link>
-      </p>
-      <p>
-        <Link href="/pages/logging">Logging</Link>
-      </p>
-    </main>
+    <Suspense
+      fallback={
+        <div className="haven-loading" role="status">
+          Opening Storyhaven…
+        </div>
+      }
+    >
+      <Haven />
+    </Suspense>
   );
 }

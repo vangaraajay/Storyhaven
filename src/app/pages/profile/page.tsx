@@ -5,12 +5,12 @@ import { auth0 } from "@/lib/auth0";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
 import ProfileForm from "./ProfileForm";
 
-async function ProfileCreationContent() {
+async function ProfileContent() {
   const session = await auth0.getSession();
   const user = session?.user;
 
   if (!user) {
-    redirect("/auth/login?returnTo=/pages/profile-creation");
+    redirect("/pages/login");
   }
 
   const profile = await getProfile(user);
@@ -31,15 +31,15 @@ async function ProfileCreationContent() {
   );
 }
 
-export default function ProfileCreationPage() {
+export default function ProfilePage() {
   return (
     <main>
       <h1>Create profile</h1>
       <p>
-        <Link href="/">Home</Link>
+        <Link href="/">Back to Storyhaven</Link>
       </p>
       <Suspense fallback={<p>Loading…</p>}>
-        <ProfileCreationContent />
+        <ProfileContent />
       </Suspense>
     </main>
   );
