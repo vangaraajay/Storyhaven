@@ -10,6 +10,12 @@ export default function BasicPage() {
       <p>
         <Link href="/phaser">Phaser</Link>
       </p>
+      <p>
+        <a href="/auth/login">Log in</a>
+      </p>
+      <p>
+        <Link href="/pages/profile-creation">Create profile</Link>
+      </p>
     </main>
   );
 }
