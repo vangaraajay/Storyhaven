@@ -160,3 +160,92 @@ export async function fetchMorePostsAction(options: FeedOptions): Promise<FeedRe
     profileId: profile?.id ?? null,
   });
 }
+
+export async function deletePostAction(postId: string): Promise<{
+  error: string | null;
+}> {
+  try {
+    const profile = await requireProfile();
+    const id = postId.trim();
+    if (!id) {
+      return { error: "Missing post ID." };
+    }
+
+    const supabase = createServiceSupabaseClient();
+    const { data: existing, error: loadError } = await supabase
+      .from("forum_posts")
+      .select("id, profile_id")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (loadError) {
+      return { error: `Failed to load post: ${loadError.message}` };
+    }
+    if (!existing) {
+      return { error: "Post not found." };
+    }
+    if (existing.profile_id !== profile.id) {
+      return { error: "You can only delete posts you created." };
+    }
+
+    const { error } = await supabase.from("forum_posts").delete().eq("id", id);
+    if (error) {
+      return { error: `Failed to delete post: ${error.message}` };
+    }
+
+    revalidatePath("/pages/forum");
+    revalidatePath(`/pages/forum/${id}`);
+    return { error: null };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Failed to delete post.",
+    };
+  }
+}
+
+export async function deleteCommentAction(
+  commentId: string,
+  postId: string,
+): Promise<{ error: string | null }> {
+  try {
+    const profile = await requireProfile();
+    const id = commentId.trim();
+    const threadId = postId.trim();
+    if (!id || !threadId) {
+      return { error: "Missing comment or post ID." };
+    }
+
+    const supabase = createServiceSupabaseClient();
+    const { data: existing, error: loadError } = await supabase
+      .from("forum_comments")
+      .select("id, profile_id, post_id")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (loadError) {
+      return { error: `Failed to load comment: ${loadError.message}` };
+    }
+    if (!existing) {
+      return { error: "Comment not found." };
+    }
+    if (existing.profile_id !== profile.id) {
+      return { error: "You can only delete comments you created." };
+    }
+    if (existing.post_id !== threadId) {
+      return { error: "Comment does not belong to this post." };
+    }
+
+    const { error } = await supabase.from("forum_comments").delete().eq("id", id);
+    if (error) {
+      return { error: `Failed to delete comment: ${error.message}` };
+    }
+
+    revalidatePath(`/pages/forum/${threadId}`);
+    revalidatePath("/pages/forum");
+    return { error: null };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Failed to delete comment.",
+    };
+  }
+}

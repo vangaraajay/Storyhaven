@@ -101,6 +101,7 @@ async function ForumContent({ searchParams }: PageProps) {
       availableBooks={availableBooks}
       bookStats={bookStats}
       isLoggedIn={isLoggedIn}
+      currentProfileId={isLoggedIn ? profile?.id ?? null : null}
     />
   );
 }

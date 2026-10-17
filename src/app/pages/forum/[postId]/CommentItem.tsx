@@ -4,12 +4,14 @@ import { useState } from "react";
 import VoteControls from "@/components/forum/VoteControls";
 import MarkdownRenderer from "@/components/forum/MarkdownRenderer";
 import CommentForm from "./CommentForm";
+import DeleteControl from "../DeleteControl";
 import type { CommentNode } from "@/lib/forum";
 
 interface CommentItemProps {
   node: CommentNode;
   postId: string;
   isLoggedIn: boolean;
+  currentProfileId: string | null;
   depth?: number;
 }
 
@@ -32,12 +34,16 @@ export default function CommentItem({
   node,
   postId,
   isLoggedIn,
+  currentProfileId,
   depth = 0,
 }: CommentItemProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
 
   const author = node.profile?.display_name || "Anonymous";
+  const isOwner = Boolean(
+    currentProfileId && currentProfileId === node.profile_id,
+  );
 
   return (
     <div style={{ position: "relative", marginLeft: depth > 0 ? (depth > 3 ? "0.75rem" : "1.25rem") : 0, paddingLeft: depth > 0 ? "0.75rem" : 0, marginTop: "0.5rem" }}>
@@ -100,6 +106,14 @@ export default function CommentItem({
               >
                 {isReplying ? "Cancel Reply" : "Reply"}
               </button>
+
+              {isOwner && (
+                <DeleteControl
+                  kind="comment"
+                  commentId={node.id}
+                  postId={postId}
+                />
+              )}
             </div>
 
             {/* Inline Reply Form */}
@@ -128,6 +142,7 @@ export default function CommentItem({
               node={child}
               postId={postId}
               isLoggedIn={isLoggedIn}
+              currentProfileId={currentProfileId}
               depth={depth + 1}
             />
           ))}

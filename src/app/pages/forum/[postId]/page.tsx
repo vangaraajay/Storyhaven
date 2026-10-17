@@ -46,6 +46,7 @@ async function ThreadContent({ params }: ThreadPageProps) {
       post={post}
       commentTree={commentTree}
       isLoggedIn={isLoggedIn}
+      currentProfileId={isLoggedIn ? profile?.id ?? null : null}
     />
   );
 }

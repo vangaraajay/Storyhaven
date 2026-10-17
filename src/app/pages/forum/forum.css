@@ -212,6 +212,42 @@ main.forum-main {
   border-color: rgba(235, 188, 186, 0.4);
 }
 
+.forum-btn-danger {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: #eb6f92 !important;
+  border: none;
+  font-family: var(--forum-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.35rem;
+  cursor: pointer;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+
+.forum-btn-danger:hover:not(:disabled) {
+  color: #ff8fad !important;
+  text-decoration: underline;
+}
+
+.forum-btn-danger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.forum-delete-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.forum-delete-error {
+  color: #eb6f92;
+  font-size: 0.7rem;
+  font-family: var(--forum-font-mono);
+}
+
 /* Mode Switcher Toggle */
 .forum-mode-toggle-wrap {
   display: inline-flex;

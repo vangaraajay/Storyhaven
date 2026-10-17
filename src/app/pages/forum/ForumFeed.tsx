@@ -25,6 +25,7 @@ interface ForumFeedProps {
   availableBooks: string[];
   bookStats?: { postCount: number; commentCount: number };
   isLoggedIn: boolean;
+  currentProfileId: string | null;
 }
 
 export default function ForumFeed({
@@ -39,6 +40,7 @@ export default function ForumFeed({
   availableBooks,
   bookStats,
   isLoggedIn,
+  currentProfileId,
 }: ForumFeedProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -268,6 +270,7 @@ export default function ForumFeed({
               key={post.id}
               post={post}
               isLoggedIn={isLoggedIn}
+              currentProfileId={currentProfileId}
               onSelectBook={handleSelectBook}
             />
           ))

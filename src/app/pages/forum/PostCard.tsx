@@ -4,11 +4,13 @@ import Link from "next/link";
 import VoteControls from "@/components/forum/VoteControls";
 import MediaBadge from "@/components/forum/MediaBadge";
 import MarkdownRenderer from "@/components/forum/MarkdownRenderer";
+import DeleteControl from "./DeleteControl";
 import type { ForumPost } from "@/lib/forum";
 
 interface PostCardProps {
   post: ForumPost;
   isLoggedIn: boolean;
+  currentProfileId: string | null;
   onSelectBook?: (book: string) => void;
 }
 
@@ -27,8 +29,16 @@ function timeAgo(dateStr: string): string {
   return date.toLocaleDateString();
 }
 
-export default function PostCard({ post, isLoggedIn, onSelectBook }: PostCardProps) {
+export default function PostCard({
+  post,
+  isLoggedIn,
+  currentProfileId,
+  onSelectBook,
+}: PostCardProps) {
   const authorName = post.profile?.display_name || "Anonymous";
+  const isOwner = Boolean(
+    currentProfileId && currentProfileId === post.profile_id,
+  );
 
   return (
     <article className="forum-post-card">
@@ -89,6 +99,7 @@ export default function PostCard({ post, isLoggedIn, onSelectBook }: PostCardPro
               {post.comments_count} {post.comments_count === 1 ? "comment" : "comments"}
             </span>
           </Link>
+          {isOwner && <DeleteControl kind="post" postId={post.id} />}
         </div>
       </div>
     </article>

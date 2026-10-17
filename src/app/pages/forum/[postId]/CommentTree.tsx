@@ -7,12 +7,14 @@ interface CommentTreeProps {
   nodes: CommentNode[];
   postId: string;
   isLoggedIn: boolean;
+  currentProfileId: string | null;
 }
 
 export default function CommentTree({
   nodes,
   postId,
   isLoggedIn,
+  currentProfileId,
 }: CommentTreeProps) {
   if (nodes.length === 0) {
     return (
@@ -32,6 +34,7 @@ export default function CommentTree({
           node={rootNode}
           postId={postId}
           isLoggedIn={isLoggedIn}
+          currentProfileId={currentProfileId}
           depth={0}
         />
       ))}

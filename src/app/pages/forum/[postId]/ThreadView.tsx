@@ -6,12 +6,14 @@ import MediaBadge from "@/components/forum/MediaBadge";
 import MarkdownRenderer from "@/components/forum/MarkdownRenderer";
 import CommentForm from "./CommentForm";
 import CommentTree from "./CommentTree";
+import DeleteControl from "../DeleteControl";
 import type { ForumPost, CommentNode } from "@/lib/forum";
 
 interface ThreadViewProps {
   post: ForumPost;
   commentTree: CommentNode[];
   isLoggedIn: boolean;
+  currentProfileId: string | null;
 }
 
 function timeAgo(dateStr: string): string {
@@ -33,8 +35,12 @@ export default function ThreadView({
   post,
   commentTree,
   isLoggedIn,
+  currentProfileId,
 }: ThreadViewProps) {
   const authorName = post.profile?.display_name || "Anonymous";
+  const isOwner = Boolean(
+    currentProfileId && currentProfileId === post.profile_id,
+  );
 
   return (
     <div className="forum-thread-container">
@@ -104,6 +110,7 @@ export default function ThreadView({
                 More on &quot;{post.media_title}&quot; →
               </Link>
             )}
+            {isOwner && <DeleteControl kind="post" postId={post.id} />}
           </div>
         </div>
       </article>
@@ -128,6 +135,7 @@ export default function ThreadView({
           nodes={commentTree}
           postId={post.id}
           isLoggedIn={isLoggedIn}
+          currentProfileId={currentProfileId}
         />
       </section>
     </div>
