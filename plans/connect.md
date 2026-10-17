@@ -15,7 +15,8 @@ Logged in → `/` Phaser haven.
 | Auth Desk (complete) | `/auth/logout?returnTo=<origin>/pages/login` |
 | Library Bookshelf | `/pages/library` |
 | Daily Story podium | `/pages/daily-story` |
-| Forums / Friends | `/pages/library` (temp) |
+| Friends | `/pages/friends` |
+| Forums | `/pages/library` (temp) |
 
 ## Auth0 dashboard checklist
 
@@ -26,3 +27,4 @@ Logged in → `/` Phaser haven.
 
 - `plans/main.md` — structure & routes
 - `plans/LOGGING.md` — library tables & UI
+- `plans/FRIENDS.md` — friends match & chat

@@ -9,6 +9,8 @@ Source of truth for how the app is organized. Update this when you add routes, m
 3. Incomplete profile → Auth Desk or Library sends you to **`/pages/profile`**.
 4. Library Bookshelf → **`/pages/library`** (log books / movies / albums).
 5. Daily Story podium → **`/pages/daily-story`** (hardcoded tale for now).
+6. Friends pad → **`/pages/friends`** (SQL match, requests, DMs, groups).
+7. Auth Desk → log out → back to **`/pages/login`**.
 6. Forums → **`/pages/forum`** (community discussions).
 7. Web pages provide a **`← Return to Haven`** back button. Round-trip navigation restores the character's last position via `sessionStorage` and suppresses re-teleporting until the character exits the sensor pad.
 8. Auth Desk → log out → back to **`/pages/login`**.
@@ -40,6 +42,13 @@ src/
       daily-story/
         page.tsx
         story.ts             # Hardcoded daily tale text
+      friends/
+        page.tsx
+        FriendsShell.tsx
+        MatchPanel.tsx
+        ChatPanel.tsx
+        NewGroupForm.tsx
+        actions.ts
       forum/
         page.tsx
         actions.ts
@@ -55,6 +64,7 @@ src/
     auth0.ts
     profiles.ts
     logging.ts
+    friends.ts
     supabase/server.ts
   proxy.ts                   # Auth0 middleware mount (/auth/*)
 ```
@@ -68,6 +78,7 @@ src/
 | `/pages/profile` | `pages/profile/` | Create display name / profile |
 | `/pages/library` | `pages/library/` | Media logging CRUD |
 | `/pages/daily-story` | `pages/daily-story/` | Daily Story podium reading |
+| `/pages/friends` | `pages/friends/` | Match, requests, DMs, groups |
 | `/pages/forum` | `pages/forum/` | Community discussions (Universal & Per-Book) |
 | `/auth/*` | Auth0 SDK via `proxy.ts` | Login, logout, callback |
 
@@ -80,6 +91,8 @@ Removed / unused: `/phaser`, bare `/pages` index, `/page`, `book-logging` stubs.
 | Auth Desk (center table) | `/pages/profile` if no profile; else `/auth/logout` → `/pages/login` |
 | Library Bookshelf | `/pages/library` |
 | Daily Story podium | `/pages/daily-story` |
+| Friends | `/pages/friends` |
+| Forums | `/pages/library` (placeholder for now) |
 | Forums | `/pages/forum` |
 | Friends | `/pages/library` (placeholder for now) |
 
@@ -88,9 +101,10 @@ Logout `returnTo` must be an **absolute** URL (e.g. `http://localhost:3000/pages
 ## Auth + data
 
 - **Auth0** — identity (Universal Login from `/pages/login`).
-- **Supabase** — `profiles`, `book_logs`, `movie_logs`, `album_logs`.
+- **Supabase** — `profiles`, logging tables, `friendships`, `dm_messages`, group chat tables.
 - Server uses **service role** only after `auth0.getSession()` (BFF). Never expose service role to the browser.
 - Details for logging schema: `plans/LOGGING.md`.
+- Friends / SQL match / chat: `plans/FRIENDS.md` · SQL: `supabase/friends_tables.sql`.
 - Shorter connect notes: `plans/connect.md` (keep in sync with this file).
 
 ## Naming conventions
