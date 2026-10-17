@@ -7,7 +7,7 @@ export const MOVEMENT_CONFIG = {
    * Top movement speed in pixels per second.
    * Baseline was 130 px/sec; 156 px/sec is ~20% faster.
    */
-  maxSpeed: 170,
+  maxSpeed: 180,
 
   /**
    * Acceleration rate in pixels per second squared when directional keys are held.
