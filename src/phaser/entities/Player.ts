@@ -1,13 +1,18 @@
 import Phaser from "phaser";
 import { COLORS } from "../constants/colors";
+import { MOVEMENT_CONFIG } from "../constants/physics";
 
 export class Player {
   public x: number;
   public y: number;
   public readonly width = 18;
   public readonly height = 26;
-  public speed = 130; // px/sec
+  public speed = MOVEMENT_CONFIG.maxSpeed;
   public isMovementLocked = false;
+
+  // 2D Velocity vector in pixels per second
+  public vx = 0;
+  public vy = 0;
 
   private readonly scene: Phaser.Scene;
   private readonly container: Phaser.GameObjects.Container;
@@ -87,27 +92,91 @@ export class Player {
     return { x: this.x, y: this.y };
   }
 
+  public stop(): void {
+    this.vx = 0;
+    this.vy = 0;
+  }
+
   public update(delta: number, solidColliders: Phaser.Geom.Rectangle[]): void {
-    if (this.isMovementLocked) return;
+    if (this.isMovementLocked) {
+      this.vx = 0;
+      this.vy = 0;
+      return;
+    }
 
-    let dx = 0;
-    let dy = 0;
+    // Clamp delta time to protect against background tab lag spikes / obstacle tunneling
+    const safeDelta = Math.min(delta, MOVEMENT_CONFIG.maxDeltaMs);
+    const dt = safeDelta / 1000;
 
-    if (this.keys.A.isDown || this.keys.LEFT.isDown) dx -= 1;
-    if (this.keys.D.isDown || this.keys.RIGHT.isDown) dx += 1;
-    if (this.keys.W.isDown || this.keys.UP.isDown) dy -= 1;
-    if (this.keys.S.isDown || this.keys.DOWN.isDown) dy += 1;
+    // 1. Collect raw directional intent (-1, 0, 1)
+    let inputX = 0;
+    let inputY = 0;
 
-    if (dx === 0 && dy === 0) return;
+    if (this.keys.A.isDown || this.keys.LEFT.isDown) inputX -= 1;
+    if (this.keys.D.isDown || this.keys.RIGHT.isDown) inputX += 1;
+    if (this.keys.W.isDown || this.keys.UP.isDown) inputY -= 1;
+    if (this.keys.S.isDown || this.keys.DOWN.isDown) inputY += 1;
 
-    // Normalize diagonal movement
-    const moveDist = this.speed * (delta / 1000);
-    const length = Math.hypot(dx, dy);
-    const vx = (dx / length) * moveDist;
-    const vy = (dy / length) * moveDist;
+    // 2. Compute normalized target velocity
+    let targetVx = 0;
+    let targetVy = 0;
 
-    // Update eye facing direction
-    this.updateFacing(dx, dy);
+    if (inputX !== 0 || inputY !== 0) {
+      const len = Math.hypot(inputX, inputY);
+      targetVx = (inputX / len) * MOVEMENT_CONFIG.maxSpeed;
+      targetVy = (inputY / len) * MOVEMENT_CONFIG.maxSpeed;
+      this.updateFacing(inputX, inputY);
+    }
+
+    // 3. Accelerate or Decelerate along X axis
+    if (targetVx !== 0) {
+      const isReversingX = (this.vx > 0 && targetVx < 0) || (this.vx < 0 && targetVx > 0);
+      const rateX = isReversingX
+        ? MOVEMENT_CONFIG.deceleration * MOVEMENT_CONFIG.turnBrakeMultiplier
+        : MOVEMENT_CONFIG.acceleration;
+      const changeX = rateX * dt;
+
+      if (this.vx < targetVx) this.vx = Math.min(this.vx + changeX, targetVx);
+      else if (this.vx > targetVx) this.vx = Math.max(this.vx - changeX, targetVx);
+    } else {
+      // Coasting / deceleration to a stop
+      const decelX = MOVEMENT_CONFIG.deceleration * dt;
+      if (this.vx > 0) this.vx = Math.max(0, this.vx - decelX);
+      else if (this.vx < 0) this.vx = Math.min(0, this.vx + decelX);
+    }
+
+    // 4. Accelerate or Decelerate along Y axis
+    if (targetVy !== 0) {
+      const isReversingY = (this.vy > 0 && targetVy < 0) || (this.vy < 0 && targetVy > 0);
+      const rateY = isReversingY
+        ? MOVEMENT_CONFIG.deceleration * MOVEMENT_CONFIG.turnBrakeMultiplier
+        : MOVEMENT_CONFIG.acceleration;
+      const changeY = rateY * dt;
+
+      if (this.vy < targetVy) this.vy = Math.min(this.vy + changeY, targetVy);
+      else if (this.vy > targetVy) this.vy = Math.max(this.vy - changeY, targetVy);
+    } else {
+      // Coasting / deceleration to a stop
+      const decelY = MOVEMENT_CONFIG.deceleration * dt;
+      if (this.vy > 0) this.vy = Math.max(0, this.vy - decelY);
+      else if (this.vy < 0) this.vy = Math.min(0, this.vy + decelY);
+    }
+
+    // 5. Zero out micro-velocities below stop threshold
+    if (Math.abs(this.vx) < MOVEMENT_CONFIG.stopThreshold && targetVx === 0) {
+      this.vx = 0;
+    }
+    if (Math.abs(this.vy) < MOVEMENT_CONFIG.stopThreshold && targetVy === 0) {
+      this.vy = 0;
+    }
+
+    // 6. Early exit if stationary and no input
+    if (this.vx === 0 && this.vy === 0 && targetVx === 0 && targetVy === 0) {
+      return;
+    }
+
+    const stepX = this.vx * dt;
+    const stepY = this.vy * dt;
 
     // Canvas world bounds (800 x 600)
     const minX = this.width / 2;
@@ -116,8 +185,14 @@ export class Player {
     const maxY = 600 - this.height / 2;
 
     // --- X Axis Movement & Collision Check ---
-    if (vx !== 0) {
-      const nextX = Phaser.Math.Clamp(this.x + vx, minX, maxX);
+    if (stepX !== 0) {
+      const nextX = Phaser.Math.Clamp(this.x + stepX, minX, maxX);
+
+      // Zero horizontal velocity on boundary impact
+      if (nextX === minX || nextX === maxX) {
+        this.vx = 0;
+      }
+
       const testBoundsX = new Phaser.Geom.Rectangle(
         nextX - this.width / 2,
         this.y - this.height / 2,
@@ -135,12 +210,21 @@ export class Player {
 
       if (!collidedX) {
         this.x = nextX;
+      } else {
+        // Absorb horizontal momentum on obstacle collision
+        this.vx = 0;
       }
     }
 
     // --- Y Axis Movement & Collision Check ---
-    if (vy !== 0) {
-      const nextY = Phaser.Math.Clamp(this.y + vy, minY, maxY);
+    if (stepY !== 0) {
+      const nextY = Phaser.Math.Clamp(this.y + stepY, minY, maxY);
+
+      // Zero vertical velocity on boundary impact
+      if (nextY === minY || nextY === maxY) {
+        this.vy = 0;
+      }
+
       const testBoundsY = new Phaser.Geom.Rectangle(
         this.x - this.width / 2,
         nextY - this.height / 2,
@@ -158,6 +242,9 @@ export class Player {
 
       if (!collidedY) {
         this.y = nextY;
+      } else {
+        // Absorb vertical momentum on obstacle collision
+        this.vy = 0;
       }
     }
 
