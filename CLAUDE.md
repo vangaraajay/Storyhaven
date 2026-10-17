@@ -1,0 +1,3 @@
+# CLAUDE.md
+
+Look inside ~/koofr (Or the K: drive, if on Windows). This is a shared directory storing plan files that are updated LIVE. This is separate from the versioning system in this repo. If the shared dir is not actve, then write plan files in a plans/ directory inside this repo. However, always check for the shared directory first---those are the most up-to-date plans (unless you have recently edited some plan in the local repo).
