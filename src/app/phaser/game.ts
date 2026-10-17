@@ -22,7 +22,7 @@ class MainScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
 
     button.on("pointerup", () => {
-      window.location.href = "/page";
+      window.location.href = "/pages";
     });
   }
 }

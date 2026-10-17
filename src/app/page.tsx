@@ -8,7 +8,10 @@ export default function Home() {
         <Link href="/phaser">Phaser</Link>
       </p>
       <p>
-        <Link href="/page">Basic page</Link>
+        <Link href="/pages">Basic page</Link>
+      </p>
+      <p>
+        <Link href="/pages/login">Login</Link>
       </p>
     </main>
   );
