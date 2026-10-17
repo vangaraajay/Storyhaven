@@ -38,6 +38,11 @@ src/
       daily-story/
         page.tsx
         story.ts             # Hardcoded daily tale text
+      forum/
+        page.tsx
+        actions.ts
+        ForumFeed.tsx
+        [postId]/
   phaser/                    # Self-contained game (outside pages/)
     PhaserGame.tsx
     game.ts
@@ -61,6 +66,7 @@ src/
 | `/pages/profile` | `pages/profile/` | Create display name / profile |
 | `/pages/library` | `pages/library/` | Media logging CRUD |
 | `/pages/daily-story` | `pages/daily-story/` | Daily Story podium reading |
+| `/pages/forum` | `pages/forum/` | Community discussions (Universal & Per-Book) |
 | `/auth/*` | Auth0 SDK via `proxy.ts` | Login, logout, callback |
 
 Removed / unused: `/phaser`, bare `/pages` index, `/page`, `book-logging` stubs.
@@ -72,7 +78,8 @@ Removed / unused: `/phaser`, bare `/pages` index, `/page`, `book-logging` stubs.
 | Auth Desk (center table) | `/pages/profile` if no profile; else `/auth/logout` → `/pages/login` |
 | Library Bookshelf | `/pages/library` |
 | Daily Story podium | `/pages/daily-story` |
-| Forums / Friends | `/pages/library` (placeholders for now) |
+| Forums | `/pages/forum` |
+| Friends | `/pages/library` (placeholder for now) |
 
 Logout `returnTo` must be an **absolute** URL (e.g. `http://localhost:3000/pages/login`) and listed in Auth0 **Allowed Logout URLs**.
 
