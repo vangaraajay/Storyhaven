@@ -59,6 +59,18 @@ export default function ForumFeed({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const observerTarget = useRef<HTMLDivElement>(null);
 
+  // Sync state if server component revalidates / re-renders
+  useEffect(() => {
+    setPosts(initialPosts);
+    setCursor(initialCursor);
+    setHasMore(initialHasMore);
+  }, [initialPosts, initialCursor, initialHasMore]);
+
+  // Immediate optimistic removal when a post is deleted
+  const handleDeletePost = (postId: string) => {
+    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  };
+
 
   // Update URL helper
   const updateRoute = useCallback(
@@ -272,6 +284,7 @@ export default function ForumFeed({
               isLoggedIn={isLoggedIn}
               currentProfileId={currentProfileId}
               onSelectBook={handleSelectBook}
+              onDelete={handleDeletePost}
             />
           ))
         )}

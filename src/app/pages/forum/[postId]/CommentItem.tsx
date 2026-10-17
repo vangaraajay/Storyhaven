@@ -39,6 +39,11 @@ export default function CommentItem({
 }: CommentItemProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  if (isDeleted) {
+    return null;
+  }
 
   const author = node.profile?.display_name || "Anonymous";
   const isOwner = Boolean(
@@ -112,6 +117,7 @@ export default function CommentItem({
                   kind="comment"
                   commentId={node.id}
                   postId={postId}
+                  onDeleted={() => setIsDeleted(true)}
                 />
               )}
             </div>
