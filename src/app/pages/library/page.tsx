@@ -4,20 +4,20 @@ import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import { listLogs } from "@/lib/logging";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
-import LogEntries from "./LogEntries";
-import LoggingForms from "./LoggingForms";
+import CreateLogForms from "./CreateLogForms";
+import LibraryEntries from "./LibraryEntries";
 
-async function LoggingContent() {
+async function LibraryContent() {
   const session = await auth0.getSession();
   const user = session?.user;
 
   if (!user) {
-    redirect("/auth/login?returnTo=/pages/logging");
+    redirect("/pages/login");
   }
 
   const profile = await getProfile(user);
   if (!isProfileComplete(profile) || !profile) {
-    redirect("/pages/profile-creation");
+    redirect("/pages/profile");
   }
 
   const logs = await listLogs(profile.id);
@@ -25,8 +25,8 @@ async function LoggingContent() {
   return (
     <>
       <p>Logging as {profile.display_name}</p>
-      <LoggingForms />
-      <LogEntries
+      <CreateLogForms />
+      <LibraryEntries
         books={logs.books}
         movies={logs.movies}
         albums={logs.albums}
@@ -35,15 +35,15 @@ async function LoggingContent() {
   );
 }
 
-export default function LoggingPage() {
+export default function LibraryPage() {
   return (
     <main>
-      <h1>Logging</h1>
+      <h1>Library</h1>
       <p>
-        <Link href="/">Home</Link>
+        <Link href="/">Back to Storyhaven</Link>
       </p>
       <Suspense fallback={<p>Loading…</p>}>
-        <LoggingContent />
+        <LibraryContent />
       </Suspense>
     </main>
   );

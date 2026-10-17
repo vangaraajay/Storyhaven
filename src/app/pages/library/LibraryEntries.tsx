@@ -365,13 +365,13 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
   );
 }
 
-type LogEntriesProps = {
+type LibraryEntriesProps = {
   books: BookLog[];
   movies: MovieLog[];
   albums: AlbumLog[];
 };
 
-export default function LogEntries({ books, movies, albums }: LogEntriesProps) {
+export default function LibraryEntries({ books, movies, albums }: LibraryEntriesProps) {
   return (
     <>
       <section>

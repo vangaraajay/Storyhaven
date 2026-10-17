@@ -26,12 +26,12 @@ async function requireProfileId(): Promise<string> {
   const user = session?.user;
 
   if (!user) {
-    redirect("/auth/login?returnTo=/pages/logging");
+    redirect("/pages/login");
   }
 
   const profile = await getProfile(user);
   if (!isProfileComplete(profile) || !profile) {
-    redirect("/pages/profile-creation");
+    redirect("/pages/profile");
   }
 
   return profile.id;
@@ -98,7 +98,7 @@ export async function createBookAction(
     };
   }
 
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
   return { error: null };
 }
 
@@ -116,7 +116,7 @@ export async function createMovieAction(
     };
   }
 
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
   return { error: null };
 }
 
@@ -134,7 +134,7 @@ export async function createAlbumAction(
     };
   }
 
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
   return { error: null };
 }
 
@@ -153,7 +153,7 @@ export async function updateBookAction(
     };
   }
 
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
   return { error: null };
 }
 
@@ -172,7 +172,7 @@ export async function updateMovieAction(
     };
   }
 
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
   return { error: null };
 }
 
@@ -191,7 +191,7 @@ export async function updateAlbumAction(
     };
   }
 
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
   return { error: null };
 }
 
@@ -199,19 +199,19 @@ export async function deleteBookAction(formData: FormData): Promise<void> {
   const profileId = await requireProfileId();
   const id = String(formData.get("id") ?? "");
   await deleteBookLog(profileId, id);
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
 }
 
 export async function deleteMovieAction(formData: FormData): Promise<void> {
   const profileId = await requireProfileId();
   const id = String(formData.get("id") ?? "");
   await deleteMovieLog(profileId, id);
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
 }
 
 export async function deleteAlbumAction(formData: FormData): Promise<void> {
   const profileId = await requireProfileId();
   const id = String(formData.get("id") ?? "");
   await deleteAlbumLog(profileId, id);
-  revalidatePath("/pages/logging");
+  revalidatePath("/pages/library");
 }

@@ -10,7 +10,7 @@ import {
 
 const initialState: LoggingFormState = { error: null };
 
-export default function LoggingForms() {
+export default function CreateLogForms() {
   const [bookState, bookAction, bookPending] = useActionState(
     createBookAction,
     initialState,

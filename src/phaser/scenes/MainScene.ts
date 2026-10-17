@@ -2,17 +2,27 @@ import Phaser from "phaser";
 import { Player } from "../entities/Player";
 import { FurnitureManager } from "../entities/FurnitureManager";
 import { DEFAULT_FURNITURE } from "../constants/furniture";
-import { LANDMARK_ZONES, type LandmarkZone } from "../constants/zones";
+import {
+  getActiveZones,
+  type LandmarkZone,
+} from "../constants/zones";
 import { COLORS } from "../constants/colors";
 
 export interface MainSceneData {
   onNavigate?: (route: string) => void;
+  isLoggedIn?: boolean;
+  needsProfile?: boolean;
+  displayName?: string | null;
 }
 
 export class MainScene extends Phaser.Scene {
   private player!: Player;
   private furnitureManager!: FurnitureManager;
   private onNavigate?: (route: string) => void;
+  private isLoggedIn = false;
+  private needsProfile = false;
+  private displayName: string | null = null;
+  private zones: LandmarkZone[] = [];
 
   private activeZone: LandmarkZone | null = null;
   private timeInZone = 0;
@@ -32,6 +42,10 @@ export class MainScene extends Phaser.Scene {
     if (data && typeof data.onNavigate === "function") {
       this.onNavigate = data.onNavigate;
     }
+    this.isLoggedIn = Boolean(data?.isLoggedIn);
+    this.needsProfile = Boolean(data?.needsProfile);
+    this.displayName = data?.displayName ?? null;
+    this.zones = getActiveZones(this.needsProfile, this.displayName);
   }
 
   public create(): void {
@@ -65,7 +79,7 @@ export class MainScene extends Phaser.Scene {
 
     // Helpful instruction tip at top
     this.add
-      .text(width / 2, 85, "Use WASD or Arrows to walk • Step onto a landmark zone to visit", {
+      .text(width / 2, 85, "Use WASD or Arrows • Library for logs • Auth Desk to log out", {
         fontSize: "13px",
         color: COLORS.TEXT_MUTED,
         fontFamily: "monospace",
@@ -91,7 +105,7 @@ export class MainScene extends Phaser.Scene {
       if (this.activeZone?.id === currentZone.id) {
         this.timeInZone += delta;
         if (this.timeInZone >= this.DWELL_THRESHOLD) {
-          this.triggerNavigation(currentZone.route);
+          this.triggerNavigation(currentZone);
         }
       } else {
         this.activeZone = currentZone;
@@ -108,7 +122,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   private findMatchingZone(x: number, y: number): LandmarkZone | null {
-    for (const zone of LANDMARK_ZONES) {
+    for (const zone of this.zones) {
       const rect = new Phaser.Geom.Rectangle(
         zone.sensorRect.x,
         zone.sensorRect.y,
@@ -122,17 +136,26 @@ export class MainScene extends Phaser.Scene {
     return null;
   }
 
-  private triggerNavigation(route: string): void {
+  private resolveRoute(zone: LandmarkZone): string {
+    if (this.needsProfile && zone.id !== "auth-desk") {
+      return "/pages/profile";
+    }
+    return zone.route;
+  }
+
+  private triggerNavigation(zone: LandmarkZone): void {
     this.isNavigating = true;
     this.player.isMovementLocked = true;
+
+    const destination = this.resolveRoute(zone);
 
     // Quick camera fade out transition
     this.cameras.main.fade(180, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
       if (this.onNavigate) {
-        this.onNavigate(route);
+        this.onNavigate(destination);
       } else {
-        window.location.href = route;
+        window.location.href = destination;
       }
     });
   }
@@ -157,7 +180,7 @@ export class MainScene extends Phaser.Scene {
   private createSensorPads(): void {
     const sensorGraphics = this.add.graphics();
 
-    for (const zone of LANDMARK_ZONES) {
+    for (const zone of this.zones) {
       const { x, y, width, height } = zone.sensorRect;
       const padColor = zone.color ?? COLORS.SENSOR_PAD;
 
@@ -232,7 +255,7 @@ export class MainScene extends Phaser.Scene {
     // Draw sensor zones in semi-transparent green
     this.debugGraphics.fillStyle(0x00ff88, 0.3);
     this.debugGraphics.lineStyle(1, 0x00ff88, 0.9);
-    for (const zone of LANDMARK_ZONES) {
+    for (const zone of this.zones) {
       const { x, y, width, height } = zone.sensorRect;
       this.debugGraphics.fillRect(x, y, width, height);
       this.debugGraphics.strokeRect(x, y, width, height);
