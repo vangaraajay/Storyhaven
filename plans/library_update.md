@@ -389,31 +389,32 @@ Storyhaven uses the cozy **Rosé Pine Dark** palette. The catalog adheres strict
 
 ## 7. Implementation Checklist
 
-- [ ] **Step 1: Public Cover Search Engine & Server Actions**
+- [x] **Step 1: Public Cover Search Engine & Server Actions**
   - Implement `src/lib/media-search.ts` with Open Library and iTunes search routines, 5s timeout, and 24h cache.
   - Implement `fetchMediaCoverAction(type, title)` in `src/app/pages/library/actions.ts`.
-- [ ] **Step 2: Auto-Cover Preview Component**
+- [x] **Step 2: Auto-Cover Preview Component**
   - Implement `src/app/pages/library/CoverPreviewBox.tsx` with 1000ms debounce, `onBlur` trigger, abort controller, and loading spinner.
   - Update `CreateLogForms.tsx` to mount `CoverPreviewBox` next to Title input in Book, Movie, and Album forms.
   - Bind resolved URL to hidden `cover_url` input with an optional "Edit URL" text toggle.
   - Implement form submission reset listener to restore idle gray state.
-- [ ] **Step 3: Catalog Data Layer & Security**
+- [x] **Step 3: Catalog Data Layer & Security**
   - Implement `src/lib/catalog.ts` supporting `listCatalogFeed(profileId, mode, category, page, pageSize)`.
   - Implement friend-scoped security queries and profile name/avatar hydration.
   - Implement `getCatalogFeedAction(mode, category, page)` in `src/app/pages/library/actions.ts`.
-- [ ] **Step 4: Catalog UI Components & Pop-up Modal**
+- [x] **Step 4: Catalog UI Components & Pop-up Modal**
   - Create `src/app/pages/library/catalog.css` with Rose-Pine styling, responsive 2/3/4/6 grid, and animations.
   - Implement `CatalogCard.tsx` with 2:3 aspect ratio, category micro-badge, 2-line title ellipsis, and friend attribution.
   - Implement `CatalogDetailModal.tsx` with backdrop blur, scroll locking, ESC key dismissal, forum cross-links, and self-owner delete shortcut.
   - Implement `CatalogSection.tsx` combining switch, category pills, grid, pagination, and modal.
-- [ ] **Step 5: Library Page Assembly**
+- [x] **Step 5: Library Page Assembly**
   - Update `src/app/pages/library/page.tsx` to pre-fetch Page 1 of the default Friends Catalog on the server.
   - Mount `<CatalogSection initialFeed={initialFeed} />` above `<CreateLogForms />`.
   - Apply `className="library-main"` to `<main>` for seamless Rose-Pine dark theme integration.
-- [ ] **Step 6: End-to-End Verification**
+- [x] **Step 6: End-to-End Verification**
   - Verify 1s debounce and `onBlur` cover preview on Book, Movie, and Album forms.
   - Test empty input clearing and fast-typing race conditions.
   - Verify switching between Friends Catalog and My Catalog.
   - Test category filter pills (`All`, `Books`, `Movies`, `Albums`).
   - Test pagination controls (`Previous`, `Page X of Y`, `Next`).
   - Test detail modal opening, ESC close, scroll lock, and forum cross-linking.
+
