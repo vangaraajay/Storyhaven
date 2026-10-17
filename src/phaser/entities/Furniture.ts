@@ -7,6 +7,7 @@ export class Furniture {
   public readonly bounds: Phaser.Geom.Rectangle;
   public readonly isSolid: boolean;
   private readonly container: Phaser.GameObjects.Container;
+  private readonly art: Phaser.GameObjects.Image | null = null;
 
   constructor(scene: Phaser.Scene, config: FurnitureConfig) {
     this.config = config;
@@ -19,6 +20,25 @@ export class Furniture {
     );
 
     this.container = scene.add.container(config.x, config.y);
+
+    const spec = config.sprite;
+    if (spec && scene.textures.exists(spec.keys[0])) {
+      if (spec.tile) {
+        const src = scene.textures.get(spec.keys[0]).getSourceImage();
+        const tile = scene.add
+          .tileSprite(0, config.height, config.width, src.height * spec.scale, spec.keys[0])
+          .setOrigin(0, 1)
+          .setTileScale(spec.scale, spec.scale);
+        this.container.add(tile);
+      } else {
+        this.art = scene.add
+          .image(config.width / 2, config.height, spec.keys[0])
+          .setOrigin(0.5, 1)
+          .setScale(spec.scale);
+        this.container.add(this.art);
+      }
+      return; // art replaces the placeholder rectangle and label
+    }
 
     // Main base body
     const baseColor = config.color ?? COLORS.DESK;
@@ -55,6 +75,14 @@ export class Furniture {
         .setOrigin(0.5);
       this.container.add(labelText);
     }
+  }
+
+  /** Switch to the i-th texture of a multi-frame sprite. No-op without art. */
+  public setFrame(i: number): void {
+    const keys = this.config.sprite?.keys;
+    if (!this.art || !keys) return;
+    const key = keys[Math.min(i, keys.length - 1)];
+    if (this.art.texture.key !== key) this.art.setTexture(key);
   }
 
   public getBounds(): Phaser.Geom.Rectangle {

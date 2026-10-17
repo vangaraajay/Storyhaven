@@ -1,0 +1,22 @@
+.group {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.star {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.star:focus-visible {
+  outline: 2px solid #f3e9d2;
+  outline-offset: 2px;
+}
+
+.disabled .star {
+  cursor: default;
+}

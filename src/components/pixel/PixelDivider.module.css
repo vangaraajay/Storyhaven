@@ -1,0 +1,22 @@
+.root {
+  --ink: #2a202a;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 0;
+  margin: 8px 0;
+  border-style: solid;
+  border-width: var(--px-bw);
+  border-image-source: var(--px-src);
+  border-image-slice: var(--px-slice) fill;
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
+}
+
+/* No divider sprite yet: 2px ink line. */
+.fallback {
+  border: 0;
+  border-image: none;
+  height: 2px;
+  background: var(--ink);
+}

@@ -8,6 +8,7 @@ import CommentForm from "./CommentForm";
 import CommentTree from "./CommentTree";
 import DeleteControl from "../DeleteControl";
 import type { ForumPost, CommentNode } from "@/lib/forum";
+import Icon from "@/components/pixel/Icon";
 
 interface ThreadViewProps {
   post: ForumPost;
@@ -99,7 +100,7 @@ export default function ThreadView({
 
           {/* Bottom Stats */}
           <div className="forum-post-footer" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.06)", paddingTop: "0.75rem" }}>
-            <span>💬 {post.comments_count} comments</span>
+            <span><Icon name="chat" size={1} /> {post.comments_count} comments</span>
             {post.media_title && post.media_type === "book" && (
               <Link
                 href={`/pages/forum?mode=per_book&book=${encodeURIComponent(
@@ -118,7 +119,7 @@ export default function ThreadView({
       {/* Comment Section */}
       <section style={{ marginBottom: "3rem" }}>
         <h2 style={{ fontSize: "1.2rem", fontWeight: 700, color: "var(--forum-text-primary)", marginBottom: "0.75rem", display: "flex", alignItems: "center", gap: "0.5rem", fontFamily: "var(--forum-font-mono)" }}>
-          <span>💬</span> Comments ({post.comments_count})
+          <Icon name="chat" size={1} /> Comments ({post.comments_count})
         </h2>
 
         {/* Top-Level Reply Box */}

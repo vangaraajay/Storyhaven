@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Icon from "@/components/pixel/Icon";
 
 interface BookDetailHeaderProps {
   bookTitle: string;
@@ -19,7 +20,7 @@ export default function BookDetailHeader({
     <div className="forum-book-banner">
       <div className="forum-book-banner-left">
         <div className="forum-book-icon-badge">
-          📖
+          <Icon name="book" />
         </div>
         <div>
           <div className="forum-book-banner-meta">

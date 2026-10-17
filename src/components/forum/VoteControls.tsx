@@ -2,6 +2,7 @@
 
 import React, { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Icon from "@/components/pixel/Icon";
 import { voteAction } from "@/app/pages/forum/actions";
 
 interface VoteControlsProps {
@@ -95,12 +96,7 @@ export default function VoteControls({
         aria-label="Upvote"
         className={`forum-vote-arrow up ${isUpvoted ? "voted" : ""}`}
       >
-        <svg
-          style={{ width: "16px", height: "16px", fill: "currentColor" }}
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 4L4 14h6v6h4v-6h6L12 4z" />
-        </svg>
+        <Icon name="upvote" size={1} />
       </button>
 
       {/* Score */}
@@ -118,12 +114,7 @@ export default function VoteControls({
         aria-label="Downvote"
         className={`forum-vote-arrow down ${isDownvoted ? "voted" : ""}`}
       >
-        <svg
-          style={{ width: "16px", height: "16px", fill: "currentColor" }}
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 20l8-10h-6V4h-4v6H4l8 10z" />
-        </svg>
+        <Icon name="upvote" size={1} className="px-flip-y" />
       </button>
     </div>
   );

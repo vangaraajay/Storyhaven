@@ -6,6 +6,7 @@ import MediaBadge from "@/components/forum/MediaBadge";
 import MarkdownRenderer from "@/components/forum/MarkdownRenderer";
 import DeleteControl from "./DeleteControl";
 import type { ForumPost } from "@/lib/forum";
+import Icon from "@/components/pixel/Icon";
 
 interface PostCardProps {
   post: ForumPost;
@@ -96,7 +97,7 @@ export default function PostCard({
         {/* Footer Actions */}
         <div className="forum-post-footer">
           <Link href={`/pages/forum/${post.id}`} className="forum-comment-count-btn">
-            <span>💬</span>
+            <Icon name="chat" size={1} />
             <span>
               {post.comments_count} {post.comments_count === 1 ? "comment" : "comments"}
             </span>

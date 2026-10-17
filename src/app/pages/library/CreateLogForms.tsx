@@ -7,7 +7,7 @@ import {
   createMovieAction,
   type LoggingFormState,
 } from "./actions";
-import CoverPreviewBox from "./CoverPreviewBox";
+import StarRating from "@/components/pixel/StarRating";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -326,53 +326,9 @@ export default function CreateLogForms() {
               {moviePending ? "Saving to Haven…" : "Save Movie to Haven"}
             </button>
           </div>
-        </form>
-      </div>
-
-      {/* ALBUM FORM */}
-      <div style={{ display: activeTab === "album" ? "block" : "none" }}>
-        <form ref={albumFormRef} action={albumAction} className="library-form">
-          <div className="form-title-cover-row">
-            <div className="form-title-col">
-              <label htmlFor="album-name">Album Title</label>
-              <input
-                id="album-name"
-                name="name"
-                type="text"
-                required
-                value={albumTitle}
-                onChange={(e) => setAlbumTitle(e.target.value)}
-                placeholder="e.g. Abbey Road"
-                autoComplete="off"
-              />
-              <input type="hidden" name="cover_url" value={albumCoverUrl} />
-
-              <div className="form-cover-override">
-                <button
-                  type="button"
-                  className="form-cover-override-toggle"
-                  onClick={() => setShowAlbumCustomCover((prev) => !prev)}
-                >
-                  {showAlbumCustomCover ? "– Hide custom cover URL" : "+ Custom cover URL"}
-                </button>
-                {showAlbumCustomCover && (
-                  <input
-                    type="url"
-                    placeholder="https://example.com/album.jpg"
-                    value={albumCoverUrl}
-                    onChange={(e) => setAlbumCoverUrl(e.target.value)}
-                    className="form-cover-override-input"
-                  />
-                )}
-              </div>
-            </div>
-
-            <CoverPreviewBox
-              type="album"
-              title={albumTitle}
-              onCoverResolved={(url) => setAlbumCoverUrl(url ?? "")}
-              resetSignal={albumResetSignal}
-            />
+          <div>
+            <span>Rating</span>
+            <StarRating name="rating" aria-label="Rating" />
           </div>
 
           <div className="form-row-grid">

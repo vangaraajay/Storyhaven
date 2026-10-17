@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Player } from "../entities/Player";
 import { FurnitureManager } from "../entities/FurnitureManager";
-import { DEFAULT_FURNITURE } from "../constants/furniture";
+import { ART_SCALE, DEFAULT_FURNITURE } from "../constants/furniture";
 import {
   getActiveZones,
   type LandmarkZone,
@@ -47,6 +47,18 @@ export class MainScene extends Phaser.Scene {
     this.needsProfile = Boolean(data?.needsProfile);
     this.displayName = data?.displayName ?? null;
     this.zones = getActiveZones(this.needsProfile, this.displayName);
+  }
+
+  public preload(): void {
+    const art: Record<string, string> = {
+      floor: "/floor.png",
+      bookshelf: "/bookshelf.png",
+      podium: "/podium.png",
+      podiumup: "/podiumup.png",
+      podiumupper: "/podiumupper.png",
+      board: "/board.png",
+    };
+    for (const [key, url] of Object.entries(art)) this.load.image(key, url);
   }
 
   public create(): void {
@@ -101,7 +113,7 @@ export class MainScene extends Phaser.Scene {
 
     // Helpful instruction tip at top
     this.add
-      .text(width / 2, 85, "Use WASD or Arrows • Library for logs • Auth Desk to log out", {
+      .text(width / 2, 145, "Use WASD or Arrows • Library for logs • Auth Desk to log out", {
         fontSize: "13px",
         color: COLORS.TEXT_MUTED,
         fontFamily: "monospace",
@@ -159,6 +171,15 @@ export class MainScene extends Phaser.Scene {
         this.hideHUD();
       }
     }
+
+    // Podium: closed -> lifting -> open while the player stands on its pad.
+    const podiumFrame =
+      this.activeZone?.id !== "daily-story"
+        ? 0
+        : this.timeInZone < this.DWELL_THRESHOLD / 2
+          ? 1
+          : 2;
+    this.furnitureManager.getById("daily-story-desk")?.setFrame(podiumFrame);
   }
 
   private findMatchingZone(x: number, y: number): LandmarkZone | null {
@@ -213,17 +234,26 @@ export class MainScene extends Phaser.Scene {
   }
 
   private createFloor(width: number, height: number): void {
-    const floor = this.add.graphics();
-    floor.fillStyle(COLORS.FLOOR, 1);
-    floor.fillRect(0, 0, width, height);
+    const WALL_H = 128; // matches the bookshelf wall collider
+    const base = this.add.graphics();
+    base.fillStyle(COLORS.FLOOR, 1);
+    base.fillRect(0, 0, width, height);
 
-    // Subtle checkered floor tiles (32x32)
-    floor.fillStyle(COLORS.FLOOR_GRID, 0.4);
+    if (this.textures.exists("floor")) {
+      this.add
+        .tileSprite(0, WALL_H, width, height - WALL_H, "floor")
+        .setOrigin(0, 0)
+        .setTileScale(ART_SCALE, ART_SCALE);
+      return;
+    }
+
+    // Fallback: checkered rectangles when the art is missing.
+    base.fillStyle(COLORS.FLOOR_GRID, 0.4);
     const tileSize = 32;
     for (let x = 0; x < width; x += tileSize) {
-      for (let y = 70; y < height; y += tileSize) {
+      for (let y = WALL_H; y < height; y += tileSize) {
         if ((x / tileSize + y / tileSize) % 2 === 0) {
-          floor.fillRect(x, y, tileSize, tileSize);
+          base.fillRect(x, y, tileSize, tileSize);
         }
       }
     }

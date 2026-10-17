@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Icon from "@/components/pixel/Icon";
 
 interface BookHubSelectorProps {
   userBooks: string[];
@@ -34,7 +35,7 @@ export default function BookHubSelector({
       <div className="forum-book-selector-header">
         <div>
           <span className="forum-book-selector-title">
-            📖 Select a Book Discussion Hub
+            <Icon name="book" size={1} /> Select a Book Discussion Hub
           </span>
           <p className="forum-book-selector-desc">
             Filter all forum threads to a single book title, or pick one from your shelf.
@@ -76,7 +77,7 @@ export default function BookHubSelector({
                   onClick={() => onSelectBook(book)}
                   className={`forum-book-chip ${isSelected ? "active" : ""}`}
                 >
-                  <span>📚</span> {book}
+                  <Icon name="book" size={1} /> {book}
                 </button>
               );
             })}
