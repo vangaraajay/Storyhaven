@@ -30,10 +30,12 @@ export default function BookDetailHeader({
               type="button"
               onClick={onClearBook}
               style={{
-                fontSize: "0.725rem",
-                color: "var(--forum-text-secondary)",
+                fontSize: "0.75rem",
+                color: "#ffd185",
+                fontWeight: 600,
                 fontFamily: "var(--forum-font-mono)",
                 textDecoration: "underline",
+                cursor: "pointer",
               }}
             >
               (Switch Book)

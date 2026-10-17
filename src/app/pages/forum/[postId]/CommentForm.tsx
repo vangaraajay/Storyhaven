@@ -125,9 +125,11 @@ export default function CommentForm({
             type="button"
             onClick={insertSpoilerTemplate}
             style={{
-              fontSize: "0.725rem",
-              color: "var(--forum-accent-rose)",
+              fontSize: "0.75rem",
+              color: "#ff8fa3",
+              fontWeight: 600,
               textDecoration: "underline",
+              cursor: "pointer",
             }}
           >
             + Spoiler tag

@@ -66,11 +66,24 @@ create table if not exists public.forum_votes (
   constraint forum_votes_target_check check (
     (post_id is not null and comment_id is null) or
     (post_id is null and comment_id is not null)
-  )
+  ),
+  constraint forum_votes_profile_post_unique unique (profile_id, post_id),
+  constraint forum_votes_profile_comment_unique unique (profile_id, comment_id)
 );
 
-create unique index if not exists forum_votes_user_post_idx on public.forum_votes (profile_id, post_id) where post_id is not null;
-create unique index if not exists forum_votes_user_comment_idx on public.forum_votes (profile_id, comment_id) where comment_id is not null;
+-- Drop obsolete partial indexes if migrating from earlier schema
+drop index if exists public.forum_votes_user_post_idx;
+drop index if exists public.forum_votes_user_comment_idx;
+
+-- Ensure constraints exist when re-running on an already-created table
+alter table public.forum_votes
+  drop constraint if exists forum_votes_profile_post_unique,
+  add constraint forum_votes_profile_post_unique unique (profile_id, post_id);
+
+alter table public.forum_votes
+  drop constraint if exists forum_votes_profile_comment_unique,
+  add constraint forum_votes_profile_comment_unique unique (profile_id, comment_id);
+
 create index if not exists forum_votes_post_idx on public.forum_votes (post_id);
 create index if not exists forum_votes_comment_idx on public.forum_votes (comment_id);
 

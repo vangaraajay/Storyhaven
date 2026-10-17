@@ -175,10 +175,12 @@ export default function CreatePostModal({
                   type="button"
                   onClick={insertSpoilerTemplate}
                   style={{
-                    color: "var(--forum-accent-rose)",
-                    fontSize: "0.725rem",
+                    color: "#ff8fa3",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
                     fontFamily: "var(--forum-font-mono)",
                     textDecoration: "underline",
+                    cursor: "pointer",
                   }}
                 >
                   + Add Spoiler Tag

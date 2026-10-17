@@ -68,7 +68,7 @@ export default function CommentItem({
           <button
             type="button"
             onClick={() => setIsCollapsed((prev) => !prev)}
-            style={{ fontSize: "0.75rem", color: "var(--forum-text-secondary)", cursor: "pointer", padding: "0 0.25rem" }}
+            style={{ fontSize: "0.775rem", color: "#c5c3ce", fontWeight: 700, cursor: "pointer", padding: "0 0.35rem" }}
           >
             {isCollapsed ? "[+]" : "[−]"}
           </button>

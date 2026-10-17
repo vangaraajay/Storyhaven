@@ -1,5 +1,9 @@
 @import "./pages/forum/forum.css";
 
+:root {
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -9,6 +13,7 @@
 html,
 body {
   min-height: 100%;
+  color-scheme: dark;
 }
 
 body {
