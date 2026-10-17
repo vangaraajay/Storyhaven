@@ -5,7 +5,12 @@ import { auth0 } from "@/lib/auth0";
 import { getProfile, isProfileComplete, type Profile } from "@/lib/profiles";
 
 async function AuthStatus() {
-  const session = await auth0.getSession();
+  let session = null;
+  try {
+    session = await auth0.getSession();
+  } catch {
+    // Auth0 not configured or domain unresolved in local dev
+  }
   const user = session?.user;
 
   if (!user) {

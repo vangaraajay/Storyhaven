@@ -1,39 +1,28 @@
 import Phaser from "phaser";
+import { MainScene } from "./scenes/MainScene";
 
-class MainScene extends Phaser.Scene {
-  constructor() {
-    super("main");
-  }
-
-  create() {
-    this.add
-      .text(400, 250, "Phaser", {
-        fontSize: "32px",
-        color: "#ffffff",
-      })
-      .setOrigin(0.5);
-
-    const button = this.add
-      .text(400, 320, "Go to page", {
-        fontSize: "20px",
-        color: "#9ad1ff",
-      })
-      .setOrigin(0.5)
-      .setInteractive({ useHandCursor: true });
-
-    button.on("pointerup", () => {
-      window.location.href = "/pages";
-    });
-  }
+export interface GameOptions {
+  onNavigate?: (route: string) => void;
 }
 
-export function createGame(parent: HTMLElement) {
+export function createGame(parent: HTMLElement, options?: GameOptions) {
+  class ConfiguredMainScene extends MainScene {
+    init() {
+      super.init({ onNavigate: options?.onNavigate });
+    }
+  }
+
   return new Phaser.Game({
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
     parent,
-    backgroundColor: "#1a1a2e",
-    scene: [MainScene],
+    backgroundColor: "#191724",
+    pixelArt: true,
+    scale: {
+      mode: Phaser.Scale.FIT,
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      width: 800,
+      height: 600,
+    },
+    scene: [ConfiguredMainScene],
   });
 }
