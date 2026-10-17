@@ -95,8 +95,8 @@ export const LANDMARK_ZONES: LandmarkZone[] = [
       width: 140,
       height: 70,
     },
-    route: "/pages/library",
-    prompt: "👥 Friends — Coming soon (Library for now)",
+    route: "/pages/friends",
+    prompt: "👥 Friends — Match & chat",
     color: 0x31748f,
   },
 ];

@@ -88,3 +88,246 @@ main {
 .daily-story p {
   margin-bottom: 1rem;
 }
+
+.friends-page {
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+.friends-page-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.friends-page-header a {
+  color: #31748f;
+  text-decoration: underline;
+}
+
+.friends-layout {
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) 1fr;
+  gap: 1.25rem;
+  min-height: 70dvh;
+}
+
+@media (max-width: 720px) {
+  .friends-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.friends-rail {
+  border-right: 1px solid #ddd;
+  padding-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.friends-rail-section h2 {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.friends-rail-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.friends-rail-list a {
+  display: block;
+  padding: 0.35rem 0.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.friends-rail-list a:hover,
+.friends-rail-list a.active {
+  background: #f0f0f0;
+}
+
+.friends-rail-action,
+.friends-find-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  color: #31748f;
+  text-decoration: underline;
+  font-size: 0.95rem;
+}
+
+.friends-find-btn {
+  margin-top: auto;
+  padding: 0.5rem 0;
+  font-weight: 600;
+}
+
+.friends-main {
+  min-width: 0;
+}
+
+.friends-muted {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.friends-error {
+  color: #b4637a;
+  margin-top: 0.5rem;
+}
+
+.friends-block {
+  margin-top: 1.25rem;
+}
+
+.friends-block h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.friends-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.friends-candidate {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.friends-candidate-name {
+  font-weight: 600;
+}
+
+.friends-candidate-actions form,
+.friends-inline-forms {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.friends-badge {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.friends-search {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.friends-search input,
+.friends-new-group input[type="text"],
+.friends-chat-compose input {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.friends-candidate-actions button,
+.friends-chat-compose button,
+.friends-new-group button {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #31748f;
+  background: #31748f;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.friends-candidate-actions button:disabled,
+.friends-chat-compose button:disabled,
+.friends-new-group button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.friends-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 60dvh;
+}
+
+.friends-chat-header {
+  margin-bottom: 0.75rem;
+}
+
+.friends-chat-thread {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.5rem 0 1rem;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 0.75rem;
+  max-height: 50dvh;
+}
+
+.friends-bubble {
+  max-width: 80%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  background: #f3f3f3;
+}
+
+.friends-bubble.mine {
+  align-self: flex-end;
+  background: #dceef5;
+}
+
+.friends-bubble.theirs {
+  align-self: flex-start;
+}
+
+.friends-bubble-name {
+  font-size: 0.8rem;
+  color: #555;
+  margin-bottom: 0.15rem;
+}
+
+.friends-chat-compose {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.friends-chat-compose input {
+  flex: 1;
+}
+
+.friends-new-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 24rem;
+}
+
+.friends-new-group fieldset {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.friends-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
