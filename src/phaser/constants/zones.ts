@@ -82,8 +82,8 @@ export const LANDMARK_ZONES: LandmarkZone[] = [
       width: 140,
       height: 70,
     },
-    route: "/pages/library",
-    prompt: "💬 Forums — Coming soon (Library for now)",
+    route: "/pages/forum",
+    prompt: "💬 Forums — Community Discussions",
     color: 0xeb6f92,
   },
   {

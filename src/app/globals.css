@@ -1,3 +1,9 @@
+@import "./pages/forum/forum.css";
+
+:root {
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -7,6 +13,7 @@
 html,
 body {
   min-height: 100%;
+  color-scheme: dark;
 }
 
 body {
@@ -23,6 +30,13 @@ main {
   padding: 2rem;
   background: #fff;
   color: #111;
+  min-height: 100dvh;
+}
+
+main.forum-main {
+  padding: 1.5rem 1rem;
+  background: #191724;
+  color: #e0def4;
   min-height: 100dvh;
 }
 

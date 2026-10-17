@@ -11,6 +11,9 @@ Source of truth for how the app is organized. Update this when you add routes, m
 5. Daily Story podium → **`/pages/daily-story`** (hardcoded tale for now).
 6. Friends pad → **`/pages/friends`** (SQL match, requests, DMs, groups).
 7. Auth Desk → log out → back to **`/pages/login`**.
+6. Forums → **`/pages/forum`** (community discussions).
+7. Web pages provide a **`← Return to Haven`** back button. Round-trip navigation restores the character's last position via `sessionStorage` and suppresses re-teleporting until the character exits the sensor pad.
+8. Auth Desk → log out → back to **`/pages/login`**.
 
 Phaser is blocked until the user is signed in.
 
@@ -46,6 +49,11 @@ src/
         ChatPanel.tsx
         NewGroupForm.tsx
         actions.ts
+      forum/
+        page.tsx
+        actions.ts
+        ForumFeed.tsx
+        [postId]/
   phaser/                    # Self-contained game (outside pages/)
     PhaserGame.tsx
     game.ts
@@ -71,6 +79,7 @@ src/
 | `/pages/library` | `pages/library/` | Media logging CRUD |
 | `/pages/daily-story` | `pages/daily-story/` | Daily Story podium reading |
 | `/pages/friends` | `pages/friends/` | Match, requests, DMs, groups |
+| `/pages/forum` | `pages/forum/` | Community discussions (Universal & Per-Book) |
 | `/auth/*` | Auth0 SDK via `proxy.ts` | Login, logout, callback |
 
 Removed / unused: `/phaser`, bare `/pages` index, `/page`, `book-logging` stubs.
@@ -84,6 +93,8 @@ Removed / unused: `/phaser`, bare `/pages` index, `/page`, `book-logging` stubs.
 | Daily Story podium | `/pages/daily-story` |
 | Friends | `/pages/friends` |
 | Forums | `/pages/library` (placeholder for now) |
+| Forums | `/pages/forum` |
+| Friends | `/pages/library` (placeholder for now) |
 
 Logout `returnTo` must be an **absolute** URL (e.g. `http://localhost:3000/pages/login`) and listed in Auth0 **Allowed Logout URLs**.
 

@@ -28,6 +28,7 @@ export class MainScene extends Phaser.Scene {
   private timeInZone = 0;
   private readonly DWELL_THRESHOLD = 500; // ms
   private isNavigating = false;
+  private suppressedZoneId: string | null = null;
 
   private hudPromptContainer!: Phaser.GameObjects.Container;
   private hudPromptText!: Phaser.GameObjects.Text;
@@ -63,8 +64,29 @@ export class MainScene extends Phaser.Scene {
     // 3. Render Landmark Sensor Pads
     this.createSensorPads();
 
-    // 4. Create Player (Spawn in center of room)
-    this.player = new Player(this, 400, 320);
+    // 4. Create Player (restore position if returning from a landmark, or default to room center)
+    let spawnX = 400;
+    let spawnY = 320;
+    this.suppressedZoneId = null;
+
+    try {
+      const saved = sessionStorage.getItem("storyhaven_player_pos");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+          spawnX = parsed.x;
+          spawnY = parsed.y;
+          this.suppressedZoneId = parsed.suppressedZoneId ?? null;
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to restore player position from sessionStorage", err);
+    }
+
+    this.player = new Player(this, spawnX, spawnY);
+
+    // Smooth camera fade-in on entry / return to room
+    this.cameras.main.fadeIn(180, 0, 0, 0);
 
     // 5. Create Floating HUD Prompt
     this.createHUD();
@@ -101,16 +123,34 @@ export class MainScene extends Phaser.Scene {
     const playerCenter = this.player.getCenter();
     const currentZone = this.findMatchingZone(playerCenter.x, playerCenter.y);
 
-    if (currentZone) {
-      if (this.activeZone?.id === currentZone.id) {
+    // Determine effective zone with suppression guard
+    let effectiveZone = currentZone;
+
+    if (this.suppressedZoneId) {
+      if (currentZone && currentZone.id === this.suppressedZoneId) {
+        // Player is still standing in the spawn pad: suppress dwell timer & navigation
+        effectiveZone = null;
+        this.timeInZone = 0;
+      } else {
+        // Player took a step outside the sensor pad boundaries!
+        // Re-arm the sensor pad and clean up stored state
+        this.suppressedZoneId = null;
+        try {
+          sessionStorage.removeItem("storyhaven_player_pos");
+        } catch {}
+      }
+    }
+
+    if (effectiveZone) {
+      if (this.activeZone?.id === effectiveZone.id) {
         this.timeInZone += delta;
         if (this.timeInZone >= this.DWELL_THRESHOLD) {
-          this.triggerNavigation(currentZone);
+          this.triggerNavigation(effectiveZone);
         }
       } else {
-        this.activeZone = currentZone;
+        this.activeZone = effectiveZone;
         this.timeInZone = 0;
-        this.showHUD(currentZone.prompt);
+        this.showHUD(effectiveZone.prompt);
       }
     } else {
       if (this.activeZone !== null) {
@@ -146,6 +186,18 @@ export class MainScene extends Phaser.Scene {
   private triggerNavigation(zone: LandmarkZone): void {
     this.isNavigating = true;
     this.player.isMovementLocked = true;
+
+    // Save player coordinates and zone ID to sessionStorage before navigation
+    try {
+      const playerState = {
+        x: Math.round(this.player.x),
+        y: Math.round(this.player.y),
+        suppressedZoneId: zone.id,
+      };
+      sessionStorage.setItem("storyhaven_player_pos", JSON.stringify(playerState));
+    } catch (err) {
+      console.warn("Could not save player position to sessionStorage", err);
+    }
 
     const destination = this.resolveRoute(zone);
 
