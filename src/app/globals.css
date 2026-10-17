@@ -345,3 +345,14 @@ main.forum-main {
   gap: 0.5rem;
   align-items: center;
 }
+
+/* Pixel art: crisp scaling for sprites rendered via <img>. */
+.px-art {
+  image-rendering: pixelated;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.px-flip-y {
+  transform: scaleY(-1);
+}

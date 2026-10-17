@@ -1,5 +1,6 @@
 "use client";
 
+import PixelTabs from "@/components/pixel/PixelTabs";
 import type { FeedSort } from "@/lib/forum";
 
 interface FeedTabsProps {
@@ -15,20 +16,11 @@ const TABS: { id: FeedSort; label: string; icon: string }[] = [
 
 export default function FeedTabs({ currentSort, onChangeSort }: FeedTabsProps) {
   return (
-    <div className="forum-tabs">
-      {TABS.map((tab) => {
-        const isActive = currentSort === tab.id;
-        return (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => onChangeSort(tab.id)}
-            className={`forum-tab ${isActive ? "active" : ""}`}
-          >
-            <span>{tab.icon}</span> {tab.label}
-          </button>
-        );
-      })}
-    </div>
+    <PixelTabs
+      tabs={TABS}
+      value={currentSort}
+      onChange={onChangeSort}
+      aria-label="Sort feed"
+    />
   );
 }

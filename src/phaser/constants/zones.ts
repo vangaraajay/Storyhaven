@@ -52,7 +52,7 @@ export const LANDMARK_ZONES: LandmarkZone[] = [
     name: "Library Bookshelf",
     sensorRect: {
       x: 100,
-      y: 70,
+      y: 128,
       width: 600,
       height: 50,
     },

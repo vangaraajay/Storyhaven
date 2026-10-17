@@ -12,6 +12,8 @@ import {
   updateMovieAction,
   type LoggingFormState,
 } from "./actions";
+import Icon from "@/components/pixel/Icon";
+import StarRating from "@/components/pixel/StarRating";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -35,7 +37,7 @@ function BookEntry({ book }: { book: BookLog }) {
           href={`/pages/forum?mode=per_book&book=${encodeURIComponent(book.name)}`}
           className="text-xs text-amber-300 hover:underline inline-block mr-3"
         >
-          💬 Discuss in Forum →
+          <Icon name="chat" size={1} /> Discuss in Forum →
         </Link>
         <button type="button" onClick={() => setEditing(true)}>
           Update
@@ -72,16 +74,8 @@ function BookEntry({ book }: { book: BookLog }) {
           />
         </div>
         <div>
-          <label htmlFor={`book-rating-${book.id}`}>Rating (0-5)</label>
-          <input
-            id={`book-rating-${book.id}`}
-            name="rating"
-            type="number"
-            min={0}
-            max={5}
-            step={0.5}
-            defaultValue={book.rating ?? ""}
-          />
+          <span>Rating</span>
+          <StarRating name="rating" defaultValue={book.rating} aria-label="Rating" />
         </div>
         <div>
           <label htmlFor={`book-started-${book.id}`}>Started date</label>
@@ -208,16 +202,8 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
           />
         </div>
         <div>
-          <label htmlFor={`movie-rating-${movie.id}`}>Rating (0-5)</label>
-          <input
-            id={`movie-rating-${movie.id}`}
-            name="rating"
-            type="number"
-            min={0}
-            max={5}
-            step={0.5}
-            defaultValue={movie.rating ?? ""}
-          />
+          <span>Rating</span>
+          <StarRating name="rating" defaultValue={movie.rating} aria-label="Rating" />
         </div>
         <div>
           <label htmlFor={`movie-finished-${movie.id}`}>Finished date</label>
@@ -320,16 +306,8 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
           />
         </div>
         <div>
-          <label htmlFor={`album-rating-${album.id}`}>Rating (0-5)</label>
-          <input
-            id={`album-rating-${album.id}`}
-            name="rating"
-            type="number"
-            min={0}
-            max={5}
-            step={0.5}
-            defaultValue={album.rating ?? ""}
-          />
+          <span>Rating</span>
+          <StarRating name="rating" defaultValue={album.rating} aria-label="Rating" />
         </div>
         <div>
           <label htmlFor={`album-finished-${album.id}`}>Finished date</label>

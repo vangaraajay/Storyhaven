@@ -7,6 +7,7 @@ import {
   createMovieAction,
   type LoggingFormState,
 } from "./actions";
+import StarRating from "@/components/pixel/StarRating";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -38,15 +39,8 @@ export default function CreateLogForms() {
             <input id="book-cover" name="cover_url" type="url" />
           </div>
           <div>
-            <label htmlFor="book-rating">Rating (0-5)</label>
-            <input
-              id="book-rating"
-              name="rating"
-              type="number"
-              min={0}
-              max={5}
-              step={0.5}
-            />
+            <span>Rating</span>
+            <StarRating name="rating" aria-label="Rating" />
           </div>
           <div>
             <label htmlFor="book-started">Started date</label>
@@ -98,15 +92,8 @@ export default function CreateLogForms() {
             <input id="movie-cover" name="cover_url" type="url" />
           </div>
           <div>
-            <label htmlFor="movie-rating">Rating (0-5)</label>
-            <input
-              id="movie-rating"
-              name="rating"
-              type="number"
-              min={0}
-              max={5}
-              step={0.5}
-            />
+            <span>Rating</span>
+            <StarRating name="rating" aria-label="Rating" />
           </div>
           <div>
             <label htmlFor="movie-finished">Finished date</label>
@@ -144,15 +131,8 @@ export default function CreateLogForms() {
             <input id="album-cover" name="cover_url" type="url" />
           </div>
           <div>
-            <label htmlFor="album-rating">Rating (0-5)</label>
-            <input
-              id="album-rating"
-              name="rating"
-              type="number"
-              min={0}
-              max={5}
-              step={0.5}
-            />
+            <span>Rating</span>
+            <StarRating name="rating" aria-label="Rating" />
           </div>
           <div>
             <label htmlFor="album-finished">Finished date</label>

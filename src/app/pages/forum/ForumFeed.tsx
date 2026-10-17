@@ -12,6 +12,7 @@ import PostCard from "./PostCard";
 import CreatePostModal from "./CreatePostModal";
 import { fetchMorePostsAction } from "./actions";
 import type { ForumPost, FeedSort, MediaFilter, FeedCursor } from "@/lib/forum";
+import Icon from "@/components/pixel/Icon";
 
 interface ForumFeedProps {
   initialPosts: ForumPost[];
@@ -177,7 +178,7 @@ export default function ForumFeed({
       <div className="forum-header">
         <div className="forum-title-group">
           <div className="forum-title-row">
-            <span className="forum-title-icon">💬</span>
+            <span className="forum-title-icon"><Icon name="chat" /></span>
             <h1 className="forum-title">Community Forum</h1>
           </div>
           <p className="forum-subtitle">

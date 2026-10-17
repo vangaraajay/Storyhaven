@@ -10,7 +10,21 @@ export interface FurnitureConfig {
   height: number;
   isSolid: boolean;
   color?: number;
+  /** Optional art. The config rect stays the collider; art is anchored to its bottom edge. */
+  sprite?: FurnitureSprite;
 }
+
+export interface FurnitureSprite {
+  /** Texture key(s). With several, setFrame(i) switches between them. */
+  keys: string[];
+  /** Integer magnification. */
+  scale: number;
+  /** Repeat the art horizontally across the collider width (e.g. bookshelf wall). */
+  tile?: boolean;
+}
+
+/** Shared magnification for all haven art. */
+export const ART_SCALE = 2;
 
 export const DEFAULT_FURNITURE: FurnitureConfig[] = [
   // Full-width top bookshelf wall
@@ -21,33 +35,38 @@ export const DEFAULT_FURNITURE: FurnitureConfig[] = [
     x: 0,
     y: 0,
     width: 800,
-    height: 70,
+    height: 128,
     isSolid: true,
     color: COLORS.BOOKSHELF,
+    sprite: { keys: ["bookshelf"], scale: ART_SCALE, tile: true },
   },
   // Daily Story desk / podium (center-left)
   {
     id: "daily-story-desk",
     type: "desk",
     label: "Today's Story Podium",
-    x: 90,
-    y: 200,
-    width: 120,
-    height: 60,
+    // Collider = podium base (64x40); art (64x96) rises above it.
+    x: 118,
+    y: 220,
+    width: 64,
+    height: 40,
     isSolid: true,
     color: COLORS.DESK,
+    sprite: { keys: ["podium", "podiumup", "podiumupper"], scale: ART_SCALE },
   },
   // Forums notice board (bottom-left)
   {
     id: "forums-board",
     type: "board",
     label: "Community Bulletin",
-    x: 20,
-    y: 450,
-    width: 140,
-    height: 60,
+    // Collider = bottom of the board; art (96x80) is anchored to it.
+    x: 40,
+    y: 470,
+    width: 96,
+    height: 40,
     isSolid: true,
     color: COLORS.BOARD,
+    sprite: { keys: ["board"], scale: ART_SCALE },
   },
   // Friends meeting board / couch (bottom-right)
   {
