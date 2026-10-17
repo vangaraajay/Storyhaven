@@ -76,6 +76,9 @@ export default function Home() {
       <p>
         <Link href="/pages">Basic page</Link>
       </p>
+      <p>
+        <Link href="/pages/logging">Logging</Link>
+      </p>
     </main>
   );
 }

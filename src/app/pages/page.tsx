@@ -16,6 +16,9 @@ export default function BasicPage() {
       <p>
         <Link href="/pages/profile-creation">Create profile</Link>
       </p>
+      <p>
+        <Link href="/pages/logging">Logging</Link>
+      </p>
     </main>
   );
 }

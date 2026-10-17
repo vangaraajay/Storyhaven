@@ -1,0 +1,417 @@
+"use client";
+
+import { useActionState, useState } from "react";
+import type { AlbumLog, BookLog, MovieLog } from "@/lib/logging";
+import {
+  deleteAlbumAction,
+  deleteBookAction,
+  deleteMovieAction,
+  updateAlbumAction,
+  updateBookAction,
+  updateMovieAction,
+  type LoggingFormState,
+} from "./actions";
+
+const initialState: LoggingFormState = { error: null };
+
+function BookEntry({ book }: { book: BookLog }) {
+  const [editing, setEditing] = useState(false);
+  const [state, action, pending] = useActionState(
+    updateBookAction,
+    initialState,
+  );
+
+  if (!editing) {
+    return (
+      <li>
+        <p>
+          {book.name}
+          {book.rating != null ? ` — ${book.rating}/5` : ""}
+          {book.status ? ` — ${book.status}` : ""}
+          {book.liked ? " — liked" : ""}
+        </p>
+        <button type="button" onClick={() => setEditing(true)}>
+          Update
+        </button>
+        <form action={deleteBookAction}>
+          <input type="hidden" name="id" value={book.id} />
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <form action={action}>
+        <input type="hidden" name="id" value={book.id} />
+        <div>
+          <label htmlFor={`book-name-${book.id}`}>Name</label>
+          <input
+            id={`book-name-${book.id}`}
+            name="name"
+            type="text"
+            required
+            defaultValue={book.name}
+          />
+        </div>
+        <div>
+          <label htmlFor={`book-cover-${book.id}`}>Cover URL</label>
+          <input
+            id={`book-cover-${book.id}`}
+            name="cover_url"
+            type="url"
+            defaultValue={book.cover_url ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`book-rating-${book.id}`}>Rating (0-5)</label>
+          <input
+            id={`book-rating-${book.id}`}
+            name="rating"
+            type="number"
+            min={0}
+            max={5}
+            step={0.5}
+            defaultValue={book.rating ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`book-started-${book.id}`}>Started date</label>
+          <input
+            id={`book-started-${book.id}`}
+            name="started_date"
+            type="date"
+            defaultValue={book.started_date ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`book-finished-${book.id}`}>Finished date</label>
+          <input
+            id={`book-finished-${book.id}`}
+            name="finished_date"
+            type="date"
+            defaultValue={book.finished_date ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`book-status-${book.id}`}>Status</label>
+          <select
+            id={`book-status-${book.id}`}
+            name="status"
+            defaultValue={book.status ?? ""}
+          >
+            <option value="">—</option>
+            <option value="want">Want</option>
+            <option value="reading">Reading</option>
+            <option value="finished">Finished</option>
+            <option value="dropped">Dropped</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor={`book-pages-${book.id}`}>Pages</label>
+          <input
+            id={`book-pages-${book.id}`}
+            name="pages"
+            type="number"
+            min={0}
+            defaultValue={book.pages ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`book-liked-${book.id}`}>
+            <input
+              id={`book-liked-${book.id}`}
+              name="liked"
+              type="checkbox"
+              defaultChecked={book.liked}
+            />{" "}
+            Like
+          </label>
+        </div>
+        <div>
+          <label htmlFor={`book-review-${book.id}`}>Review / notes</label>
+          <textarea
+            id={`book-review-${book.id}`}
+            name="review"
+            rows={3}
+            defaultValue={book.review ?? ""}
+          />
+        </div>
+        {state.error ? <p>{state.error}</p> : null}
+        <button type="submit" disabled={pending}>
+          {pending ? "Updating…" : "Save"}
+        </button>
+        <button type="button" onClick={() => setEditing(false)}>
+          Cancel
+        </button>
+      </form>
+    </li>
+  );
+}
+
+function MovieEntry({ movie }: { movie: MovieLog }) {
+  const [editing, setEditing] = useState(false);
+  const [state, action, pending] = useActionState(
+    updateMovieAction,
+    initialState,
+  );
+
+  if (!editing) {
+    return (
+      <li>
+        <p>
+          {movie.name}
+          {movie.rating != null ? ` — ${movie.rating}/5` : ""}
+          {movie.runtime != null ? ` — ${movie.runtime} min` : ""}
+          {movie.liked ? " — liked" : ""}
+        </p>
+        <button type="button" onClick={() => setEditing(true)}>
+          Update
+        </button>
+        <form action={deleteMovieAction}>
+          <input type="hidden" name="id" value={movie.id} />
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <form action={action}>
+        <input type="hidden" name="id" value={movie.id} />
+        <div>
+          <label htmlFor={`movie-name-${movie.id}`}>Name</label>
+          <input
+            id={`movie-name-${movie.id}`}
+            name="name"
+            type="text"
+            required
+            defaultValue={movie.name}
+          />
+        </div>
+        <div>
+          <label htmlFor={`movie-cover-${movie.id}`}>Cover URL</label>
+          <input
+            id={`movie-cover-${movie.id}`}
+            name="cover_url"
+            type="url"
+            defaultValue={movie.cover_url ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`movie-rating-${movie.id}`}>Rating (0-5)</label>
+          <input
+            id={`movie-rating-${movie.id}`}
+            name="rating"
+            type="number"
+            min={0}
+            max={5}
+            step={0.5}
+            defaultValue={movie.rating ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`movie-finished-${movie.id}`}>Finished date</label>
+          <input
+            id={`movie-finished-${movie.id}`}
+            name="finished_date"
+            type="date"
+            defaultValue={movie.finished_date ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`movie-runtime-${movie.id}`}>Runtime (minutes)</label>
+          <input
+            id={`movie-runtime-${movie.id}`}
+            name="runtime"
+            type="number"
+            min={0}
+            defaultValue={movie.runtime ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`movie-liked-${movie.id}`}>
+            <input
+              id={`movie-liked-${movie.id}`}
+              name="liked"
+              type="checkbox"
+              defaultChecked={movie.liked}
+            />{" "}
+            Like
+          </label>
+        </div>
+        <div>
+          <label htmlFor={`movie-review-${movie.id}`}>Review / notes</label>
+          <textarea
+            id={`movie-review-${movie.id}`}
+            name="review"
+            rows={3}
+            defaultValue={movie.review ?? ""}
+          />
+        </div>
+        {state.error ? <p>{state.error}</p> : null}
+        <button type="submit" disabled={pending}>
+          {pending ? "Updating…" : "Save"}
+        </button>
+        <button type="button" onClick={() => setEditing(false)}>
+          Cancel
+        </button>
+      </form>
+    </li>
+  );
+}
+
+function AlbumEntry({ album }: { album: AlbumLog }) {
+  const [editing, setEditing] = useState(false);
+  const [state, action, pending] = useActionState(
+    updateAlbumAction,
+    initialState,
+  );
+
+  if (!editing) {
+    return (
+      <li>
+        <p>
+          {album.name}
+          {album.rating != null ? ` — ${album.rating}/5` : ""}
+          {album.liked ? " — liked" : ""}
+        </p>
+        <button type="button" onClick={() => setEditing(true)}>
+          Update
+        </button>
+        <form action={deleteAlbumAction}>
+          <input type="hidden" name="id" value={album.id} />
+          <button type="submit">Delete</button>
+        </form>
+      </li>
+    );
+  }
+
+  return (
+    <li>
+      <form action={action}>
+        <input type="hidden" name="id" value={album.id} />
+        <div>
+          <label htmlFor={`album-name-${album.id}`}>Name</label>
+          <input
+            id={`album-name-${album.id}`}
+            name="name"
+            type="text"
+            required
+            defaultValue={album.name}
+          />
+        </div>
+        <div>
+          <label htmlFor={`album-cover-${album.id}`}>Cover URL</label>
+          <input
+            id={`album-cover-${album.id}`}
+            name="cover_url"
+            type="url"
+            defaultValue={album.cover_url ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`album-rating-${album.id}`}>Rating (0-5)</label>
+          <input
+            id={`album-rating-${album.id}`}
+            name="rating"
+            type="number"
+            min={0}
+            max={5}
+            step={0.5}
+            defaultValue={album.rating ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`album-finished-${album.id}`}>Finished date</label>
+          <input
+            id={`album-finished-${album.id}`}
+            name="finished_date"
+            type="date"
+            defaultValue={album.finished_date ?? ""}
+          />
+        </div>
+        <div>
+          <label htmlFor={`album-liked-${album.id}`}>
+            <input
+              id={`album-liked-${album.id}`}
+              name="liked"
+              type="checkbox"
+              defaultChecked={album.liked}
+            />{" "}
+            Like
+          </label>
+        </div>
+        <div>
+          <label htmlFor={`album-review-${album.id}`}>Review / notes</label>
+          <textarea
+            id={`album-review-${album.id}`}
+            name="review"
+            rows={3}
+            defaultValue={album.review ?? ""}
+          />
+        </div>
+        {state.error ? <p>{state.error}</p> : null}
+        <button type="submit" disabled={pending}>
+          {pending ? "Updating…" : "Save"}
+        </button>
+        <button type="button" onClick={() => setEditing(false)}>
+          Cancel
+        </button>
+      </form>
+    </li>
+  );
+}
+
+type LogEntriesProps = {
+  books: BookLog[];
+  movies: MovieLog[];
+  albums: AlbumLog[];
+};
+
+export default function LogEntries({ books, movies, albums }: LogEntriesProps) {
+  return (
+    <>
+      <section>
+        <h2>Your books</h2>
+        {books.length === 0 ? (
+          <p>No books logged yet.</p>
+        ) : (
+          <ul>
+            {books.map((book) => (
+              <BookEntry key={book.id} book={book} />
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section>
+        <h2>Your movies</h2>
+        {movies.length === 0 ? (
+          <p>No movies logged yet.</p>
+        ) : (
+          <ul>
+            {movies.map((movie) => (
+              <MovieEntry key={movie.id} movie={movie} />
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section>
+        <h2>Your albums</h2>
+        {albums.length === 0 ? (
+          <p>No albums logged yet.</p>
+        ) : (
+          <ul>
+            {albums.map((album) => (
+              <AlbumEntry key={album.id} album={album} />
+            ))}
+          </ul>
+        )}
+      </section>
+    </>
+  );
+}
