@@ -992,3 +992,30 @@ main.forum-main {
     padding: 0.85rem;
   }
 }
+
+/* Return to Haven navigation button */
+.forum-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.9rem;
+  font-family: var(--forum-font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--forum-text-primary);
+  background: var(--forum-bg-surface);
+  border: 1px solid var(--forum-border-default);
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  width: fit-content;
+}
+
+.forum-back-btn:hover {
+  background: var(--forum-bg-overlay);
+  border-color: var(--forum-border-strong);
+  color: var(--forum-accent-rose);
+  transform: translateX(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}

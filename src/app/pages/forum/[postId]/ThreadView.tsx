@@ -39,9 +39,13 @@ export default function ThreadView({
   return (
     <div className="forum-thread-container">
       {/* Navigation Breadcrumb */}
-      <div className="forum-breadcrumb">
+      <div className="forum-breadcrumb" style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+        <Link href="/" className="forum-back-btn" style={{ marginBottom: 0 }}>
+          <span aria-hidden="true">←</span> Return to Haven
+        </Link>
+        <span style={{ color: "var(--forum-border-subtle)" }}>•</span>
         <Link href="/pages/forum" className="forum-breadcrumb-link">
-          <span>←</span> Back to Discussions
+          Back to Discussions
         </Link>
       </div>
 

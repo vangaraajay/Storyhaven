@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import FeedModeToggle from "./FeedModeToggle";
 import BookHubSelector from "./BookHubSelector";
@@ -163,6 +164,13 @@ export default function ForumFeed({
 
   return (
     <div className="forum-container">
+      {/* Top Navigation */}
+      <div style={{ marginBottom: "0.85rem" }}>
+        <Link href="/" className="forum-back-btn">
+          <span aria-hidden="true">←</span> Return to Haven
+        </Link>
+      </div>
+
       {/* Top Header & New Post Action */}
       <div className="forum-header">
         <div className="forum-title-group">

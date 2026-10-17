@@ -9,7 +9,9 @@ Source of truth for how the app is organized. Update this when you add routes, m
 3. Incomplete profile → Auth Desk or Library sends you to **`/pages/profile`**.
 4. Library Bookshelf → **`/pages/library`** (log books / movies / albums).
 5. Daily Story podium → **`/pages/daily-story`** (hardcoded tale for now).
-6. Auth Desk → log out → back to **`/pages/login`**.
+6. Forums → **`/pages/forum`** (community discussions).
+7. Web pages provide a **`← Return to Haven`** back button. Round-trip navigation restores the character's last position via `sessionStorage` and suppresses re-teleporting until the character exits the sensor pad.
+8. Auth Desk → log out → back to **`/pages/login`**.
 
 Phaser is blocked until the user is signed in.
 
