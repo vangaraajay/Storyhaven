@@ -14,7 +14,8 @@ Logged in → `/` Phaser haven.
 | Auth Desk (no profile) | `/pages/profile` |
 | Auth Desk (complete) | `/auth/logout?returnTo=<origin>/pages/login` |
 | Library Bookshelf | `/pages/library` |
-| Other pads | `/pages/library` (temp) |
+| Daily Story podium | `/pages/daily-story` |
+| Forums / Friends | `/pages/library` (temp) |
 
 ## Auth0 dashboard checklist
 

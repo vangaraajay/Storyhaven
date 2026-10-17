@@ -69,8 +69,8 @@ export const LANDMARK_ZONES: LandmarkZone[] = [
       width: 120,
       height: 50,
     },
-    route: "/pages/library",
-    prompt: "📜 Daily Story — Coming soon (Library for now)",
+    route: "/pages/daily-story",
+    prompt: "📜 Daily Story — Read today's tale",
     color: 0xf6c177,
   },
   {

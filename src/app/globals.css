@@ -50,3 +50,41 @@ main {
   color: #31748f;
   text-decoration: underline;
 }
+
+.daily-story-page {
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.daily-story-back {
+  color: #31748f;
+  text-decoration: underline;
+}
+
+.daily-story {
+  margin-top: 1.5rem;
+}
+
+.daily-story-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.daily-story h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.daily-story-author {
+  color: #555;
+  margin-bottom: 1.75rem;
+}
+
+.daily-story p {
+  margin-bottom: 1rem;
+}
