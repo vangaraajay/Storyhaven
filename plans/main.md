@@ -8,7 +8,8 @@ Source of truth for how the app is organized. Update this when you add routes, m
 2. After Auth0 → **`/`** Phaser haven (no HTML chrome).
 3. Incomplete profile → Auth Desk or Library sends you to **`/pages/profile`**.
 4. Library Bookshelf → **`/pages/library`** (log books / movies / albums).
-5. Auth Desk → log out → back to **`/pages/login`**.
+5. Daily Story podium → **`/pages/daily-story`** (hardcoded tale for now).
+6. Auth Desk → log out → back to **`/pages/login`**.
 
 Phaser is blocked until the user is signed in.
 
@@ -34,6 +35,9 @@ src/
         CreateLogForms.tsx   # Create book/movie/album
         LibraryEntries.tsx   # List + update/delete
         actions.ts
+      daily-story/
+        page.tsx
+        story.ts             # Hardcoded daily tale text
   phaser/                    # Self-contained game (outside pages/)
     PhaserGame.tsx
     game.ts
@@ -56,6 +60,7 @@ src/
 | `/pages/login` | `pages/login/` | Guest log in / sign up |
 | `/pages/profile` | `pages/profile/` | Create display name / profile |
 | `/pages/library` | `pages/library/` | Media logging CRUD |
+| `/pages/daily-story` | `pages/daily-story/` | Daily Story podium reading |
 | `/auth/*` | Auth0 SDK via `proxy.ts` | Login, logout, callback |
 
 Removed / unused: `/phaser`, bare `/pages` index, `/page`, `book-logging` stubs.
@@ -66,7 +71,8 @@ Removed / unused: `/phaser`, bare `/pages` index, `/page`, `book-logging` stubs.
 |---|---|
 | Auth Desk (center table) | `/pages/profile` if no profile; else `/auth/logout` → `/pages/login` |
 | Library Bookshelf | `/pages/library` |
-| Daily Story / Forums / Friends | `/pages/library` (placeholders for now) |
+| Daily Story podium | `/pages/daily-story` |
+| Forums / Friends | `/pages/library` (placeholders for now) |
 
 Logout `returnTo` must be an **absolute** URL (e.g. `http://localhost:3000/pages/login`) and listed in Auth0 **Allowed Logout URLs**.
 
