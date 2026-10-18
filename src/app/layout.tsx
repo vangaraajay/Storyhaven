@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Pixelify_Sans } from "next/font/google";
+import BackgroundMusic from "@/components/audio/BackgroundMusic";
 import MotionProvider from "@/components/pixel/MotionProvider";
 import "./globals.css";
 
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en" className={pixelFont.variable} style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <body>
         <MotionProvider />
+        <BackgroundMusic />
         {children}
       </body>
     </html>
