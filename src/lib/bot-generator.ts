@@ -173,18 +173,26 @@ export async function generateBotCommunity(
       message: `Reusing ${botPool.length} existing bot profiles (0 new profiles required).`,
     });
   } else {
-    // Need delta usernames
+    // Need delta usernames (chunked into batches of up to 10 for fast, reliable responses)
     const delta = targetBotCount - existingBots.length;
     botPool = [...existingBots];
+    const BATCH_USERNAMES_SIZE = 10;
+    const namesToInsert: string[] = [];
 
-    await onProgress?.({
-      step: 1,
-      totalSteps: 4,
-      message: `Reusing ${existingBots.length} existing bots; generating ${delta} new usernames via Gemini 3.1 Flash Lite...`,
-    });
+    while (namesToInsert.length < delta) {
+      const batchSize = Math.min(
+        BATCH_USERNAMES_SIZE,
+        delta - namesToInsert.length,
+      );
 
-    const usernamePrompt = `You are a naming engine for "Storyhaven", a cozy retro fantasy pixel library where readers, cinephiles, and vinyl listeners gather.
-Generate exactly ${delta} unique, creative, evocative usernames.
+      await onProgress?.({
+        step: 1,
+        totalSteps: 4,
+        message: `Generating bot usernames (${namesToInsert.length}/${delta}) via Gemini 3.1 Flash Lite...`,
+      });
+
+      const usernamePrompt = `You are a naming engine for "Storyhaven", a cozy retro fantasy pixel library where readers, cinephiles, and vinyl listeners gather.
+Generate exactly ${batchSize} unique, creative, evocative usernames.
 Guidelines:
 - Themes: antique books, cozy tea, botany, vinyl grooves, cinema, constellations, quiet rain, late-night reading, candlelit shelves.
 - Formats: CamelCase or single evocative words (e.g., MossyFolio, StarlightSpine, TeaAndTolkien, CinephileCat, NocturneReader, VelvetLoom, QuillAndFern, Hearthbound).
@@ -193,21 +201,34 @@ Format: Output ONLY the usernames separated by a pipe character (|). Do not incl
 Example:
 MossyFolio | StarlightSpine | TeaAndTolkien | CinephileCat`;
 
-    const rawNames = await callGemma(usernamePrompt, {
-      reason: `Generating ${delta} bot usernames for identity pool`,
-      temperature: 0.85,
-    });
-    const parsedNames = parseDelimitedUsernames(rawNames, delta);
+      try {
+        const rawNames = await callGemma(usernamePrompt, {
+          reason: `Generating ${batchSize} bot usernames (${namesToInsert.length + 1}-${namesToInsert.length + batchSize} of ${delta})`,
+          temperature: 0.85,
+        });
+        const parsedNames = parseDelimitedUsernames(rawNames, batchSize);
 
-    // Filter and sanitize names
-    const namesToInsert = parsedNames
-      .map((n) => String(n).trim().replace(/[^a-zA-Z0-9_-]/g, ""))
-      .filter(Boolean)
-      .slice(0, delta);
+        for (const name of parsedNames) {
+          const clean = name.trim().replace(/[^a-zA-Z0-9_-]/g, "");
+          if (
+            clean &&
+            !namesToInsert.includes(clean) &&
+            namesToInsert.length < delta
+          ) {
+            namesToInsert.push(clean);
+          }
+        }
+      } catch (err) {
+        console.warn("Sub-batch username error:", err);
+      }
 
-    // If Gemma returned fewer than delta, generate fallback names
-    while (namesToInsert.length < delta) {
-      namesToInsert.push(`HavenSeeker${randomInt(100, 999)}`);
+      // If a batch returned fewer, pad with unique fallback names to ensure completion
+      while (
+        namesToInsert.length <
+        Math.min(delta, namesToInsert.length + batchSize)
+      ) {
+        namesToInsert.push(`HavenSeeker${randomInt(100, 999)}`);
+      }
     }
 
     const newRows = namesToInsert.map((name) => {
@@ -239,16 +260,38 @@ MossyFolio | StarlightSpine | TeaAndTolkien | CinephileCat`;
   }
 
   // =========================================================================
-  // STEP 2: Batch Forum Post Generation & Catalog Mirroring
+  // STEP 2: Batch Forum Post Generation & Catalog Mirroring (Chunked by 3)
   // =========================================================================
-  await onProgress?.({
-    step: 2,
-    totalSteps: 4,
-    message: `Authoring ${targetPostCount} forum posts via Gemini 3.1 Flash Lite...`,
-  });
+  type InsertedPost = {
+    id: string;
+    profile_id: string;
+    title: string;
+    content: string;
+    media_type: string;
+    media_title: string | null;
+    created_at: string;
+  };
 
-  const postsPrompt = `You are community members posting on Storyhaven's cozy library forum.
-Generate exactly ${targetPostCount} authentic, engaging forum posts across categories: book, movie, album, general.
+  const insertedPosts: InsertedPost[] = [];
+  const now = Date.now();
+  const BATCH_POSTS_SIZE = 3;
+
+  while (insertedPosts.length < targetPostCount) {
+    const batchSize = Math.min(
+      BATCH_POSTS_SIZE,
+      targetPostCount - insertedPosts.length,
+    );
+    const batchNum = Math.floor(insertedPosts.length / BATCH_POSTS_SIZE) + 1;
+    const totalBatches = Math.ceil(targetPostCount / BATCH_POSTS_SIZE);
+
+    await onProgress?.({
+      step: 2,
+      totalSteps: 4,
+      message: `Authoring forum posts (batch ${batchNum}/${totalBatches}, ${insertedPosts.length}/${targetPostCount}) via Gemini 3.1 Flash Lite...`,
+    });
+
+    const postsPrompt = `You are community members posting on Storyhaven's cozy library forum.
+Generate exactly ${batchSize} authentic, engaging forum posts across categories: book, movie, album, general.
 Mix book reflections, film thoughts, vinyl record discussions, and cozy library musings.
 
 Format each post using the exact delimiter "===POST===" like this:
@@ -267,101 +310,98 @@ MEDIA_TITLE: None
 CONTENT:
 The sound of rain against the stained glass windows makes the library feel like an enclave away from time...`;
 
-  const rawPosts = await callGemma(postsPrompt, {
-    reason: `Batch generating ${targetPostCount} forum posts across categories`,
-    temperature: 0.8,
-  });
-
-  let parsedPosts = parseDelimitedPosts(rawPosts);
-  if (parsedPosts.length === 0) {
     try {
-      parsedPosts = extractAndParseJson<RawPostItem[]>(rawPosts);
-    } catch {
-      // keep fallback
-    }
-  }
+      const rawPosts = await callGemma(postsPrompt, {
+        reason: `Sub-batch generating ${batchSize} forum posts (${insertedPosts.length + 1}-${insertedPosts.length + batchSize} of ${targetPostCount})`,
+        temperature: 0.8,
+      });
 
-  type InsertedPost = {
-    id: string;
-    profile_id: string;
-    title: string;
-    content: string;
-    media_type: string;
-    media_title: string | null;
-    created_at: string;
-  };
-
-  const insertedPosts: InsertedPost[] = [];
-  const now = Date.now();
-
-  for (let i = 0; i < Math.min(parsedPosts.length, targetPostCount); i++) {
-    const rawP = parsedPosts[i];
-    const author = sample(botPool);
-    // Stagger timestamps across past 1 to 7 days
-    const postAgeMs = randomInt(3600 * 1000, 7 * 86400 * 1000);
-    const postCreatedAt = new Date(now - postAgeMs).toISOString();
-
-    const mediaType = ["book", "movie", "album", "general"].includes(
-      rawP.media_type,
-    )
-      ? rawP.media_type
-      : "general";
-
-    const mediaTitle = rawP.media_title?.trim() || null;
-
-    const { data: postRow, error: pErr } = await supabase
-      .from("forum_posts")
-      .insert({
-        profile_id: author.id,
-        title: rawP.title.trim().slice(0, 300),
-        content: rawP.content.trim(),
-        media_type: mediaType,
-        media_title: mediaTitle,
-        created_at: postCreatedAt,
-      })
-      .select("id, profile_id, title, content, media_type, media_title, created_at")
-      .single();
-
-    if (pErr) {
-      console.warn("Failed to insert bot forum post:", pErr.message);
-      continue;
-    }
-
-    insertedPosts.push(postRow as InsertedPost);
-
-    // Automatic Bot Catalog Population
-    if (mediaTitle) {
-      try {
-        if (mediaType === "book") {
-          await supabase.from("book_logs").insert({
-            profile_id: author.id,
-            name: mediaTitle,
-            liked: true,
-            rating: 4.5,
-            status: "finished",
-            created_at: postCreatedAt,
-          });
-        } else if (mediaType === "movie") {
-          await supabase.from("movie_logs").insert({
-            profile_id: author.id,
-            name: mediaTitle,
-            liked: true,
-            rating: 4.5,
-            runtime: 110,
-            created_at: postCreatedAt,
-          });
-        } else if (mediaType === "album") {
-          await supabase.from("album_logs").insert({
-            profile_id: author.id,
-            name: mediaTitle,
-            liked: true,
-            rating: 4.5,
-            created_at: postCreatedAt,
-          });
+      let parsedPosts = parseDelimitedPosts(rawPosts);
+      if (parsedPosts.length === 0) {
+        try {
+          parsedPosts = extractAndParseJson<RawPostItem[]>(rawPosts);
+        } catch {
+          // fallback
         }
-      } catch (logErr) {
-        console.warn("Failed to populate bot catalog log:", logErr);
       }
+
+      if (parsedPosts.length === 0) {
+        console.warn("No posts parsed in this sub-batch; breaking.");
+        break;
+      }
+
+      for (const rawP of parsedPosts) {
+        if (insertedPosts.length >= targetPostCount) break;
+
+        const author = sample(botPool);
+        const postAgeMs = randomInt(3600 * 1000, 7 * 86400 * 1000);
+        const postCreatedAt = new Date(now - postAgeMs).toISOString();
+
+        const mediaType = ["book", "movie", "album", "general"].includes(
+          rawP.media_type,
+        )
+          ? rawP.media_type
+          : "general";
+
+        const mediaTitle = rawP.media_title?.trim() || null;
+
+        const { data: postRow, error: pErr } = await supabase
+          .from("forum_posts")
+          .insert({
+            profile_id: author.id,
+            title: rawP.title.trim().slice(0, 300),
+            content: rawP.content.trim(),
+            media_type: mediaType,
+            media_title: mediaTitle,
+            created_at: postCreatedAt,
+          })
+          .select("id, profile_id, title, content, media_type, media_title, created_at")
+          .single();
+
+        if (pErr) {
+          console.warn("Failed to insert bot forum post:", pErr.message);
+          continue;
+        }
+
+        insertedPosts.push(postRow as InsertedPost);
+
+        if (mediaTitle) {
+          try {
+            if (mediaType === "book") {
+              await supabase.from("book_logs").insert({
+                profile_id: author.id,
+                name: mediaTitle,
+                liked: true,
+                rating: 4.5,
+                status: "finished",
+                created_at: postCreatedAt,
+              });
+            } else if (mediaType === "movie") {
+              await supabase.from("movie_logs").insert({
+                profile_id: author.id,
+                name: mediaTitle,
+                liked: true,
+                rating: 4.5,
+                runtime: 110,
+                created_at: postCreatedAt,
+              });
+            } else if (mediaType === "album") {
+              await supabase.from("album_logs").insert({
+                profile_id: author.id,
+                name: mediaTitle,
+                liked: true,
+                rating: 4.5,
+                created_at: postCreatedAt,
+              });
+            }
+          } catch (logErr) {
+            console.warn("Failed to populate bot catalog log:", logErr);
+          }
+        }
+      }
+    } catch (batchErr) {
+      console.warn("Post sub-batch error:", batchErr);
+      break;
     }
   }
 
@@ -370,25 +410,43 @@ The sound of rain against the stained glass windows makes the library feel like 
   }
 
   // =========================================================================
-  // STEP 3: Threaded Comments & Replies Generation
+  // STEP 3: Threaded Comments & Replies Generation (Chunked by pairs of posts)
   // =========================================================================
-  await onProgress?.({
-    step: 3,
-    totalSteps: 4,
-    message: `Generating ${targetCommentCount} threaded comments & replies via Gemini 3.1 Flash Lite...`,
-  });
+  let commentsInserted = 0;
+  const insertedCommentIds: Array<{ id: string; profile_id: string }> = [];
 
-  const postsSummary = insertedPosts
-    .map(
-      (p, idx) =>
-        `post_${idx}: [${p.media_type}] "${p.title}" - ${p.content.slice(0, 150)}...`,
-    )
-    .join("\n");
+  // Group inserted posts into small batches of 2 posts each
+  const POSTS_PER_COMMENT_BATCH = 2;
+  const postBatches: InsertedPost[][] = [];
+  for (let i = 0; i < insertedPosts.length; i += POSTS_PER_COMMENT_BATCH) {
+    postBatches.push(insertedPosts.slice(i, i + POSTS_PER_COMMENT_BATCH));
+  }
 
-  const commentsPrompt = `Here is a list of ${insertedPosts.length} forum posts from Storyhaven:
+  const commentsPerBatch = Math.max(
+    2,
+    Math.round(targetCommentCount / Math.max(1, postBatches.length)),
+  );
+
+  for (let bIdx = 0; bIdx < postBatches.length; bIdx++) {
+    const currentPostBatch = postBatches[bIdx];
+
+    await onProgress?.({
+      step: 3,
+      totalSteps: 4,
+      message: `Generating comments (batch ${bIdx + 1}/${postBatches.length}, ${commentsInserted}/${targetCommentCount}) via Gemini 3.1 Flash Lite...`,
+    });
+
+    const postsSummary = currentPostBatch
+      .map(
+        (p, idx) =>
+          `post_${idx}: [${p.media_type}] "${p.title}" - ${p.content.slice(0, 150)}...`,
+      )
+      .join("\n");
+
+    const commentsPrompt = `Here is a list of ${currentPostBatch.length} forum posts from Storyhaven:
 ${postsSummary}
 
-Generate approximately ${targetCommentCount} thoughtful comments and replies distributed across these posts.
+Generate approximately ${commentsPerBatch} thoughtful comments and replies distributed across these posts.
 Target approximately ${Math.round(nestedRatio * 100)}% of comments to be replies to preceding comments on the same post.
 
 Format each comment using the exact delimiter "===COMMENT===" like this:
@@ -407,129 +465,125 @@ PARENT_TEMP_ID: c1
 CONTENT:
 Reply responding specifically to c1...`;
 
-  let commentsInserted = 0;
-  const insertedCommentIds: Array<{ id: string; profile_id: string }> = [];
+    try {
+      const rawComments = await callGemma(commentsPrompt, {
+        reason: `Sub-batch generating ${commentsPerBatch} comments for posts ${bIdx * POSTS_PER_COMMENT_BATCH + 1}-${bIdx * POSTS_PER_COMMENT_BATCH + currentPostBatch.length}`,
+        temperature: 0.8,
+      });
 
-  try {
-    const rawComments = await callGemma(commentsPrompt, {
-      reason: `Batch generating ${targetCommentCount} threaded comments & replies`,
-      temperature: 0.8,
-    });
-
-    let parsedCommentsMap = parseDelimitedComments(rawComments);
-    if (Object.keys(parsedCommentsMap).length === 0) {
-      try {
-        parsedCommentsMap =
-          extractAndParseJson<Record<string, RawCommentItem[]>>(rawComments);
-      } catch {
-        // fallback
+      let parsedCommentsMap = parseDelimitedComments(rawComments);
+      if (Object.keys(parsedCommentsMap).length === 0) {
+        try {
+          parsedCommentsMap =
+            extractAndParseJson<Record<string, RawCommentItem[]>>(rawComments);
+        } catch {
+          // fallback
+        }
       }
+
+      for (let pIdx = 0; pIdx < currentPostBatch.length; pIdx++) {
+        const post = currentPostBatch[pIdx];
+        const commentItems = parsedCommentsMap[`post_${pIdx}`] || [];
+        if (!Array.isArray(commentItems) || commentItems.length === 0) continue;
+
+        const tempIdToDb = new Map<
+          string,
+          { dbId: string; authorId: string; createdAt: Date }
+        >();
+
+        // Group into Tier 0 (roots) and Tier 1+ (replies)
+        const rootComments = commentItems.filter((c) => !c.parent_temp_id);
+        const subComments = commentItems.filter((c) => Boolean(c.parent_temp_id));
+
+        // 1. Insert Root Comments
+        for (const rc of rootComments) {
+          const author = sample(botPool);
+          const postDate = new Date(post.created_at).getTime();
+          const commentDate = new Date(
+            Math.min(
+              now - 60 * 1000,
+              postDate + randomInt(600 * 1000, 18 * 3600 * 1000),
+            ),
+          );
+
+          const { data: dbComment } = await supabase
+            .from("forum_comments")
+            .insert({
+              post_id: post.id,
+              profile_id: author.id,
+              content: rc.content.trim(),
+              parent_id: null,
+              created_at: commentDate.toISOString(),
+            })
+            .select("id, profile_id, created_at")
+            .single();
+
+          if (dbComment) {
+            commentsInserted++;
+            tempIdToDb.set(rc.temp_id, {
+              dbId: dbComment.id,
+              authorId: author.id,
+              createdAt: commentDate,
+            });
+            insertedCommentIds.push({
+              id: dbComment.id,
+              profile_id: author.id,
+            });
+          }
+        }
+
+        // 2. Insert Subcomments
+        for (const sc of subComments) {
+          const parentInfo = sc.parent_temp_id
+            ? tempIdToDb.get(sc.parent_temp_id)
+            : null;
+
+          let author = sample(botPool);
+          if (parentInfo && botPool.length > 1) {
+            const others = botPool.filter((b) => b.id !== parentInfo.authorId);
+            if (others.length > 0) author = sample(others);
+          }
+
+          const baseTime = parentInfo
+            ? parentInfo.createdAt.getTime()
+            : new Date(post.created_at).getTime();
+
+          const subDate = new Date(
+            Math.min(
+              now - 30 * 1000,
+              baseTime + randomInt(300 * 1000, 6 * 3600 * 1000),
+            ),
+          );
+
+          const { data: dbComment } = await supabase
+            .from("forum_comments")
+            .insert({
+              post_id: post.id,
+              profile_id: author.id,
+              content: sc.content.trim(),
+              parent_id: parentInfo ? parentInfo.dbId : null,
+              created_at: subDate.toISOString(),
+            })
+            .select("id, profile_id, created_at")
+            .single();
+
+          if (dbComment) {
+            commentsInserted++;
+            tempIdToDb.set(sc.temp_id, {
+              dbId: dbComment.id,
+              authorId: author.id,
+              createdAt: subDate,
+            });
+            insertedCommentIds.push({
+              id: dbComment.id,
+              profile_id: author.id,
+            });
+          }
+        }
+      }
+    } catch (commErr) {
+      console.warn("Sub-batch comment generation error:", commErr);
     }
-
-    for (let pIdx = 0; pIdx < insertedPosts.length; pIdx++) {
-      const post = insertedPosts[pIdx];
-      const commentItems = parsedCommentsMap[`post_${pIdx}`] || [];
-      if (!Array.isArray(commentItems) || commentItems.length === 0) continue;
-
-      const tempIdToDb = new Map<
-        string,
-        { dbId: string; authorId: string; createdAt: Date }
-      >();
-
-      // Group into Tier 0 (roots) and Tier 1+ (replies)
-      const rootComments = commentItems.filter((c) => !c.parent_temp_id);
-      const subComments = commentItems.filter((c) => Boolean(c.parent_temp_id));
-
-      // 1. Insert Root Comments
-      for (const rc of rootComments) {
-        const author = sample(botPool);
-        const postDate = new Date(post.created_at).getTime();
-        // Comment delayed 10m to 18h after post
-        const commentDate = new Date(
-          Math.min(
-            now - 60 * 1000,
-            postDate + randomInt(600 * 1000, 18 * 3600 * 1000),
-          ),
-        );
-
-        const { data: dbComment } = await supabase
-          .from("forum_comments")
-          .insert({
-            post_id: post.id,
-            profile_id: author.id,
-            content: rc.content.trim(),
-            parent_id: null,
-            created_at: commentDate.toISOString(),
-          })
-          .select("id, profile_id, created_at")
-          .single();
-
-        if (dbComment) {
-          commentsInserted++;
-          tempIdToDb.set(rc.temp_id, {
-            dbId: dbComment.id,
-            authorId: author.id,
-            createdAt: commentDate,
-          });
-          insertedCommentIds.push({
-            id: dbComment.id,
-            profile_id: author.id,
-          });
-        }
-      }
-
-      // 2. Insert Subcomments (Topological parent resolution)
-      for (const sc of subComments) {
-        const parentInfo = sc.parent_temp_id
-          ? tempIdToDb.get(sc.parent_temp_id)
-          : null;
-
-        // Choose an author different from parent if pool allows
-        let author = sample(botPool);
-        if (parentInfo && botPool.length > 1) {
-          const others = botPool.filter((b) => b.id !== parentInfo.authorId);
-          if (others.length > 0) author = sample(others);
-        }
-
-        const baseTime = parentInfo
-          ? parentInfo.createdAt.getTime()
-          : new Date(post.created_at).getTime();
-
-        const subDate = new Date(
-          Math.min(
-            now - 30 * 1000,
-            baseTime + randomInt(300 * 1000, 6 * 3600 * 1000),
-          ),
-        );
-
-        const { data: dbComment } = await supabase
-          .from("forum_comments")
-          .insert({
-            post_id: post.id,
-            profile_id: author.id,
-            content: sc.content.trim(),
-            parent_id: parentInfo ? parentInfo.dbId : null,
-            created_at: subDate.toISOString(),
-          })
-          .select("id, profile_id, created_at")
-          .single();
-
-        if (dbComment) {
-          commentsInserted++;
-          tempIdToDb.set(sc.temp_id, {
-            dbId: dbComment.id,
-            authorId: author.id,
-            createdAt: subDate,
-          });
-          insertedCommentIds.push({
-            id: dbComment.id,
-            profile_id: author.id,
-          });
-        }
-      }
-    }
-  } catch (commErr) {
-    console.warn("Error threading comments:", commErr);
   }
 
   // =========================================================================
