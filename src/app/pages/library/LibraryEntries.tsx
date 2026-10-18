@@ -34,7 +34,7 @@ function BookEntry({ book }: { book: BookLog }) {
           {book.name}
           {book.rating != null ? ` — ${book.rating}/5` : ""}
           {book.status ? ` — ${book.status}` : ""}
-          {book.liked ? " — ♥" : ""}
+          {book.liked ? <> — <Icon name="heart" size={1} /></> : ""}
         </p>
         <Link
           href={`/pages/forum?mode=per_book&book=${encodeURIComponent(book.name)}`}
@@ -160,7 +160,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
           {movie.name}
           {movie.rating != null ? ` — ${movie.rating}/5` : ""}
           {movie.runtime != null ? ` — ${movie.runtime} min` : ""}
-          {movie.liked ? " — liked" : ""}
+          {movie.liked ? <> — <Icon name="heart" size={1} /></> : ""}
         </p>
         <PixelButton type="button" onClick={() => setEditing(true)}>
           Update
@@ -256,7 +256,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
         <p>
           {album.name}
           {album.rating != null ? ` — ${album.rating}/5` : ""}
-          {album.liked ? " — liked" : ""}
+          {album.liked ? <> — <Icon name="heart" size={1} /></> : ""}
         </p>
         <PixelButton type="button" onClick={() => setEditing(true)}>
           Update

@@ -62,6 +62,7 @@ export const ICONS = {
   match: "/match.png",
   search: "/search.png",
   settings: "/settings.png",
+  sparkle: "/sparkle1.png",
   star_empty: "/star_empty.png",
   star_full: "/star_full.png",
   upvote: "/upvote.png",
