@@ -176,7 +176,7 @@ export default function CreateLogForms() {
           <div className="form-row-grid">
             <div>
               <label>Rating</label>
-              <StarRating name="rating" aria-label="Book Rating" />
+              <StarRating key={bookResetSignal} name="rating" aria-label="Book Rating" />
             </div>
             <div>
               <label htmlFor="book-status">Status</label>
@@ -278,7 +278,7 @@ export default function CreateLogForms() {
           <div className="form-row-grid">
             <div>
               <label>Rating</label>
-              <StarRating name="rating" aria-label="Movie Rating" />
+              <StarRating key={movieResetSignal} name="rating" aria-label="Movie Rating" />
             </div>
             <div>
               <label htmlFor="movie-runtime">Runtime (minutes)</label>
@@ -364,7 +364,7 @@ export default function CreateLogForms() {
           <div className="form-row-grid">
             <div>
               <label>Rating</label>
-              <StarRating name="rating" aria-label="Album Rating" />
+              <StarRating key={albumResetSignal} name="rating" aria-label="Album Rating" />
             </div>
             <div>
               <label htmlFor="album-finished">Finished date</label>
