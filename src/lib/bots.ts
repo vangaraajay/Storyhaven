@@ -13,6 +13,14 @@ import {
 } from "@/lib/avatar/types";
 
 /**
+ * Canonical hexadecimal range for PostgreSQL UUIDs starting with 'b075'.
+ * Used for range filtering (.gte / .lte) on PostgreSQL uuid columns since
+ * Postgres does not support the LIKE operator (~~) on uuid types.
+ */
+export const BOT_UUID_MIN = "b0750000-0000-0000-0000-000000000000";
+export const BOT_UUID_MAX = "b075ffff-ffff-ffff-ffff-ffffffffffff";
+
+/**
  * Returns true if the provided UUID string belongs to a Storyhaven bot.
  * Bot IDs always begin with 'b075' (hex for 'BOTS').
  */

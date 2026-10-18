@@ -1,5 +1,10 @@
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
-import { generateBotId, generateRandomBotAvatar } from "@/lib/bots";
+import {
+  BOT_UUID_MAX,
+  BOT_UUID_MIN,
+  generateBotId,
+  generateRandomBotAvatar,
+} from "@/lib/bots";
 import { callGemma, extractAndParseJson } from "@/lib/gemini";
 import type { Avatar } from "@/lib/avatar/types";
 
@@ -75,19 +80,23 @@ export async function getBotStats(): Promise<BotStats> {
     supabase
       .from("profiles")
       .select("id", { count: "exact", head: true })
-      .like("id", "b075%"),
+      .gte("id", BOT_UUID_MIN)
+      .lte("id", BOT_UUID_MAX),
     supabase
       .from("forum_posts")
       .select("id", { count: "exact", head: true })
-      .like("profile_id", "b075%"),
+      .gte("profile_id", BOT_UUID_MIN)
+      .lte("profile_id", BOT_UUID_MAX),
     supabase
       .from("forum_comments")
       .select("id", { count: "exact", head: true })
-      .like("profile_id", "b075%"),
+      .gte("profile_id", BOT_UUID_MIN)
+      .lte("profile_id", BOT_UUID_MAX),
     supabase
       .from("forum_votes")
       .select("id", { count: "exact", head: true })
-      .like("profile_id", "b075%"),
+      .gte("profile_id", BOT_UUID_MIN)
+      .lte("profile_id", BOT_UUID_MAX),
   ]);
 
   return {
@@ -106,7 +115,12 @@ export async function purgeAllBots(): Promise<{ deletedProfiles: number }> {
   const supabase = createServiceSupabaseClient();
 
   const [deletedIdsRes, deletedSubsRes] = await Promise.all([
-    supabase.from("profiles").delete().like("id", "b075%").select("id"),
+    supabase
+      .from("profiles")
+      .delete()
+      .gte("id", BOT_UUID_MIN)
+      .lte("id", BOT_UUID_MAX)
+      .select("id"),
     supabase.from("profiles").delete().like("auth0_sub", "bot|%").select("id"),
   ]);
 
@@ -144,7 +158,8 @@ export async function generateBotCommunity(
   const { data: existingProfiles, error: fetchErr } = await supabase
     .from("profiles")
     .select("id, display_name, avatar, avatar_url")
-    .like("id", "b075%");
+    .gte("id", BOT_UUID_MIN)
+    .lte("id", BOT_UUID_MAX);
 
   if (fetchErr) {
     throw new Error(`Failed to load existing bots: ${fetchErr.message}`);
