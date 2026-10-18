@@ -3,6 +3,9 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createCommentAction } from "../actions";
+import UnlockToast from "@/components/pixel/UnlockToast";
+import PixelButton from "@/components/pixel/PixelButton";
+import { PixelTextarea } from "@/components/pixel/PixelInput";
 
 interface CommentFormProps {
   postId: string;
@@ -26,6 +29,7 @@ export default function CommentForm({
   const router = useRouter();
   const [content, setContent] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [unlocked, setUnlocked] = useState<string[] | undefined>();
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -51,6 +55,7 @@ export default function CommentForm({
         setError(res.error);
       } else {
         setContent("");
+        setUnlocked(res.unlocked);
         onSuccess?.();
       }
     });
@@ -69,21 +74,21 @@ export default function CommentForm({
         <p style={{ color: "var(--forum-text-secondary)", marginBottom: "0.75rem", fontSize: "0.85rem" }}>
           Join the conversation by signing in.
         </p>
-        <button
+        <PixelButton
           type="button"
           onClick={() =>
             router.push(`/pages/login?returnTo=/pages/forum/${postId}`)
           }
-          className="forum-btn-primary"
         >
           Sign In to Reply
-        </button>
+        </PixelButton>
       </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit} style={{ margin: "0.75rem 0", fontFamily: "var(--forum-font-mono)", fontSize: "0.775rem" }}>
+      <UnlockToast keys={unlocked} />
       {error && (
         <div style={{ padding: "0.5rem 0.75rem", marginBottom: "0.5rem", borderRadius: "8px", background: "rgba(225, 29, 72, 0.15)", border: "1px solid rgba(225, 29, 72, 0.4)", color: "#fda4af" }}>
           {error}
@@ -99,7 +104,7 @@ export default function CommentForm({
           boxShadow: "inset 0 2px 6px rgba(0, 0, 0, 0.3)",
         }}
       >
-        <textarea
+        <PixelTextarea
           required
           autoFocus={autoFocus}
           rows={3}
@@ -121,7 +126,7 @@ export default function CommentForm({
         />
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.06)", marginTop: "0.35rem" }}>
-          <button
+          <PixelButton
             type="button"
             onClick={insertSpoilerTemplate}
             style={{
@@ -133,27 +138,25 @@ export default function CommentForm({
             }}
           >
             + Spoiler tag
-          </button>
+          </PixelButton>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             {onCancel && (
-              <button
+              <PixelButton
                 type="button"
                 onClick={onCancel}
-                className="forum-btn-ghost"
               >
                 Cancel
-              </button>
+              </PixelButton>
             )}
 
-            <button
+            <PixelButton
               type="submit"
               disabled={isPending || !content.trim()}
-              className="forum-btn-primary"
               style={{ padding: "0.45rem 1rem", fontSize: "0.775rem", opacity: (isPending || !content.trim()) ? 0.5 : 1 }}
             >
               {isPending ? "Posting…" : "Reply"}
-            </button>
+            </PixelButton>
           </div>
         </div>
       </div>

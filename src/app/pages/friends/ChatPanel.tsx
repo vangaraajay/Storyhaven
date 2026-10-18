@@ -8,6 +8,8 @@ import {
   sendGroupMessageAction,
   type FriendsActionState,
 } from "./actions";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput from "@/components/pixel/PixelInput";
 
 const initial: FriendsActionState = { error: null, message: null };
 const POLL_MS = 2500;
@@ -91,7 +93,7 @@ export default function ChatPanel(props: ChatPanelProps) {
   }, [key, lastMessageId, messages.length]);
 
   return (
-    <section className="friends-chat">
+    <section className="friends-chat px-panel">
       <header className="friends-chat-header">
         <h2>{props.title}</h2>
       </header>
@@ -128,7 +130,7 @@ export default function ChatPanel(props: ChatPanelProps) {
         ) : (
           <input type="hidden" name="groupId" value={props.groupId} />
         )}
-        <input
+        <PixelInput
           name="body"
           type="text"
           placeholder="Write a message…"
@@ -136,9 +138,9 @@ export default function ChatPanel(props: ChatPanelProps) {
           maxLength={4000}
           autoComplete="off"
         />
-        <button type="submit" disabled={pending}>
+        <PixelButton type="submit" disabled={pending}>
           {pending ? "Sending…" : "Send"}
-        </button>
+        </PixelButton>
       </form>
       {state.error && <p className="friends-error">{state.error}</p>}
     </section>

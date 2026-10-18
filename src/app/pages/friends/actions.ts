@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { checkUnlocks } from "@/lib/unlocks";
 import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import {
@@ -24,6 +25,8 @@ import { getProfile, isProfileComplete } from "@/lib/profiles";
 export type FriendsActionState = {
   error: string | null;
   message?: ChatMessage | null;
+  /** Decoration keys newly unlocked by this action. */
+  unlocked?: string[];
 };
 
 async function requireProfileId(): Promise<string> {
@@ -82,7 +85,8 @@ export async function acceptRequestAction(
   }
 
   revalidateFriends();
-  return { error: null };
+  const unlocked = await checkUnlocks(profileId, "match_made");
+  return { error: null, unlocked };
 }
 
 export async function declineRequestAction(

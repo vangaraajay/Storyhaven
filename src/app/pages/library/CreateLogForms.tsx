@@ -8,6 +8,9 @@ import {
   type LoggingFormState,
 } from "./actions";
 import StarRating from "@/components/pixel/StarRating";
+import UnlockToast from "@/components/pixel/UnlockToast";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -27,16 +30,16 @@ export default function CreateLogForms() {
 
   return (
     <>
-      <section>
+      <section className="px-panel">
         <h2>Log a book</h2>
         <form action={bookAction}>
           <div>
             <label htmlFor="book-name">Name</label>
-            <input id="book-name" name="name" type="text" required />
+            <PixelInput id="book-name" name="name" type="text" required />
           </div>
           <div>
             <label htmlFor="book-cover">Cover URL</label>
-            <input id="book-cover" name="cover_url" type="url" />
+            <PixelInput id="book-cover" name="cover_url" type="url" />
           </div>
           <div>
             <span>Rating</span>
@@ -44,25 +47,25 @@ export default function CreateLogForms() {
           </div>
           <div>
             <label htmlFor="book-started">Started date</label>
-            <input id="book-started" name="started_date" type="date" />
+            <PixelInput id="book-started" name="started_date" type="date" />
           </div>
           <div>
             <label htmlFor="book-finished">Finished date</label>
-            <input id="book-finished" name="finished_date" type="date" />
+            <PixelInput id="book-finished" name="finished_date" type="date" />
           </div>
           <div>
             <label htmlFor="book-status">Status</label>
-            <select id="book-status" name="status" defaultValue="">
+            <PixelSelect id="book-status" name="status" defaultValue="">
               <option value="">—</option>
               <option value="want">Want</option>
               <option value="reading">Reading</option>
               <option value="finished">Finished</option>
               <option value="dropped">Dropped</option>
-            </select>
+            </PixelSelect>
           </div>
           <div>
             <label htmlFor="book-pages">Pages</label>
-            <input id="book-pages" name="pages" type="number" min={0} />
+            <PixelInput id="book-pages" name="pages" type="number" min={0} />
           </div>
           <div>
             <label htmlFor="book-liked">
@@ -71,25 +74,26 @@ export default function CreateLogForms() {
           </div>
           <div>
             <label htmlFor="book-review">Review / notes</label>
-            <textarea id="book-review" name="review" rows={3} />
+            <PixelTextarea id="book-review" name="review" rows={3} />
           </div>
           {bookState.error ? <p>{bookState.error}</p> : null}
-          <button type="submit" disabled={bookPending}>
+          <UnlockToast keys={bookState.unlocked} />
+          <PixelButton type="submit" disabled={bookPending}>
             {bookPending ? "Saving…" : "Save book"}
-          </button>
+          </PixelButton>
         </form>
       </section>
 
-      <section>
+      <section className="px-panel">
         <h2>Log a movie</h2>
         <form action={movieAction}>
           <div>
             <label htmlFor="movie-name">Name</label>
-            <input id="movie-name" name="name" type="text" required />
+            <PixelInput id="movie-name" name="name" type="text" required />
           </div>
           <div>
             <label htmlFor="movie-cover">Cover URL</label>
-            <input id="movie-cover" name="cover_url" type="url" />
+            <PixelInput id="movie-cover" name="cover_url" type="url" />
           </div>
           <div>
             <span>Rating</span>
@@ -97,11 +101,11 @@ export default function CreateLogForms() {
           </div>
           <div>
             <label htmlFor="movie-finished">Finished date</label>
-            <input id="movie-finished" name="finished_date" type="date" />
+            <PixelInput id="movie-finished" name="finished_date" type="date" />
           </div>
           <div>
             <label htmlFor="movie-runtime">Runtime (minutes)</label>
-            <input id="movie-runtime" name="runtime" type="number" min={0} />
+            <PixelInput id="movie-runtime" name="runtime" type="number" min={0} />
           </div>
           <div>
             <label htmlFor="movie-liked">
@@ -110,25 +114,26 @@ export default function CreateLogForms() {
           </div>
           <div>
             <label htmlFor="movie-review">Review / notes</label>
-            <textarea id="movie-review" name="review" rows={3} />
+            <PixelTextarea id="movie-review" name="review" rows={3} />
           </div>
           {movieState.error ? <p>{movieState.error}</p> : null}
-          <button type="submit" disabled={moviePending}>
+          <UnlockToast keys={movieState.unlocked} />
+          <PixelButton type="submit" disabled={moviePending}>
             {moviePending ? "Saving…" : "Save movie"}
-          </button>
+          </PixelButton>
         </form>
       </section>
 
-      <section>
+      <section className="px-panel">
         <h2>Log an album</h2>
         <form action={albumAction}>
           <div>
             <label htmlFor="album-name">Name</label>
-            <input id="album-name" name="name" type="text" required />
+            <PixelInput id="album-name" name="name" type="text" required />
           </div>
           <div>
             <label htmlFor="album-cover">Cover URL</label>
-            <input id="album-cover" name="cover_url" type="url" />
+            <PixelInput id="album-cover" name="cover_url" type="url" />
           </div>
           <div>
             <span>Rating</span>
@@ -136,7 +141,7 @@ export default function CreateLogForms() {
           </div>
           <div>
             <label htmlFor="album-finished">Finished date</label>
-            <input id="album-finished" name="finished_date" type="date" />
+            <PixelInput id="album-finished" name="finished_date" type="date" />
           </div>
           <div>
             <label htmlFor="album-liked">
@@ -145,12 +150,13 @@ export default function CreateLogForms() {
           </div>
           <div>
             <label htmlFor="album-review">Review / notes</label>
-            <textarea id="album-review" name="review" rows={3} />
+            <PixelTextarea id="album-review" name="review" rows={3} />
           </div>
           {albumState.error ? <p>{albumState.error}</p> : null}
-          <button type="submit" disabled={albumPending}>
+          <UnlockToast keys={albumState.unlocked} />
+          <PixelButton type="submit" disabled={albumPending}>
             {albumPending ? "Saving…" : "Save album"}
-          </button>
+          </PixelButton>
         </form>
       </section>
     </>

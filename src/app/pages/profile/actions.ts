@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
+import { parseAvatar } from "@/lib/avatar/types";
 import { saveProfile } from "@/lib/profiles";
 
 export type ProfileFormState = {
@@ -20,12 +21,12 @@ export async function createProfileAction(
   }
 
   const displayName = String(formData.get("display_name") ?? "");
-  const avatarUrl = String(formData.get("avatar_url") ?? "");
+  const avatar = parseAvatar(String(formData.get("avatar") ?? ""));
 
   try {
     await saveProfile(user, {
       display_name: displayName,
-      avatar_url: avatarUrl || null,
+      avatar,
     });
   } catch (error) {
     return {
@@ -33,5 +34,5 @@ export async function createProfileAction(
     };
   }
 
-  redirect("/");
+  redirect(formData.get("editing") ? "/pages/library" : "/");
 }

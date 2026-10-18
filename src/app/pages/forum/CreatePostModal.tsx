@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createPostAction } from "./actions";
 import type { MediaType } from "@/lib/forum";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -68,13 +70,12 @@ export default function CreatePostModal({
           <h2 className="forum-modal-title">
             <span>✍️</span> Create Forum Discussion
           </h2>
-          <button
+          <PixelButton
             type="button"
             onClick={onClose}
-            className="forum-modal-close"
           >
             ✕
-          </button>
+          </PixelButton>
         </div>
 
         {!isLoggedIn ? (
@@ -82,13 +83,12 @@ export default function CreatePostModal({
             <p style={{ color: "var(--forum-text-secondary)", fontSize: "0.875rem", marginBottom: "1rem" }}>
               You must be logged in to start a new discussion.
             </p>
-            <button
+            <PixelButton
               type="button"
               onClick={() => router.push("/pages/login?returnTo=/pages/forum")}
-              className="forum-btn-primary"
             >
               Sign In to Post
-            </button>
+            </PixelButton>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -114,7 +114,7 @@ export default function CreatePostModal({
               <label className="forum-label">
                 Post Title *
               </label>
-              <input
+              <PixelInput
                 type="text"
                 required
                 maxLength={300}
@@ -131,7 +131,7 @@ export default function CreatePostModal({
                 <label className="forum-label">
                   Category
                 </label>
-                <select
+                <PixelSelect
                   value={mediaType}
                   onChange={(e) => setMediaType(e.target.value as MediaType)}
                   className="forum-select"
@@ -140,7 +140,7 @@ export default function CreatePostModal({
                   <option value="book">📚 Book</option>
                   <option value="movie">🎬 Movie</option>
                   <option value="album">🎵 Music / Album</option>
-                </select>
+                </PixelSelect>
               </div>
 
               {mediaType !== "general" && (
@@ -148,7 +148,7 @@ export default function CreatePostModal({
                   <label className="forum-label">
                     {mediaType === "book" ? "Book Title" : "Media Title"}
                   </label>
-                  <input
+                  <PixelInput
                     type="text"
                     list="user-books-list"
                     value={mediaTitle}
@@ -171,7 +171,7 @@ export default function CreatePostModal({
             <div className="forum-form-group">
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.35rem" }}>
                 <label className="forum-label" style={{ margin: 0 }}>Content *</label>
-                <button
+                <PixelButton
                   type="button"
                   onClick={insertSpoilerTemplate}
                   style={{
@@ -184,9 +184,9 @@ export default function CreatePostModal({
                   }}
                 >
                   + Add Spoiler Tag
-                </button>
+                </PixelButton>
               </div>
-              <textarea
+              <PixelTextarea
                 required
                 rows={5}
                 value={content}
@@ -201,21 +201,19 @@ export default function CreatePostModal({
 
             {/* Actions */}
             <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.75rem", paddingTop: "0.5rem" }}>
-              <button
+              <PixelButton
                 type="button"
                 onClick={onClose}
-                className="forum-btn-ghost"
               >
                 Cancel
-              </button>
-              <button
+              </PixelButton>
+              <PixelButton
                 type="submit"
                 disabled={isPending}
-                className="forum-btn-primary"
                 style={{ opacity: isPending ? 0.6 : 1 }}
               >
                 {isPending ? "Posting…" : "Publish Post"}
-              </button>
+              </PixelButton>
             </div>
           </form>
         )}

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { checkUnlocks } from "@/lib/unlocks";
 import { auth0 } from "@/lib/auth0";
 import { getProfile, isProfileComplete, type Profile } from "@/lib/profiles";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
@@ -38,6 +39,7 @@ async function requireProfile(): Promise<Profile> {
 export async function createPostAction(formData: FormData): Promise<{
   error: string | null;
   postId: string | null;
+  unlocked?: string[];
 }> {
   try {
     const profile = await requireProfile();
@@ -79,7 +81,8 @@ export async function createPostAction(formData: FormData): Promise<{
     }
 
     revalidatePath("/pages/forum");
-    return { error: null, postId: data.id };
+    const unlocked = await checkUnlocks(profile.id, "forum_post");
+    return { error: null, postId: data.id, unlocked };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "An unexpected error occurred.",
@@ -91,6 +94,7 @@ export async function createPostAction(formData: FormData): Promise<{
 export async function createCommentAction(formData: FormData): Promise<{
   error: string | null;
   commentId: string | null;
+  unlocked?: string[];
 }> {
   try {
     const profile = await requireProfile();
@@ -122,7 +126,8 @@ export async function createCommentAction(formData: FormData): Promise<{
     }
 
     revalidatePath(`/pages/forum/${postId}`);
-    return { error: null, commentId: data.id };
+    const unlocked = await checkUnlocks(profile.id, "forum_comment");
+    return { error: null, commentId: data.id, unlocked };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : "An unexpected error occurred.",

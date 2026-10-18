@@ -16,10 +16,20 @@ import {
   type BookStatus,
 } from "@/lib/logging";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
+import { checkUnlocks, type UnlockEvent } from "@/lib/unlocks";
 
 export type LoggingFormState = {
   error: string | null;
+  /** Decoration keys newly unlocked by this save. */
+  unlocked?: string[];
 };
+
+/** Unlock events for a log save: always a log, plus a review when text was written. */
+function logEvents(formData: FormData, created: boolean): UnlockEvent[] {
+  const events: UnlockEvent[] = created ? ["log_created"] : [];
+  if (String(formData.get("review") ?? "").trim()) events.push("review_saved");
+  return events;
+}
 
 async function requireProfileId(): Promise<string> {
   const session = await auth0.getSession();
@@ -99,7 +109,8 @@ export async function createBookAction(
   }
 
   revalidatePath("/pages/library");
-  return { error: null };
+  const unlocked = await checkUnlocks(profileId, logEvents(formData, true));
+  return { error: null, unlocked };
 }
 
 export async function createMovieAction(
@@ -117,7 +128,8 @@ export async function createMovieAction(
   }
 
   revalidatePath("/pages/library");
-  return { error: null };
+  const unlocked = await checkUnlocks(profileId, logEvents(formData, true));
+  return { error: null, unlocked };
 }
 
 export async function createAlbumAction(
@@ -135,7 +147,8 @@ export async function createAlbumAction(
   }
 
   revalidatePath("/pages/library");
-  return { error: null };
+  const unlocked = await checkUnlocks(profileId, logEvents(formData, true));
+  return { error: null, unlocked };
 }
 
 export async function updateBookAction(
@@ -154,7 +167,8 @@ export async function updateBookAction(
   }
 
   revalidatePath("/pages/library");
-  return { error: null };
+  const unlocked = await checkUnlocks(profileId, logEvents(formData, false));
+  return { error: null, unlocked };
 }
 
 export async function updateMovieAction(
@@ -173,7 +187,8 @@ export async function updateMovieAction(
   }
 
   revalidatePath("/pages/library");
-  return { error: null };
+  const unlocked = await checkUnlocks(profileId, logEvents(formData, false));
+  return { error: null, unlocked };
 }
 
 export async function updateAlbumAction(
@@ -192,7 +207,8 @@ export async function updateAlbumAction(
   }
 
   revalidatePath("/pages/library");
-  return { error: null };
+  const unlocked = await checkUnlocks(profileId, logEvents(formData, false));
+  return { error: null, unlocked };
 }
 
 export async function deleteBookAction(formData: FormData): Promise<void> {

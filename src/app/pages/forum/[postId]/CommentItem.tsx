@@ -6,6 +6,8 @@ import MarkdownRenderer from "@/components/forum/MarkdownRenderer";
 import CommentForm from "./CommentForm";
 import DeleteControl from "../DeleteControl";
 import type { CommentNode } from "@/lib/forum";
+import Avatar from "@/components/pixel/Avatar";
+import PixelButton from "@/components/pixel/PixelButton";
 
 interface CommentItemProps {
   node: CommentNode;
@@ -61,9 +63,7 @@ export default function CommentItem({
         {/* Header Row */}
         <div className="forum-comment-header">
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <div className="forum-avatar" style={{ width: "20px", height: "20px", fontSize: "9px" }}>
-              {author.charAt(0).toUpperCase()}
-            </div>
+            <Avatar avatar={node.profile?.avatar} scale={1} crop="head" label={author} />
             <span style={{ fontWeight: 600, color: "var(--forum-text-primary)" }}>{author}</span>
             <span style={{ color: "var(--forum-text-muted)" }}>•</span>
             <span style={{ color: "var(--forum-text-secondary)", fontSize: "0.75rem" }}>
@@ -71,13 +71,13 @@ export default function CommentItem({
             </span>
           </div>
 
-          <button
+          <PixelButton
             type="button"
             onClick={() => setIsCollapsed((prev) => !prev)}
             style={{ fontSize: "0.775rem", color: "#c5c3ce", fontWeight: 700, cursor: "pointer", padding: "0 0.35rem" }}
           >
             {isCollapsed ? "[+]" : "[−]"}
-          </button>
+          </PixelButton>
         </div>
 
         {/* Comment Body & Actions */}
@@ -99,13 +99,12 @@ export default function CommentItem({
               />
 
               {/* Reply Button */}
-              <button
+              <PixelButton
                 type="button"
                 onClick={() => setIsReplying((prev) => !prev)}
-                className="forum-btn-ghost"
               >
                 {isReplying ? "Cancel Reply" : "Reply"}
-              </button>
+              </PixelButton>
 
               {isOwner && (
                 <DeleteControl

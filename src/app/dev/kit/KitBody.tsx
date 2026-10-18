@@ -8,6 +8,8 @@ import PixelInput, {
   PixelSelect,
   PixelTextarea,
 } from "@/components/pixel/PixelInput";
+import Avatar from "@/components/pixel/Avatar";
+import AvatarCreator from "@/components/pixel/AvatarCreator";
 import Icon from "@/components/pixel/Icon";
 import StarRating from "@/components/pixel/StarRating";
 import Toast from "@/components/pixel/Toast";
@@ -109,6 +111,19 @@ export default function KitBody() {
         <StarRating defaultValue={3} aria-label="Three" />
         <StarRating defaultValue={4} disabled aria-label="Disabled" />
       </Row>
+
+      <div data-motion="full">
+        <Row title="Avatar: scale 1-4 / head crop / walk frame / blinking (data-motion=full)">
+          <Avatar scale={1} />
+          <Avatar scale={2} />
+          <Avatar scale={4} blink />
+          <Avatar scale={2} crop="head" avatar={{ v: 1, skin: "ebony", eyes: "happy", mouth: "flat", top: "hoodie", topColor: "rose", hair: "curly_pigtails", hairColor: "iris", accessory: "headphones" }} />
+          <Avatar scale={2} body="walk_l" />
+        </Row>
+        <Row title="AvatarCreator">
+          <AvatarCreator />
+        </Row>
+      </div>
 
       <Row title="PixelDivider">
         <div style={{ width: 320 }}>

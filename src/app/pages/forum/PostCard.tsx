@@ -7,6 +7,7 @@ import MarkdownRenderer from "@/components/forum/MarkdownRenderer";
 import DeleteControl from "./DeleteControl";
 import type { ForumPost } from "@/lib/forum";
 import Icon from "@/components/pixel/Icon";
+import Avatar from "@/components/pixel/Avatar";
 
 interface PostCardProps {
   post: ForumPost;
@@ -59,9 +60,7 @@ export default function PostCard({
       <div className="forum-post-main">
         {/* Meta Header */}
         <div className="forum-post-meta">
-          <div className="forum-avatar">
-            {authorName.charAt(0).toUpperCase()}
-          </div>
+          <Avatar avatar={post.profile?.avatar} scale={1} crop="head" label={authorName} />
 
           <span>
             Posted by <span style={{ color: "var(--forum-text-primary)", fontWeight: 600 }}>{authorName}</span>

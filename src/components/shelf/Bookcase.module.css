@@ -1,0 +1,217 @@
+/* Shelf unit = 2x source pixels. Slot cell 64x64; posts 16x64; caps 16x32. */
+.theme_oak { --light: #d9a36a; --mid: #b97d45; --shadow: #8a5a2e; }
+.theme_walnut { --light: #9a6a4a; --mid: #74482f; --shadow: #4f2f1d; }
+.theme_birch { --light: #f0e2c4; --mid: #d6c29a; --shadow: #a8956c; }
+.theme_rose { --light: #f2a0b8; --mid: #d9708f; --shadow: #a84a68; }
+
+.root {
+  --ink: #2a202a;
+  --u: 2px; /* one source pixel; set from the container width */
+  --slot: 64px;
+  --cols: 6;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  color: var(--ink);
+}
+
+.case {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  background: var(--shadow); /* back panel fallback */
+  image-rendering: pixelated;
+  overflow-x: auto;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+}
+
+.shelf {
+  display: flex;
+  align-items: flex-end;
+}
+
+.post {
+  flex: none;
+  width: var(--post-w);
+  height: var(--post-h);
+  background-color: var(--mid);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.slots {
+  background-color: var(--shadow);
+  background-size: var(--slot) var(--slot);
+  image-rendering: pixelated;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--slot));
+  grid-auto-rows: var(--slot);
+}
+
+.slot {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+
+.decorate .decorSlot {
+  cursor: pointer;
+}
+
+.decorate .decorSlot:hover,
+.decorSlot:focus-visible {
+  outline: 2px solid #f3e9d2;
+  outline-offset: -2px;
+}
+
+.decorImg {
+  width: var(--slot);
+  height: var(--slot);
+  image-rendering: pixelated;
+}
+
+.media {
+  border: var(--u) solid var(--ink);
+  box-sizing: border-box;
+  position: relative;
+  margin-bottom: 0;
+}
+
+.media::after {
+  content: "";
+  position: absolute;
+  inset: 2px auto 2px 2px;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.book { width: calc(var(--u) * 12); height: calc(var(--u) * 28); }
+.movie { width: calc(var(--u) * 18); height: calc(var(--u) * 26); }
+.album { width: calc(var(--u) * 24); height: calc(var(--u) * 24); }
+
+.planks {
+  display: flex;
+  align-items: stretch;
+  height: var(--cap-h);
+}
+
+.cap {
+  flex: none;
+  width: var(--cap-w);
+  height: var(--cap-h);
+  background-color: var(--mid);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.plank {
+  flex: none;
+  width: calc(var(--slot) * var(--cols));
+  height: var(--cap-h);
+  box-sizing: border-box;
+  background: var(--mid);
+  border-top: calc(var(--u) * 2) solid var(--light);
+  border-bottom: calc(var(--u) * 2) solid var(--shadow);
+}
+
+.plankArt {
+  border: 0;
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  image-rendering: pixelated;
+}
+
+.floor {
+  position: relative;
+  height: calc(var(--u) * 32);
+  background-size: calc(var(--u) * 64) calc(var(--u) * 40);
+  background-color: #232136;
+  image-rendering: pixelated;
+}
+
+.pouf {
+  position: absolute;
+  left: calc(var(--u) * 20);
+  top: calc(var(--u) * 6);
+  width: calc(var(--u) * 32);
+  height: calc(var(--u) * 18);
+  background: var(--mid);
+  border: 2px solid var(--ink);
+  box-sizing: border-box;
+  box-shadow: inset 0 -6px 0 var(--shadow), inset 0 4px 0 var(--light);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #e0def4;
+}
+
+.pickerWrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(25, 23, 36, 0.7);
+  z-index: 10;
+  padding: 16px;
+}
+
+.picker {
+  max-width: 420px;
+  width: 100%;
+  max-height: 80dvh;
+  overflow-y: auto;
+}
+
+.pickerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.pickerItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: 2px solid transparent;
+  font: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.pickerItem:hover,
+.pickerItem:focus-visible,
+.pickerItem[aria-checked="true"] {
+  border-color: var(--ink);
+  background: rgba(42, 32, 42, 0.12);
+}
+
+.toastHost {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+}

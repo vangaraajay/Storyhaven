@@ -4,9 +4,12 @@ export type MediaType = "book" | "movie" | "album" | "general";
 export type FeedSort = "discover" | "top" | "new";
 export type MediaFilter = "all" | "book" | "movie" | "album" | "general";
 
+import type { Avatar } from "@/lib/avatar/types";
+
 export interface ForumProfile {
   display_name: string | null;
   avatar_url: string | null;
+  avatar: Avatar | null;
 }
 
 export interface ForumPost {
@@ -150,7 +153,7 @@ export async function fetchForumFeed(options: FeedOptions): Promise<FeedResult> 
 
     let query = supabase
       .from("forum_posts")
-      .select("*, profile:profiles(display_name, avatar_url)")
+      .select("*, profile:profiles(display_name, avatar_url, avatar)")
       .order("random_bucket", { ascending: true })
       .order("id", { ascending: true })
       .limit(limit);
@@ -188,7 +191,7 @@ export async function fetchForumFeed(options: FeedOptions): Promise<FeedResult> 
       const remaining = limit - accumulated.length;
       let wrapQuery = supabase
         .from("forum_posts")
-        .select("*, profile:profiles(display_name, avatar_url)")
+        .select("*, profile:profiles(display_name, avatar_url, avatar)")
         .lt("random_bucket", currentBucket)
         .order("random_bucket", { ascending: true })
         .order("id", { ascending: true })
@@ -227,7 +230,7 @@ export async function fetchForumFeed(options: FeedOptions): Promise<FeedResult> 
   // 2. TOP & NEW MODES (Keyset / Timestamp cursor)
   let query = supabase
     .from("forum_posts")
-    .select("*, profile:profiles(display_name, avatar_url)")
+    .select("*, profile:profiles(display_name, avatar_url, avatar)")
     .limit(limit);
 
   if (isPerBook && cleanBookTitle) {
@@ -298,7 +301,7 @@ export async function getPostById(
 
   const { data: post, error } = await supabase
     .from("forum_posts")
-    .select("*, profile:profiles(display_name, avatar_url)")
+    .select("*, profile:profiles(display_name, avatar_url, avatar)")
     .eq("id", postId)
     .maybeSingle();
 
@@ -323,7 +326,7 @@ export async function getCommentsByPostId(
 
   const { data: comments, error } = await supabase
     .from("forum_comments")
-    .select("*, profile:profiles(display_name, avatar_url)")
+    .select("*, profile:profiles(display_name, avatar_url, avatar)")
     .eq("post_id", postId)
     .order("created_at", { ascending: true });
 

@@ -14,6 +14,8 @@ import {
 } from "./actions";
 import Icon from "@/components/pixel/Icon";
 import StarRating from "@/components/pixel/StarRating";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -26,7 +28,7 @@ function BookEntry({ book }: { book: BookLog }) {
 
   if (!editing) {
     return (
-      <li>
+      <li className="px-panel">
         <p>
           {book.name}
           {book.rating != null ? ` — ${book.rating}/5` : ""}
@@ -39,24 +41,24 @@ function BookEntry({ book }: { book: BookLog }) {
         >
           <Icon name="chat" size={1} /> Discuss in Forum →
         </Link>
-        <button type="button" onClick={() => setEditing(true)}>
+        <PixelButton type="button" onClick={() => setEditing(true)}>
           Update
-        </button>
+        </PixelButton>
         <form action={deleteBookAction}>
           <input type="hidden" name="id" value={book.id} />
-          <button type="submit">Delete</button>
+          <PixelButton type="submit">Delete</PixelButton>
         </form>
       </li>
     );
   }
 
   return (
-    <li>
+    <li className="px-panel">
       <form action={action}>
         <input type="hidden" name="id" value={book.id} />
         <div>
           <label htmlFor={`book-name-${book.id}`}>Name</label>
-          <input
+          <PixelInput
             id={`book-name-${book.id}`}
             name="name"
             type="text"
@@ -66,7 +68,7 @@ function BookEntry({ book }: { book: BookLog }) {
         </div>
         <div>
           <label htmlFor={`book-cover-${book.id}`}>Cover URL</label>
-          <input
+          <PixelInput
             id={`book-cover-${book.id}`}
             name="cover_url"
             type="url"
@@ -79,7 +81,7 @@ function BookEntry({ book }: { book: BookLog }) {
         </div>
         <div>
           <label htmlFor={`book-started-${book.id}`}>Started date</label>
-          <input
+          <PixelInput
             id={`book-started-${book.id}`}
             name="started_date"
             type="date"
@@ -88,7 +90,7 @@ function BookEntry({ book }: { book: BookLog }) {
         </div>
         <div>
           <label htmlFor={`book-finished-${book.id}`}>Finished date</label>
-          <input
+          <PixelInput
             id={`book-finished-${book.id}`}
             name="finished_date"
             type="date"
@@ -97,7 +99,7 @@ function BookEntry({ book }: { book: BookLog }) {
         </div>
         <div>
           <label htmlFor={`book-status-${book.id}`}>Status</label>
-          <select
+          <PixelSelect
             id={`book-status-${book.id}`}
             name="status"
             defaultValue={book.status ?? ""}
@@ -107,11 +109,11 @@ function BookEntry({ book }: { book: BookLog }) {
             <option value="reading">Reading</option>
             <option value="finished">Finished</option>
             <option value="dropped">Dropped</option>
-          </select>
+          </PixelSelect>
         </div>
         <div>
           <label htmlFor={`book-pages-${book.id}`}>Pages</label>
-          <input
+          <PixelInput
             id={`book-pages-${book.id}`}
             name="pages"
             type="number"
@@ -132,7 +134,7 @@ function BookEntry({ book }: { book: BookLog }) {
         </div>
         <div>
           <label htmlFor={`book-review-${book.id}`}>Review / notes</label>
-          <textarea
+          <PixelTextarea
             id={`book-review-${book.id}`}
             name="review"
             rows={3}
@@ -140,12 +142,12 @@ function BookEntry({ book }: { book: BookLog }) {
           />
         </div>
         {state.error ? <p>{state.error}</p> : null}
-        <button type="submit" disabled={pending}>
+        <PixelButton type="submit" disabled={pending}>
           {pending ? "Updating…" : "Save"}
-        </button>
-        <button type="button" onClick={() => setEditing(false)}>
+        </PixelButton>
+        <PixelButton type="button" onClick={() => setEditing(false)}>
           Cancel
-        </button>
+        </PixelButton>
       </form>
     </li>
   );
@@ -160,31 +162,31 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
 
   if (!editing) {
     return (
-      <li>
+      <li className="px-panel">
         <p>
           {movie.name}
           {movie.rating != null ? ` — ${movie.rating}/5` : ""}
           {movie.runtime != null ? ` — ${movie.runtime} min` : ""}
           {movie.liked ? " — liked" : ""}
         </p>
-        <button type="button" onClick={() => setEditing(true)}>
+        <PixelButton type="button" onClick={() => setEditing(true)}>
           Update
-        </button>
+        </PixelButton>
         <form action={deleteMovieAction}>
           <input type="hidden" name="id" value={movie.id} />
-          <button type="submit">Delete</button>
+          <PixelButton type="submit">Delete</PixelButton>
         </form>
       </li>
     );
   }
 
   return (
-    <li>
+    <li className="px-panel">
       <form action={action}>
         <input type="hidden" name="id" value={movie.id} />
         <div>
           <label htmlFor={`movie-name-${movie.id}`}>Name</label>
-          <input
+          <PixelInput
             id={`movie-name-${movie.id}`}
             name="name"
             type="text"
@@ -194,7 +196,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
         </div>
         <div>
           <label htmlFor={`movie-cover-${movie.id}`}>Cover URL</label>
-          <input
+          <PixelInput
             id={`movie-cover-${movie.id}`}
             name="cover_url"
             type="url"
@@ -207,7 +209,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
         </div>
         <div>
           <label htmlFor={`movie-finished-${movie.id}`}>Finished date</label>
-          <input
+          <PixelInput
             id={`movie-finished-${movie.id}`}
             name="finished_date"
             type="date"
@@ -216,7 +218,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
         </div>
         <div>
           <label htmlFor={`movie-runtime-${movie.id}`}>Runtime (minutes)</label>
-          <input
+          <PixelInput
             id={`movie-runtime-${movie.id}`}
             name="runtime"
             type="number"
@@ -237,7 +239,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
         </div>
         <div>
           <label htmlFor={`movie-review-${movie.id}`}>Review / notes</label>
-          <textarea
+          <PixelTextarea
             id={`movie-review-${movie.id}`}
             name="review"
             rows={3}
@@ -245,12 +247,12 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
           />
         </div>
         {state.error ? <p>{state.error}</p> : null}
-        <button type="submit" disabled={pending}>
+        <PixelButton type="submit" disabled={pending}>
           {pending ? "Updating…" : "Save"}
-        </button>
-        <button type="button" onClick={() => setEditing(false)}>
+        </PixelButton>
+        <PixelButton type="button" onClick={() => setEditing(false)}>
           Cancel
-        </button>
+        </PixelButton>
       </form>
     </li>
   );
@@ -265,30 +267,30 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
 
   if (!editing) {
     return (
-      <li>
+      <li className="px-panel">
         <p>
           {album.name}
           {album.rating != null ? ` — ${album.rating}/5` : ""}
           {album.liked ? " — liked" : ""}
         </p>
-        <button type="button" onClick={() => setEditing(true)}>
+        <PixelButton type="button" onClick={() => setEditing(true)}>
           Update
-        </button>
+        </PixelButton>
         <form action={deleteAlbumAction}>
           <input type="hidden" name="id" value={album.id} />
-          <button type="submit">Delete</button>
+          <PixelButton type="submit">Delete</PixelButton>
         </form>
       </li>
     );
   }
 
   return (
-    <li>
+    <li className="px-panel">
       <form action={action}>
         <input type="hidden" name="id" value={album.id} />
         <div>
           <label htmlFor={`album-name-${album.id}`}>Name</label>
-          <input
+          <PixelInput
             id={`album-name-${album.id}`}
             name="name"
             type="text"
@@ -298,7 +300,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
         </div>
         <div>
           <label htmlFor={`album-cover-${album.id}`}>Cover URL</label>
-          <input
+          <PixelInput
             id={`album-cover-${album.id}`}
             name="cover_url"
             type="url"
@@ -311,7 +313,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
         </div>
         <div>
           <label htmlFor={`album-finished-${album.id}`}>Finished date</label>
-          <input
+          <PixelInput
             id={`album-finished-${album.id}`}
             name="finished_date"
             type="date"
@@ -331,7 +333,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
         </div>
         <div>
           <label htmlFor={`album-review-${album.id}`}>Review / notes</label>
-          <textarea
+          <PixelTextarea
             id={`album-review-${album.id}`}
             name="review"
             rows={3}
@@ -339,12 +341,12 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
           />
         </div>
         {state.error ? <p>{state.error}</p> : null}
-        <button type="submit" disabled={pending}>
+        <PixelButton type="submit" disabled={pending}>
           {pending ? "Updating…" : "Save"}
-        </button>
-        <button type="button" onClick={() => setEditing(false)}>
+        </PixelButton>
+        <PixelButton type="button" onClick={() => setEditing(false)}>
           Cancel
-        </button>
+        </PixelButton>
       </form>
     </li>
   );

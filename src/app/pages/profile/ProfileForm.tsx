@@ -1,6 +1,10 @@
 "use client";
 
 import { useActionState } from "react";
+import AvatarCreator from "@/components/pixel/AvatarCreator";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput from "@/components/pixel/PixelInput";
+import type { Avatar } from "@/lib/avatar/types";
 import {
   createProfileAction,
   type ProfileFormState,
@@ -10,12 +14,15 @@ const initialState: ProfileFormState = { error: null };
 
 type ProfileFormProps = {
   defaultDisplayName?: string;
-  defaultAvatarUrl?: string;
+  defaultAvatar?: Avatar | null;
+  /** True when the profile already exists (edit from the library). */
+  isEditing?: boolean;
 };
 
 export default function ProfileForm({
   defaultDisplayName = "",
-  defaultAvatarUrl = "",
+  defaultAvatar = null,
+  isEditing = false,
 }: ProfileFormProps) {
   const [state, action, pending] = useActionState(
     createProfileAction,
@@ -26,7 +33,7 @@ export default function ProfileForm({
     <form action={action}>
       <div>
         <label htmlFor="display_name">Display name</label>
-        <input
+        <PixelInput
           id="display_name"
           name="display_name"
           type="text"
@@ -34,19 +41,13 @@ export default function ProfileForm({
           defaultValue={defaultDisplayName}
         />
       </div>
-      <div>
-        <label htmlFor="avatar_url">Avatar URL (optional)</label>
-        <input
-          id="avatar_url"
-          name="avatar_url"
-          type="url"
-          defaultValue={defaultAvatarUrl}
-        />
-      </div>
+      <h2>{isEditing ? "Edit your character" : "Create your character"}</h2>
+      <input type="hidden" name="editing" value={isEditing ? "1" : ""} />
+      <AvatarCreator name="avatar" defaultValue={defaultAvatar} />
       {state.error ? <p>{state.error}</p> : null}
-      <button type="submit" disabled={pending}>
-        {pending ? "Saving…" : "Create profile"}
-      </button>
+      <PixelButton type="submit" disabled={pending}>
+        {pending ? "Saving…" : isEditing ? "Save profile" : "Create profile"}
+      </PixelButton>
     </form>
   );
 }

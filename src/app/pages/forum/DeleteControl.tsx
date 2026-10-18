@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { deleteCommentAction, deletePostAction } from "./actions";
+import PixelButton from "@/components/pixel/PixelButton";
 
 type DeleteControlProps =
   | {
@@ -56,14 +57,13 @@ export default function DeleteControl(props: DeleteControlProps) {
 
   return (
     <span className="forum-delete-wrap">
-      <button
+      <PixelButton
         type="button"
         onClick={onDelete}
         disabled={pending}
-        className="forum-btn-danger"
       >
         {pending ? "Deleting…" : "Delete"}
-      </button>
+      </PixelButton>
       {error && <span className="forum-delete-error">{error}</span>}
     </span>
   );

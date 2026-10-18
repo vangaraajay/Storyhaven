@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Icon from "@/components/pixel/Icon";
+import PixelButton from "@/components/pixel/PixelButton";
 
 interface BookDetailHeaderProps {
   bookTitle: string;
@@ -27,7 +28,7 @@ export default function BookDetailHeader({
             <span className="forum-book-banner-tag">
               Book Discussion Hub
             </span>
-            <button
+            <PixelButton
               type="button"
               onClick={onClearBook}
               style={{
@@ -40,7 +41,7 @@ export default function BookDetailHeader({
               }}
             >
               (Switch Book)
-            </button>
+            </PixelButton>
           </div>
           <h1 className="forum-book-banner-title">
             {bookTitle}

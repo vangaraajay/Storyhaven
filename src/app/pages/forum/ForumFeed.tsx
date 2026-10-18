@@ -13,6 +13,7 @@ import CreatePostModal from "./CreatePostModal";
 import { fetchMorePostsAction } from "./actions";
 import type { ForumPost, FeedSort, MediaFilter, FeedCursor } from "@/lib/forum";
 import Icon from "@/components/pixel/Icon";
+import PixelButton from "@/components/pixel/PixelButton";
 
 interface ForumFeedProps {
   initialPosts: ForumPost[];
@@ -187,13 +188,12 @@ export default function ForumFeed({
         </div>
 
         <div>
-          <button
+          <PixelButton
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
-            className="forum-btn-primary"
           >
             <span>✍️</span> Create Discussion
-          </button>
+          </PixelButton>
         </div>
       </div>
 
@@ -257,13 +257,12 @@ export default function ForumFeed({
                 ? `Be the first to start a conversation about "${selectedBook}"!`
                 : "Be the first to share your review, thoughts, or questions."}
             </p>
-            <button
+            <PixelButton
               type="button"
               onClick={() => setIsCreateModalOpen(true)}
-              className="forum-btn-primary"
             >
               Start First Discussion
-            </button>
+            </PixelButton>
           </div>
         ) : (
           posts.map((post) => (

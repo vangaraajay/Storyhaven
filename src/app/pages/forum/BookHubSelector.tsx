@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Icon from "@/components/pixel/Icon";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput from "@/components/pixel/PixelInput";
 
 interface BookHubSelectorProps {
   userBooks: string[];
@@ -44,19 +46,18 @@ export default function BookHubSelector({
 
         {/* Search / Enter Title Form */}
         <form onSubmit={handleCustomSubmit} className="forum-book-search-form">
-          <input
+          <PixelInput
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search or enter book…"
             className="forum-book-search-input"
           />
-          <button
+          <PixelButton
             type="submit"
-            className="forum-btn-secondary"
           >
             Go
-          </button>
+          </PixelButton>
         </form>
       </div>
 
@@ -71,14 +72,14 @@ export default function BookHubSelector({
               const isSelected =
                 selectedBook?.toLowerCase() === book.toLowerCase();
               return (
-                <button
+                <PixelButton
                   key={book}
                   type="button"
                   onClick={() => onSelectBook(book)}
                   className={`forum-book-chip ${isSelected ? "active" : ""}`}
                 >
                   <Icon name="book" size={1} /> {book}
-                </button>
+                </PixelButton>
               );
             })}
           </div>
@@ -93,18 +94,17 @@ export default function BookHubSelector({
           </span>
           <div className="forum-chip-group">
             {combinedSuggestions.slice(0, 8).map((book) => (
-              <button
+              <PixelButton
                 key={book}
                 type="button"
                 onClick={() => {
                   onSelectBook(book);
                   setSearch("");
                 }}
-                className="forum-book-chip"
                 style={{ color: "var(--forum-accent-foam)" }}
               >
                 {book}
-              </button>
+              </PixelButton>
             ))}
           </div>
         </div>

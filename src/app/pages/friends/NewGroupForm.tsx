@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 import type { FriendRow } from "@/lib/friends";
 import { createGroupAction, type FriendsActionState } from "./actions";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput from "@/components/pixel/PixelInput";
 
 const initial: FriendsActionState = { error: null };
 
@@ -21,11 +23,11 @@ export default function NewGroupForm({ friends }: { friends: FriendRow[] }) {
   }
 
   return (
-    <form action={formAction} className="friends-new-group">
+    <form action={formAction} className="friends-new-group px-panel">
       <h3>New group</h3>
       <label>
         Group name
-        <input name="name" type="text" required maxLength={80} />
+        <PixelInput name="name" type="text" required maxLength={80} />
       </label>
       <fieldset>
         <legend>Members</legend>
@@ -40,9 +42,9 @@ export default function NewGroupForm({ friends }: { friends: FriendRow[] }) {
           </label>
         ))}
       </fieldset>
-      <button type="submit" disabled={pending}>
+      <PixelButton type="submit" disabled={pending}>
         {pending ? "Creating…" : "Create group"}
-      </button>
+      </PixelButton>
       {state.error && <p className="friends-error">{state.error}</p>}
     </form>
   );

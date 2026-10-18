@@ -23,12 +23,19 @@ async function Haven() {
     needsProfile: true,
   };
 
+  let needsAvatar = false;
   try {
     const profile = await getProfile(user);
     auth.needsProfile = !isProfileComplete(profile);
     auth.displayName = profile?.display_name ?? auth.displayName;
+    needsAvatar = !auth.needsProfile && !profile?.avatar;
   } catch {
     // Profile fetch failed; still allow the haven once logged in.
+  }
+
+  // Post-signup: finish by creating a character (redirect outside the try/catch).
+  if (needsAvatar) {
+    redirect("/create");
   }
 
   return <HavenHome auth={auth} />;

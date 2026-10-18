@@ -14,10 +14,10 @@ async function ProfileContent() {
   }
 
   const profile = await getProfile(user);
+  // Profile editing is gone; characters are edited at /create.
   if (isProfileComplete(profile)) {
     redirect("/");
   }
-
   return (
     <>
       <p>Signed in as {user.email ?? user.sub}</p>
@@ -25,7 +25,7 @@ async function ProfileContent() {
         defaultDisplayName={
           profile?.display_name ?? user.name ?? user.nickname ?? ""
         }
-        defaultAvatarUrl={profile?.avatar_url ?? user.picture ?? ""}
+        defaultAvatar={profile?.avatar ?? null}
       />
     </>
   );
@@ -34,7 +34,7 @@ async function ProfileContent() {
 export default function ProfilePage() {
   return (
     <main>
-      <h1>Create profile</h1>
+      <h1>Profile</h1>
       <p>
         <Link href="/">Back to Storyhaven</Link>
       </p>

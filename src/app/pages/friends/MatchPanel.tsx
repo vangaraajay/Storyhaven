@@ -13,6 +13,8 @@ import {
   searchFriendsAction,
   type FriendsActionState,
 } from "./actions";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelInput from "@/components/pixel/PixelInput";
 
 const initial: FriendsActionState = { error: null };
 
@@ -56,9 +58,9 @@ function CandidateActions({ candidate }: { candidate: MatchCandidate }) {
             name="addresseeId"
             value={candidate.profile.id}
           />
-          <button type="submit" disabled={addPending}>
+          <PixelButton type="submit" disabled={addPending}>
             {addPending ? "Sending…" : "Add friend"}
-          </button>
+          </PixelButton>
         </form>
       ) : null}
 
@@ -70,9 +72,9 @@ function CandidateActions({ candidate }: { candidate: MatchCandidate }) {
             value={candidate.friendshipId}
           />
           <span className="friends-badge">Pending</span>
-          <button type="submit" disabled={cancelPending}>
+          <PixelButton type="submit" disabled={cancelPending}>
             Cancel
-          </button>
+          </PixelButton>
         </form>
       ) : null}
 
@@ -84,9 +86,9 @@ function CandidateActions({ candidate }: { candidate: MatchCandidate }) {
               name="friendshipId"
               value={candidate.friendshipId}
             />
-            <button type="submit" disabled={acceptPending}>
+            <PixelButton type="submit" disabled={acceptPending}>
               Accept
-            </button>
+            </PixelButton>
           </form>
           <form action={declineAction}>
             <input
@@ -94,9 +96,9 @@ function CandidateActions({ candidate }: { candidate: MatchCandidate }) {
               name="friendshipId"
               value={candidate.friendshipId}
             />
-            <button type="submit" disabled={declinePending}>
+            <PixelButton type="submit" disabled={declinePending}>
               Decline
-            </button>
+            </PixelButton>
           </form>
         </div>
       ) : null}
@@ -185,7 +187,7 @@ export default function MatchPanel({
       <div className="friends-block">
         <label className="friends-search">
           <span>Search by name</span>
-          <input
+          <PixelInput
             type="search"
             value={query}
             onChange={(event) => onSearch(event.target.value)}

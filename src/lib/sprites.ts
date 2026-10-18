@@ -69,3 +69,67 @@ export const ICONS = {
 } as const;
 
 export type IconName = keyof typeof ICONS;
+
+/**
+ * Avatar layer art (32x32 PNGs in /public). Layers drawn bottom to top:
+ * body, eyes, mouth, top, hair, accessory. Key colors #FF00FF / #CC00CC /
+ * #990099 in body, hair and top art are replaced by the chosen palette.
+ */
+export const AVATAR_ART = {
+  body: { idle: "/body.png", walk_l: "/walk_l.png", walk_r: "/walk_r.png" },
+  eyes: {
+    eyes: { open: "/eyes.png", blink: "/eyes_blink.png", left: "/eyes_left.png", right: "/eyes_right.png" },
+    eyes_sp: { open: "/eyes_sp.png", blink: "/eyes_sp_blink.png", left: "/eyes_sp_left.png", right: "/eyes_sp_right.png" },
+    happy: { open: "/happy.png", blink: "/happy_blink.png", left: "/happy_left.png", right: "/happy_right.png" },
+    sleepy: { open: "/sleepy.png", blink: "/sleepy_blink.png", left: "/sleepy_left.png", right: "/sleepy_right.png" },
+  },
+  mouth: { smile: "/smile.png", flat: "/flat.png", flat_wide: "/flat_wide.png" },
+  top: {
+    tshirt: "/tshirt.png",
+    hoodie: "/hoodie.png",
+    cardigan: "/cardigan.png",
+    overalls: "/overalls.png",
+    jersey: "/jersey.png",
+    turtleneck: "/turtleneck.png",
+  },
+  hair: {
+    short: "/short.png",
+    straight: "/straight.png",
+    curls: "/curls.png",
+    buzz_cut: "/buzz_cut.png",
+    crop_cut: "/crop_cut.png",
+    curly_pigtails: "/curly_pigtails.png",
+  },
+  accessory: {
+    glasses: "/glasses.png",
+    "3d_glasses": "/3D_glasses.png",
+    headphones: "/headphones.png",
+  },
+} as const;
+
+/** Bookcase art. null = missing: Bookcase draws a CSS fallback. Source px; drawn at 2x. */
+export const SHELF_ART = {
+  capL: { src: "/end_left.png", w: 8, h: 16 },
+  capR: { src: "/end_right.png", w: 8, h: 16 },
+  post: { src: "/post.png", w: 8, h: 32 },
+  plank: { src: "/plank.png" }, // tiled horizontally; CSS fallback if the file is missing
+  back: { src: "/back.png", w: 32, h: 32 }, // recolorable tile
+  slot: { src: "/slot.png", w: 32, h: 32 }, // empty decor slot marker
+  pouf: null, // no art yet
+  floor: { src: "/floor.png", w: 64, h: 40 },
+} as const;
+
+/** Decoration art (32x32) a user can place in decor slots once unlocked. */
+export const DECOR = {
+  candle: "/candle.png",
+  cactus: "/cactus.png",
+  lily: "/lily.png",
+  chest: "/chest.png",
+  popcorn: "/popcorn.png",
+  paperbacks: "/paperbacks.png",
+  vinyl: "/vinyl.png",
+  trophy: "/Trophy.png",
+  record_player: "/record_player.png",
+} as const;
+
+export type DecorKey = keyof typeof DECOR;

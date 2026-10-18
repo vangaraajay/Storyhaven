@@ -9,6 +9,7 @@ import CommentTree from "./CommentTree";
 import DeleteControl from "../DeleteControl";
 import type { ForumPost, CommentNode } from "@/lib/forum";
 import Icon from "@/components/pixel/Icon";
+import Avatar from "@/components/pixel/Avatar";
 
 interface ThreadViewProps {
   post: ForumPost;
@@ -74,9 +75,7 @@ export default function ThreadView({
         <div className="forum-thread-main">
           {/* Header Meta */}
           <div className="forum-post-meta">
-            <div className="forum-avatar">
-              {authorName.charAt(0).toUpperCase()}
-            </div>
+            <Avatar avatar={post.profile?.avatar} scale={1} crop="head" label={authorName} />
 
             <span>
               Posted by <span style={{ color: "var(--forum-text-primary)", fontWeight: 600 }}>{authorName}</span>
