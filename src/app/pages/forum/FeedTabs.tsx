@@ -11,8 +11,8 @@ interface FeedTabsProps {
 }
 
 const TABS: { id: FeedSort; label: string; icon: ReactNode }[] = [
-  { id: "discover", label: "Discover", icon: "🎲" },
-  { id: "top", label: "Top", icon: "🔥" },
+  { id: "discover", label: "Discover", icon: <Icon name="dice" size={1} /> },
+  { id: "top", label: "Top", icon: <Icon name="flame" size={1} /> },
   { id: "new", label: "New", icon: <Icon name="sparkle" size={1} /> },
 ];
 

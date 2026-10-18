@@ -7,9 +7,31 @@ import {
   type LandmarkZone,
 } from "../constants/zones";
 import { COLORS } from "../constants/colors";
+import { ICONS } from "@/lib/sprites";
+
+/** Where a sensor pad's label goes (game coordinates); rendered as crisp DOM text by HavenOverlay. */
+export interface PadLabel {
+  id: string;
+  name: string;
+  icon?: string;
+  color: number;
+  cx: number;
+  cy: number;
+  width: number;
+  height: number;
+}
+
+export interface PromptInfo {
+  id: string;
+  text: string;
+  icon?: string;
+}
 
 export interface MainSceneData {
+  onZones?: (labels: PadLabel[]) => void;
+  onPrompt?: (prompt: PromptInfo | null) => void;
   onNavigate?: (route: string) => void;
+  onReady?: () => void;
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
@@ -20,6 +42,9 @@ export class MainScene extends Phaser.Scene {
   private player!: Player;
   private furnitureManager!: FurnitureManager;
   private onNavigate?: (route: string) => void;
+  private onReady?: () => void;
+  private onZones?: (labels: PadLabel[]) => void;
+  private onPrompt?: (prompt: PromptInfo | null) => void;
   private isLoggedIn = false;
   private needsProfile = false;
   private displayName: string | null = null;
@@ -32,8 +57,6 @@ export class MainScene extends Phaser.Scene {
   private isNavigating = false;
   private suppressedZoneId: string | null = null;
 
-  private hudPromptContainer!: Phaser.GameObjects.Container;
-  private hudPromptText!: Phaser.GameObjects.Text;
   private debugGraphics!: Phaser.GameObjects.Graphics;
   private isDebugVisible = false;
 
@@ -49,12 +72,21 @@ export class MainScene extends Phaser.Scene {
     this.needsProfile = Boolean(data?.needsProfile);
     this.displayName = data?.displayName ?? null;
     this.avatarFrames = data?.avatarFrames;
+    this.onReady = data?.onReady;
+    this.onZones = data?.onZones;
+    this.onPrompt = data?.onPrompt;
     this.zones = getActiveZones(this.needsProfile, this.displayName);
   }
 
   public preload(): void {
     const art: Record<string, string> = {
-      floor: "/floor.png",
+      floor: "/floor_soft.png",
+      counter: "/counter.png",
+      fireplace1: "/fireplace1.png",
+      fireplace2: "/fireplace2.png",
+      fireplace3: "/fireplace3.png",
+      bookshelf_alt1: "/bookshelf_alt1.png",
+      bookshelf_alt2: "/bookshelf_alt2.png",
       bookshelf: "/bookshelf.png",
       podium: "/podium.png",
       podiumup: "/podiumup.png",
@@ -62,6 +94,8 @@ export class MainScene extends Phaser.Scene {
       board: "/board.png",
     };
     for (const [key, url] of Object.entries(art)) this.load.image(key, url);
+    // Pixel icons for the zone prompts.
+    for (const [name, url] of Object.entries(ICONS)) this.load.image(`icon-${name}`, url);
   }
 
   public create(): void {
@@ -81,7 +115,7 @@ export class MainScene extends Phaser.Scene {
 
     // 4. Create Player (restore position if returning from a landmark, or default to room center)
     let spawnX = 400;
-    let spawnY = 320;
+    let spawnY = 250;
     this.suppressedZoneId = null;
 
     try {
@@ -113,11 +147,12 @@ export class MainScene extends Phaser.Scene {
 
     this.player = new Player(this, spawnX, spawnY, spriteKeys);
 
+    this.onReady?.();
+
     // Smooth camera fade-in on entry / return to room
     this.cameras.main.fadeIn(180, 0, 0, 0);
 
     // 5. Create Floating HUD Prompt
-    this.createHUD();
 
     // 6. Debug view toggle (D key)
     this.debugGraphics = this.add.graphics().setDepth(100).setVisible(false);
@@ -126,21 +161,9 @@ export class MainScene extends Phaser.Scene {
       this.debugGraphics.setVisible(this.isDebugVisible);
       this.drawDebugOverlay();
     });
-
-    // Helpful instruction tip at top
-    this.add
-      .text(width / 2, 145, "Use WASD or Arrows • Library for logs • Auth Desk to log out", {
-        fontSize: "13px",
-        color: COLORS.TEXT_MUTED,
-        fontFamily: "monospace",
-        backgroundColor: "rgba(43, 29, 20, 0.7)",
-        padding: { x: 8, y: 4 },
-      })
-      .setOrigin(0.5)
-      .setDepth(10);
   }
 
-  public update(_time: number, delta: number): void {
+  public update(time: number, delta: number): void {
     if (this.isNavigating) return;
 
     // Update player movement and collision against all solid furniture
@@ -177,25 +200,34 @@ export class MainScene extends Phaser.Scene {
         }
       } else {
         this.activeZone = effectiveZone;
+        this.refreshPads();
         this.timeInZone = 0;
-        this.showHUD(effectiveZone.prompt);
+        this.showHUD(effectiveZone);
       }
     } else {
       if (this.activeZone !== null) {
         this.activeZone = null;
+        this.refreshPads();
         this.timeInZone = 0;
         this.hideHUD();
       }
     }
 
     // Podium: closed -> lifting -> open while the player stands on its pad.
-    const podiumFrame =
-      this.activeZone?.id !== "daily-story"
-        ? 0
-        : this.timeInZone < this.DWELL_THRESHOLD / 2
-          ? 1
-          : 2;
+    // Idle: every ~4 s a page lifts and turns (2 frames, 180 ms each); skipped under reduced motion.
+    let podiumFrame = 0;
+    if (this.activeZone?.id === "daily-story") {
+      podiumFrame = this.timeInZone < this.DWELL_THRESHOLD / 2 ? 1 : 2;
+    } else if (document.documentElement.dataset.motion !== "reduced") {
+      const t = time % 4000;
+      podiumFrame = t < 180 ? 1 : t < 360 ? 2 : 0;
+    }
     this.furnitureManager.getById("daily-story-desk")?.setFrame(podiumFrame);
+
+    // Fireplace: flicker through its 3 frames (~220 ms each); a still first frame under reduced motion.
+    const fireFrame = document.documentElement.dataset.motion === "reduced" ? 0 : Math.floor(time / 220) % 3;
+    this.furnitureManager.getById("friends-board")?.setFrame(fireFrame);
+
   }
 
   private findMatchingZone(x: number, y: number): LandmarkZone | null {
@@ -251,7 +283,7 @@ export class MainScene extends Phaser.Scene {
 
   private createFloor(width: number, height: number): void {
     const WALL_H = 128; // matches the bookshelf wall collider
-    const base = this.add.graphics();
+    const base = this.add.graphics().setDepth(-10);
     base.fillStyle(COLORS.FLOOR, 1);
     base.fillRect(0, 0, width, height);
 
@@ -259,6 +291,7 @@ export class MainScene extends Phaser.Scene {
       this.add
         .tileSprite(0, WALL_H, width, height - WALL_H, "floor")
         .setOrigin(0, 0)
+        .setDepth(-9)
         .setTileScale(ART_SCALE, ART_SCALE);
       return;
     }
@@ -275,66 +308,67 @@ export class MainScene extends Phaser.Scene {
     }
   }
 
+  private pads = new Map<string, { fill: Phaser.GameObjects.Rectangle; border: Phaser.GameObjects.Rectangle; color: number }>();
+
   private createSensorPads(): void {
-    const sensorGraphics = this.add.graphics();
+    const reduced = document.documentElement.dataset.motion === "reduced";
+
+    // Names and icons are drawn as DOM text over the canvas (crisp at any size), not as Phaser text.
+    this.onZones?.(
+      this.zones.map((z) => ({
+        id: z.id,
+        name: z.name,
+        icon: z.icon,
+        color: z.color ?? COLORS.SENSOR_PAD,
+        cx: z.sensorRect.x + z.sensorRect.width / 2,
+        cy: z.sensorRect.y + z.sensorRect.height / 2,
+        width: z.sensorRect.width,
+        height: z.sensorRect.height,
+      })),
+    );
 
     for (const zone of this.zones) {
       const { x, y, width, height } = zone.sensorRect;
-      const padColor = zone.color ?? COLORS.SENSOR_PAD;
+      const color = zone.color ?? COLORS.SENSOR_PAD;
 
-      // Glow sensor fill
-      sensorGraphics.fillStyle(padColor, 0.18);
-      sensorGraphics.fillRect(x, y, width, height);
-
-      // Sensor pad perimeter border
-      sensorGraphics.lineStyle(2, padColor, 0.6);
-      sensorGraphics.strokeRect(x, y, width, height);
-
-      // In-world subtle tag
+      // Doormat: solid fill + hard 2px border + inner 1px line, with square corner studs.
+      const fill = this.add.rectangle(x + width / 2, y + height / 2, width, height, color, 0.3).setDepth(-7);
+      const border = this.add
+        .rectangle(x + width / 2, y + height / 2, width, height)
+        .setStrokeStyle(2, color, 1)
+        .setDepth(-7);
       this.add
-        .text(x + width / 2, y + height / 2, `[ ${zone.name} ]`, {
-          fontSize: "11px",
-          color: COLORS.TEXT_MUTED,
-          fontFamily: "monospace",
-        })
-        .setOrigin(0.5);
+        .rectangle(x + width / 2, y + height / 2, width - 10, height - 10)
+        .setStrokeStyle(1, color, 0.55)
+        .setDepth(-7);
+      for (const [cx, cy] of [[x, y], [x + width, y], [x, y + height], [x + width, y + height]]) {
+        this.add.rectangle(cx, cy, 6, 6, color, 1).setDepth(-7);
+      }
+
+      this.pads.set(zone.id, { fill, border, color });
+
+      // Gentle idle pulse (stepped, skipped for reduced motion).
+      if (!reduced) {
+        this.tweens.add({ targets: fill, alpha: 0.5, duration: 700, yoyo: true, repeat: -1, ease: "Stepped", easeParams: [3] });
+      }
     }
   }
 
-  private createHUD(): void {
-    this.hudPromptContainer = this.add.container(400, 560).setDepth(200).setVisible(false);
-
-    const bg = this.add.rectangle(0, 0, 360, 36, 0x2b1d14, 0.92);
-    bg.setStrokeStyle(1.5, 0xebbcba, 0.9);
-
-    this.hudPromptText = this.add
-      .text(0, 0, "", {
-        fontSize: "14px",
-        color: COLORS.TEXT,
-        fontFamily: "monospace",
-      })
-      .setOrigin(0.5);
-
-    this.hudPromptContainer.add([bg, this.hudPromptText]);
-
-    // Gentle floating sine animation
-    this.tweens.add({
-      targets: this.hudPromptContainer,
-      y: 556,
-      duration: 800,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut",
-    });
+  /** Brighten the pad the player is standing on. */
+  private refreshPads(): void {
+    for (const [id, pad] of this.pads) {
+      const active = this.activeZone?.id === id;
+      pad.fill.setFillStyle(pad.color, active ? 0.6 : 0.3);
+      pad.border.setStrokeStyle(active ? 4 : 2, active ? 0xf3e6c8 : pad.color, 1);
+    }
   }
 
-  private showHUD(text: string): void {
-    this.hudPromptText.setText(text);
-    this.hudPromptContainer.setVisible(true);
+  private showHUD(zone: LandmarkZone): void {
+    this.onPrompt?.({ id: zone.id, text: zone.prompt, icon: zone.icon });
   }
 
   private hideHUD(): void {
-    this.hudPromptContainer.setVisible(false);
+    this.onPrompt?.(null);
   }
 
   private drawDebugOverlay(): void {

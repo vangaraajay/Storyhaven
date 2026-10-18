@@ -1,8 +1,12 @@
 import Phaser from "phaser";
-import { MainScene } from "./scenes/MainScene";
+import { MainScene, type PadLabel, type PromptInfo } from "./scenes/MainScene";
 
 export interface GameOptions {
   onNavigate?: (route: string) => void;
+  /** Called once the first scene has been created. */
+  onReady?: () => void;
+  onZones?: (labels: PadLabel[]) => void;
+  onPrompt?: (prompt: PromptInfo | null) => void;
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
@@ -19,6 +23,9 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
         needsProfile: options?.needsProfile,
         displayName: options?.displayName ?? null,
         avatarFrames: options?.avatarFrames,
+        onReady: options?.onReady,
+        onZones: options?.onZones,
+        onPrompt: options?.onPrompt,
       });
     }
   }

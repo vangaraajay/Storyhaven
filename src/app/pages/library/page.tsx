@@ -1,20 +1,69 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
-import { listLogs } from "@/lib/logging";
-import { getProfile, isProfileComplete } from "@/lib/profiles";
+import { getLogs } from "@/lib/cachedLogs";
+import { getProfile, isProfileComplete, type Profile } from "@/lib/profiles";
 import Bookcase, { type MediaItem } from "@/components/shelf/Bookcase";
 import { getShelfData } from "@/lib/shelf";
 import { listCatalogFeed } from "@/lib/catalog";
 import CatalogSection from "./CatalogSection";
 import CreateLogForms from "./CreateLogForms";
 import LibraryEntries from "./LibraryEntries";
+import Icon from "@/components/pixel/Icon";
+import PixelLink from "@/components/pixel/PixelLink";
+import LoadingScreen from "@/components/pixel/LoadingScreen";
+import RememberAvatar from "@/components/pixel/RememberAvatar";
 
 type LibrarySearchParams = Promise<{ decorate?: string; item?: string }>;
 
-async function LibraryContent({ searchParams }: { searchParams: LibrarySearchParams }) {
+/** Shelf: needs the logs (for covers) and the shelf tables; slow, so it streams in on its own. */
+async function ShelfSection({ profile, searchParams }: { profile: Profile; searchParams: LibrarySearchParams }) {
   const { decorate, item } = await searchParams;
+  const [logs, shelf] = await Promise.all([
+    getLogs(profile.id),
+    // Shelf data needs supabase/shelf_tables.sql; an unmigrated DB shows the library without a shelf.
+    getShelfData(profile.id).catch(() => null),
+  ]);
+  if (!shelf) return null;
+
+  const media: MediaItem[] = [
+    ...logs.books.map((l) => ({ id: l.id, kind: "book" as const, name: l.name, cover_url: l.cover_url, at: l.created_at })),
+    ...logs.movies.map((l) => ({ id: l.id, kind: "movie" as const, name: l.name, cover_url: l.cover_url, at: l.created_at })),
+    ...logs.albums.map((l) => ({ id: l.id, kind: "album" as const, name: l.name, cover_url: l.cover_url, at: l.created_at })),
+  ]
+    .sort((a, b) => a.at.localeCompare(b.at))
+    .map(({ at: _at, ...m }) => m); // eslint-disable-line @typescript-eslint/no-unused-vars
+
+  return (
+    <Bookcase
+      theme={shelf.theme}
+      items={media}
+      placed={shelf.placed}
+      unlocked={shelf.unlocked}
+      avatar={profile.avatar ?? null}
+      avatarLabel={profile.display_name ?? undefined}
+      initialDecorate={decorate === "1"}
+      initialItem={item}
+    />
+  );
+}
+
+/** Friends / personal catalog (two feeds), above the creation forms. */
+async function CatalogBlock({ profileId }: { profileId: string }) {
+  const [initialFriendsFeed, initialSelfFeed] = await Promise.all([
+    listCatalogFeed(profileId, "friends", "all", 1, 12),
+    listCatalogFeed(profileId, "self", "all", 1, 12),
+  ]);
+  return <CatalogSection initialFriendsFeed={initialFriendsFeed} initialSelfFeed={initialSelfFeed} />;
+}
+
+async function EntriesBlock({ profileId }: { profileId: string }) {
+  const logs = await getLogs(profileId);
+  return <LibraryEntries books={logs.books} movies={logs.movies} albums={logs.albums} />;
+}
+
+/** Shelf, catalog and entries load in parallel behind one loading screen. */
+async function LibraryContent({ searchParams }: { searchParams: LibrarySearchParams }) {
   const session = await auth0.getSession();
   const user = session?.user;
 
@@ -27,42 +76,19 @@ async function LibraryContent({ searchParams }: { searchParams: LibrarySearchPar
     redirect("/pages/profile");
   }
 
-  const [initialFriendsFeed, initialSelfFeed, logs] = await Promise.all([
-    listCatalogFeed(profile.id, "friends", "all", 1, 12),
-    listCatalogFeed(profile.id, "self", "all", 1, 12),
-    listLogs(profile.id),
-  ]);
-  // Shelf data needs supabase/shelf_tables.sql; an unmigrated DB shows the library without a shelf.
-  const shelf = await getShelfData(profile.id).catch(() => null);
-  const media: MediaItem[] = [
-    ...logs.books.map((l) => ({ id: l.id, kind: "book" as const, name: l.name, cover_url: l.cover_url, at: l.created_at })),
-    ...logs.movies.map((l) => ({ id: l.id, kind: "movie" as const, name: l.name, cover_url: l.cover_url, at: l.created_at })),
-    ...logs.albums.map((l) => ({ id: l.id, kind: "album" as const, name: l.name, cover_url: l.cover_url, at: l.created_at })),
-  ]
-    .sort((a, b) => a.at.localeCompare(b.at))
-    .map(({ at: _at, ...m }) => m); // eslint-disable-line @typescript-eslint/no-unused-vars
-
   return (
     <>
+      <RememberAvatar avatar={profile.avatar ?? null} />
       <p className="library-header">
         Logged in as {profile.display_name} ·{" "}
-        <Link href="/create?returnTo=/pages/library">Edit character</Link>
+        <PixelLink href="/create?returnTo=/pages/library">Edit character</PixelLink>
       </p>
-      {shelf ? (
-        <Bookcase theme={shelf.theme} items={media} placed={shelf.placed} unlocked={shelf.unlocked} avatar={profile.avatar ?? null} avatarLabel={profile.display_name ?? undefined} initialDecorate={decorate === "1"} initialItem={item} />
-      ) : null}
+      <ShelfSection profile={profile} searchParams={searchParams} />
       <div className="library-body">
-        {/* Friends / personal catalog with type filters, above the creation forms */}
-        <CatalogSection
-          initialFriendsFeed={initialFriendsFeed}
-          initialSelfFeed={initialSelfFeed}
-        />
+        <CatalogBlock profileId={profile.id} />
+        {/* The forms need no data, so they render immediately. */}
         <CreateLogForms />
-        <LibraryEntries
-          books={logs.books}
-          movies={logs.movies}
-          albums={logs.albums}
-        />
+        <EntriesBlock profileId={profile.id} />
       </div>
     </>
   );
@@ -73,15 +99,9 @@ export default function LibraryPage({ searchParams }: { searchParams: LibrarySea
     <main className="library-main">
       <header className="library-header">
         <h1>Library</h1>
-        <Link href="/">← Return to Haven</Link>
+        <PixelLink href="/"><Icon name="arrow_left" size={1} /> Return to Haven</PixelLink>
       </header>
-      <Suspense
-        fallback={
-          <div className="haven-loading" style={{ height: "60dvh" }}>
-            Loading your Haven Library…
-          </div>
-        }
-      >
+      <Suspense fallback={<LoadingScreen scene="library" />}>
         <LibraryContent searchParams={searchParams} />
       </Suspense>
     </main>

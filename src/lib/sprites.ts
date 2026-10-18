@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Icon from "@/components/pixel/Icon";
 
 /** On-screen magnification applied to every sprite. */
 export const SPRITE_SCALE = 2;
@@ -54,6 +55,21 @@ export function cx(...parts: Array<string | false | null | undefined>): string {
 
 /** 16x16 icon art in /public. Add a key here to make it available to <Icon>. */
 export const ICONS = {
+  arrow_left: "/arrow_left.png",
+  arrow_right: "/arrow_right.png",
+  all: "/all.png",
+  close: "/close.png",
+  dice: "/dice.png",
+  door: "/door.png",
+  flame: "/flame.png",
+  globe: "/global.png",
+  hourglass: "/hourglass.png",
+  id_card: "/id_card.png",
+  mug: "/mug.png",
+  pencil: "/pencil.png",
+  scroll: "/scroll.png",
+  trash: "/trash.png",
+  user: "/user.png",
   book: "/book.png",
   chat: "/chat.png",
   film: "/film.png",

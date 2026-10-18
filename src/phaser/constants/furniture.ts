@@ -26,6 +26,9 @@ export interface FurnitureSprite {
 /** Shared magnification for all haven art. */
 export const ART_SCALE = 2;
 
+/** Landmark objects (podium, board, fireplace, counter) are drawn larger so they read as destinations. */
+export const LANDMARK_SCALE = 3;
+
 export const DEFAULT_FURNITURE: FurnitureConfig[] = [
   // Full-width top bookshelf wall
   {
@@ -38,78 +41,58 @@ export const DEFAULT_FURNITURE: FurnitureConfig[] = [
     height: 128,
     isSolid: true,
     color: COLORS.BOOKSHELF,
-    sprite: { keys: ["bookshelf"], scale: ART_SCALE, tile: true },
+    sprite: { keys: ["bookshelf", "bookshelf_alt1", "bookshelf_alt2"], scale: ART_SCALE, tile: true },
   },
   // Daily Story desk / podium (center-left)
   {
     id: "daily-story-desk",
     type: "desk",
     label: "Today's Story Podium",
-    // Collider = podium base (64x40); art (64x96) rises above it.
-    x: 118,
-    y: 220,
-    width: 64,
+    x: 70,
+    y: 250,
+    width: 96,
     height: 40,
     isSolid: true,
     color: COLORS.DESK,
-    sprite: { keys: ["podium", "podiumup", "podiumupper"], scale: ART_SCALE },
+    sprite: { keys: ["podium", "podiumup", "podiumupper"], scale: LANDMARK_SCALE },
   },
   // Forums notice board (bottom-left)
   {
     id: "forums-board",
     type: "board",
     label: "Community Bulletin",
-    // Collider = bottom of the board; art (96x80) is anchored to it.
     x: 40,
-    y: 470,
-    width: 96,
-    height: 40,
+    y: 460,
+    width: 144,
+    height: 50,
     isSolid: true,
     color: COLORS.BOARD,
-    sprite: { keys: ["board"], scale: ART_SCALE },
+    sprite: { keys: ["board"], scale: LANDMARK_SCALE },
   },
-  // Friends meeting board / couch (bottom-right)
+  // Friends lounge: animated fireplace (bottom-right). Collider = hearth base; art (96x96) rises above it.
   {
     id: "friends-board",
-    type: "board",
+    type: "custom",
     label: "Companions Lounge",
-    x: 640,
-    y: 450,
-    width: 140,
-    height: 60,
+    x: 630,
+    y: 454,
+    width: 144,
+    height: 56,
     isSolid: true,
     color: COLORS.BOARD,
+    sprite: { keys: ["fireplace1", "fireplace2", "fireplace3"], scale: LANDMARK_SCALE },
   },
-  // Auth Desk — log in / log out (sensor sits just in front)
+  // Auth Desk: counter sprite (sensor sits just in front). Collider = counter base; art (96x64) rises above it.
   {
     id: "auth-desk",
     type: "table",
     label: "Auth Desk",
-    x: 340,
-    y: 400,
-    width: 120,
-    height: 55,
+    x: 638,
+    y: 264,
+    width: 144,
+    height: 44,
     isSolid: true,
     color: COLORS.TABLE,
-  },
-  {
-    id: "auth-chair-left",
-    type: "chair",
-    x: 310,
-    y: 415,
-    width: 25,
-    height: 30,
-    isSolid: true,
-    color: COLORS.CHAIR,
-  },
-  {
-    id: "auth-chair-right",
-    type: "chair",
-    x: 465,
-    y: 415,
-    width: 25,
-    height: 30,
-    isSolid: true,
-    color: COLORS.CHAIR,
+    sprite: { keys: ["counter"], scale: LANDMARK_SCALE },
   },
 ];

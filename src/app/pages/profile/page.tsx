@@ -1,9 +1,9 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
 import ProfileForm from "./ProfileForm";
+import PixelLink from "@/components/pixel/PixelLink";
 
 async function ProfileContent() {
   const session = await auth0.getSession();
@@ -36,7 +36,7 @@ export default function ProfilePage() {
     <main>
       <h1>Profile</h1>
       <p>
-        <Link href="/">Back to Storyhaven</Link>
+        <PixelLink href="/">Back to Storyhaven</PixelLink>
       </p>
       <Suspense fallback={<p>Loading…</p>}>
         <ProfileContent />

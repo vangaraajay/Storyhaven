@@ -5,6 +5,7 @@ import { getProfile, isProfileComplete } from "@/lib/profiles";
 import { getPostById, getCommentsByPostId, buildCommentTree } from "@/lib/forum";
 import ThreadView from "./ThreadView";
 import "../forum.css";
+import LoadingScreen from "@/components/pixel/LoadingScreen";
 
 export const instant = false;
 
@@ -54,14 +55,7 @@ async function ThreadContent({ params }: ThreadPageProps) {
 export default function ThreadPage(props: ThreadPageProps) {
   return (
     <main className="forum-main" suppressHydrationWarning>
-      <Suspense
-        fallback={
-          <div className="forum-thread-container" style={{ padding: "3rem 1rem", textAlign: "center", fontFamily: "var(--forum-font-mono)", fontSize: "0.85rem", color: "var(--forum-text-secondary)" }}>
-            <span style={{ display: "inline-block", marginRight: "0.5rem" }}>⏳</span>
-            Loading discussion…
-          </div>
-        }
-      >
+      <Suspense fallback={<LoadingScreen scene="forum" />}>
         <ThreadContent {...props} />
       </Suspense>
     </main>

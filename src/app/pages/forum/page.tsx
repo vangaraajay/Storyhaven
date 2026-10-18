@@ -11,6 +11,7 @@ import {
 } from "@/lib/forum";
 import ForumFeed from "./ForumFeed";
 import "./forum.css";
+import LoadingScreen from "@/components/pixel/LoadingScreen";
 
 export const instant = false;
 
@@ -112,14 +113,7 @@ async function ForumContent({ searchParams }: PageProps) {
 export default function ForumPage(props: PageProps) {
   return (
     <main className="forum-main" suppressHydrationWarning>
-      <Suspense
-        fallback={
-          <div className="forum-container" style={{ padding: "3rem 1rem", textAlign: "center", fontFamily: "var(--forum-font-mono)", fontSize: "0.85rem", color: "var(--forum-text-secondary)" }}>
-            <span style={{ display: "inline-block", marginRight: "0.5rem" }}>⏳</span>
-            Opening the community library…
-          </div>
-        }
-      >
+      <Suspense fallback={<LoadingScreen scene="forum" />}>
         <ForumContent {...props} />
       </Suspense>
     </main>

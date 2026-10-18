@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import Link from "next/link";
 import type {
   CatalogFeedResponse,
   CatalogItem,
@@ -14,6 +13,7 @@ import PixelTabs from "@/components/pixel/PixelTabs";
 import CatalogCard from "./CatalogCard";
 import CatalogDetailModal from "./CatalogDetailModal";
 import PixelButton from "@/components/pixel/PixelButton";
+import PixelLink from "@/components/pixel/PixelLink";
 
 type CatalogSectionProps = {
   initialFriendsFeed: CatalogFeedResponse;
@@ -160,9 +160,9 @@ export default function CatalogSection({
                   Your social library is quiet. Connect with fellow readers and
                   friends in the Haven lounge to see their shared media logs!
                 </p>
-                <Link href="/pages/friends" className="catalog-empty-action">
-                  <Icon name="match" size={1} /> Go to Friends Lounge →
-                </Link>
+                <PixelLink href="/pages/friends">
+                  <Icon name="match" size={1} /> Go to Friends Lounge <Icon name="arrow_right" size={1} />
+                </PixelLink>
               </>
             ) : (
               <p>
@@ -195,7 +195,7 @@ export default function CatalogSection({
             onClick={() => handlePageChange(Math.max(1, page - 1))}
             disabled={page <= 1 || isPending}
           >
-            ← Previous
+            <Icon name="arrow_left" size={1} /> Previous
           </PixelButton>
           <span className="catalog-page-indicator">
             Page {feed.currentPage} of {feed.totalPages} ({feed.totalCount} items)
@@ -205,7 +205,7 @@ export default function CatalogSection({
             onClick={() => handlePageChange(Math.min(feed.totalPages, page + 1))}
             disabled={page >= feed.totalPages || isPending}
           >
-            Next →
+            Next <Icon name="arrow_right" size={1} />
           </PixelButton>
         </div>
       )}

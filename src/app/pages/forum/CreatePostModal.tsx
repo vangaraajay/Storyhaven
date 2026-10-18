@@ -6,6 +6,7 @@ import { createPostAction } from "./actions";
 import type { MediaType } from "@/lib/forum";
 import PixelButton from "@/components/pixel/PixelButton";
 import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
+import Icon from "@/components/pixel/Icon";
 
 interface CreatePostModalProps {
   isOpen: boolean;
@@ -68,13 +69,13 @@ export default function CreatePostModal({
         {/* Header */}
         <div className="forum-modal-header">
           <h2 className="forum-modal-title">
-            <span>✍️</span> Create Forum Discussion
+            <Icon name="pencil" size={1} /> Create Forum Discussion
           </h2>
           <PixelButton
             type="button"
             onClick={onClose}
           >
-            ✕
+            <Icon name="close" size={1} />
           </PixelButton>
         </div>
 
@@ -136,10 +137,10 @@ export default function CreatePostModal({
                   onChange={(e) => setMediaType(e.target.value as MediaType)}
                   className="forum-select"
                 >
-                  <option value="general">☕ General Discussion</option>
-                  <option value="book">📚 Book</option>
-                  <option value="movie">🎬 Movie</option>
-                  <option value="album">🎵 Music / Album</option>
+                  <option value="general">General Discussion</option>
+                  <option value="book">Book</option>
+                  <option value="movie">Movie</option>
+                  <option value="album">Music / Album</option>
                 </PixelSelect>
               </div>
 

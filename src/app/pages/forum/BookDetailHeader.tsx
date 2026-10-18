@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import Icon from "@/components/pixel/Icon";
 import PixelButton from "@/components/pixel/PixelButton";
+import PixelLink from "@/components/pixel/PixelLink";
 
 interface BookDetailHeaderProps {
   bookTitle: string;
@@ -57,21 +57,19 @@ export default function BookDetailHeader({
 
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
         {fromDailyStory ? (
-          <Link
+          <PixelLink
             href="/pages/daily-story"
-            className="forum-btn-secondary"
             style={{ color: "var(--forum-accent-foam)" }}
           >
-            ← Back to Daily Story
-          </Link>
+            <Icon name="arrow_left" size={1} /> Back to Daily Story
+          </PixelLink>
         ) : (
-          <Link
+          <PixelLink
             href="/pages/library"
-            className="forum-btn-secondary"
             style={{ color: "var(--forum-accent-gold)" }}
           >
-            View in Library →
-          </Link>
+            View in Library <Icon name="arrow_right" size={1} />
+          </PixelLink>
         )}
       </div>
     </div>

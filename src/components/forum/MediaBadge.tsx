@@ -32,7 +32,7 @@ const BADGE_STYLES: Record<MediaType, { bg: string; text: string; border: string
     bg: "rgba(217, 119, 6, 0.12)",
     text: "#8a5a1e",
     border: "rgba(217, 119, 6, 0.3)",
-    icon: "☕",
+    icon: <Icon name="mug" size={1} />,
   },
 };
 

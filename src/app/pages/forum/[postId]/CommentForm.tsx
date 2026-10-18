@@ -95,15 +95,7 @@ export default function CommentForm({
         </div>
       )}
 
-      <div
-        style={{
-          borderRadius: "14px",
-          border: "1px solid var(--forum-border-default)",
-          padding: "0.75rem",
-          background: "var(--forum-bg-base)",
-          boxShadow: "inset 0 2px 6px rgba(0, 0, 0, 0.3)",
-        }}
-      >
+      <div>
         <PixelTextarea
           required
           autoFocus={autoFocus}
@@ -111,31 +103,13 @@ export default function CommentForm({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder={placeholder}
-          style={{
-            width: "100%",
-            background: "transparent",
-            color: "var(--forum-text-primary)",
-            fontSize: "0.875rem",
-            border: "none",
-            outline: "none",
-            resize: "vertical",
-            fontFamily: "var(--forum-font-sans)",
-            lineHeight: 1.5,
-            boxSizing: "border-box",
-          }}
+          style={{ width: "100%", minHeight: "5rem" }}
         />
 
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: "0.5rem", borderTop: "1px solid rgba(255, 255, 255, 0.06)", marginTop: "0.35rem" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.5rem", flexWrap: "wrap", paddingTop: "0.5rem" }}>
           <PixelButton
             type="button"
             onClick={insertSpoilerTemplate}
-            style={{
-              fontSize: "0.75rem",
-              color: "#ff8fa3",
-              fontWeight: 600,
-              textDecoration: "underline",
-              cursor: "pointer",
-            }}
           >
             + Spoiler tag
           </PixelButton>
@@ -153,7 +127,6 @@ export default function CommentForm({
             <PixelButton
               type="submit"
               disabled={isPending || !content.trim()}
-              style={{ padding: "0.45rem 1rem", fontSize: "0.775rem", opacity: (isPending || !content.trim()) ? 0.5 : 1 }}
             >
               {isPending ? "Posting…" : "Reply"}
             </PixelButton>

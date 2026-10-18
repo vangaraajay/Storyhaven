@@ -1,0 +1,108 @@
+.screen {
+  --ink: #2a202a;
+  display: flex;
+  flex-direction: column;
+  background: #2b1d14;
+  overflow: hidden;
+}
+
+.full {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+}
+
+.inline {
+  min-height: 60dvh;
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 16px 24px;
+  min-width: 240px;
+}
+
+.title {
+  font-size: 1.5rem;
+  letter-spacing: 0.04em;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bar {
+  width: 100%;
+  height: 12px;
+  border: 2px solid var(--ink);
+  background: #f4e8ce;
+  overflow: hidden;
+}
+
+/* A block that steps across the bar; static (full) when motion is reduced. */
+.fill {
+  width: 100%;
+  height: 100%;
+  background: #b97d45;
+}
+
+html[data-motion="full"] .fill {
+  width: 25%;
+  animation: bar-run 1200ms steps(8, end) infinite;
+}
+
+@keyframes bar-run {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(400%); }
+}
+
+.floor {
+  flex: none;
+  height: 64px;
+  background-image: url(/floor.png);
+  background-size: 128px 80px;
+  image-rendering: pixelated;
+  border-top: 4px solid #2a202a;
+  position: relative;
+}
+
+.walker {
+  position: absolute;
+  bottom: calc(100% - 4px);
+  left: 0;
+  /* Walks left to right across the floor in whole-pixel steps. */
+}
+
+html[data-motion="full"] .walker {
+  animation: walk-across 6s steps(48, end) infinite;
+}
+
+html:not([data-motion="full"]) .walker {
+  left: 50%;
+  margin-left: -64px;
+}
+
+@keyframes walk-across {
+  from { transform: translateX(-140px); }
+  to { transform: translateX(100vw); }
+}
+
+/* Scene prop standing on the floor (bookshelf, board, fireplace, podium, counter). */
+.prop {
+  position: absolute;
+  bottom: calc(100% - 4px);
+}

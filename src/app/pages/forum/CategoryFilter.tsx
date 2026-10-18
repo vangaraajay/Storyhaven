@@ -11,11 +11,11 @@ interface CategoryFilterProps {
 }
 
 const FILTERS: { id: MediaFilter; label: string; icon: ReactNode }[] = [
-  { id: "all", label: "All", icon: "🌌" },
+  { id: "all", label: "All", icon: <Icon name="all" size={1} /> },
   { id: "book", label: "Books", icon: <Icon name="book" size={1} /> },
   { id: "movie", label: "Movies", icon: <Icon name="film" size={1} /> },
   { id: "album", label: "Music", icon: <Icon name="vinyl" size={1} /> },
-  { id: "general", label: "General", icon: "☕" },
+  { id: "general", label: "General", icon: <Icon name="mug" size={1} /> },
 ];
 
 export default function CategoryFilter({

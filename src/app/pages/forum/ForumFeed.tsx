@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import FeedModeToggle from "./FeedModeToggle";
 import BookHubSelector from "./BookHubSelector";
@@ -14,6 +13,7 @@ import { fetchMorePostsAction } from "./actions";
 import type { ForumPost, FeedSort, MediaFilter, FeedCursor } from "@/lib/forum";
 import Icon from "@/components/pixel/Icon";
 import PixelButton from "@/components/pixel/PixelButton";
+import PixelLink from "@/components/pixel/PixelLink";
 
 interface ForumFeedProps {
   initialPosts: ForumPost[];
@@ -184,9 +184,9 @@ export default function ForumFeed({
     <div className="forum-container">
       {/* Top Navigation */}
       <div style={{ marginBottom: "0.85rem" }}>
-        <Link href="/" className="forum-back-btn">
-          <span aria-hidden="true">←</span> Return to Haven
-        </Link>
+        <PixelLink href="/">
+          <Icon name="arrow_left" size={1} /> Return to Haven
+        </PixelLink>
       </div>
 
       {/* Top Header & New Post Action */}
@@ -206,7 +206,7 @@ export default function ForumFeed({
             type="button"
             onClick={() => setIsCreateModalOpen(true)}
           >
-            <span>✍️</span> Create Discussion
+            <Icon name="pencil" size={1} /> Create Discussion
           </PixelButton>
         </div>
       </div>
@@ -260,12 +260,12 @@ export default function ForumFeed({
               color: "var(--forum-text-secondary)",
             }}
           >
-            <span style={{ display: "inline-block", marginRight: "0.5rem" }}>⏳</span>
+            <span style={{ display: "inline-block", marginRight: "0.5rem" }}><Icon name="hourglass" size={1} /></span>
             Refreshing discussions…
           </div>
         ) : posts.length === 0 ? (
           <div className="forum-empty-card">
-            <span className="forum-empty-icon">📜</span>
+            <span className="forum-empty-icon"><Icon name="scroll" size={2} /></span>
             <h3 className="forum-empty-title">No discussions yet</h3>
             <p className="forum-empty-desc">
               {isPerBook && selectedBook
@@ -306,7 +306,7 @@ export default function ForumFeed({
       >
         {isLoadingMore && (
           <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
-            <span>⏳</span>
+            <span><Icon name="hourglass" size={1} /></span>
             <span>Unfolding more stories…</span>
           </div>
         )}

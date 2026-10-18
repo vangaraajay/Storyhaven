@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
 import HavenHome, { type HavenAuth } from "./haven/HavenHome";
+import LoadingScreen from "@/components/pixel/LoadingScreen";
 
 async function Haven() {
   let session = null;
@@ -46,11 +47,7 @@ async function Haven() {
 export default function Home() {
   return (
     <Suspense
-      fallback={
-        <div className="haven-loading" role="status">
-          Opening Storyhaven…
-        </div>
-      }
+      fallback={<LoadingScreen scene="haven" />}
     >
       <Haven />
     </Suspense>

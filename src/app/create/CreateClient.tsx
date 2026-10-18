@@ -12,6 +12,8 @@ import { PART_OPTIONS, SWATCHES, randomAvatar, type PartName } from "@/lib/avata
 import type { Avatar as AvatarData } from "@/lib/avatar/types";
 import { saveAvatarAction } from "./actions";
 import styles from "./create.module.css";
+import Icon from "@/components/pixel/Icon";
+import { rememberAvatar } from "@/lib/avatar/store";
 
 type ColorTarget = "skin" | "hairColor" | "topColor";
 
@@ -106,6 +108,7 @@ export default function CreateClient({
       }
       leaving.current = true;
       setSaved(avatar);
+      rememberAvatar(avatar);
       setToast(true);
       setTimeout(() => router.push(returnTo), 700);
     });
@@ -122,7 +125,7 @@ export default function CreateClient({
     <main className={styles.page}>
       <header className={styles.header}>
         <PixelButton onClick={goBack} aria-label="Back">
-          ← Back
+          <Icon name="arrow_left" size={1} /> Back
         </PixelButton>
         <h1 className={styles.title}>Edit character</h1>
       </header>

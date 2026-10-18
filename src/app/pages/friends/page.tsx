@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth0 } from "@/lib/auth0";
 import {
@@ -16,6 +15,9 @@ import {
 import { getProfile, isProfileComplete } from "@/lib/profiles";
 import { getHavenMatchStateForProfile } from "@/lib/match-drop";
 import FriendsShell from "./FriendsShell";
+import Icon from "@/components/pixel/Icon";
+import PixelLink from "@/components/pixel/PixelLink";
+import LoadingScreen from "@/components/pixel/LoadingScreen";
 
 type FriendsPageProps = {
   searchParams: Promise<{
@@ -117,9 +119,9 @@ export default function FriendsPage(props: FriendsPageProps) {
     <main className="friends-page">
       <header className="friends-page-header">
         <h1>Friends</h1>
-        <Link href="/">← Back to Storyhaven</Link>
+        <PixelLink href="/"><Icon name="arrow_left" size={1} /> Back to Storyhaven</PixelLink>
       </header>
-      <Suspense fallback={<p>Loading friends…</p>}>
+      <Suspense fallback={<LoadingScreen scene="friends" />}>
         <FriendsContent searchParams={props.searchParams} />
       </Suspense>
     </main>

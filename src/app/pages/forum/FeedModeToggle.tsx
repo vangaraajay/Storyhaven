@@ -12,7 +12,7 @@ interface FeedModeToggleProps {
 }
 
 const MODES: { id: FeedMode; label: string; icon: ReactNode }[] = [
-  { id: "universal", label: "Universal Feed", icon: "🌐" },
+  { id: "universal", label: "Universal Feed", icon: <Icon name="globe" size={1} /> },
   { id: "per_book", label: "Per-Book Hubs", icon: <Icon name="book" size={1} /> },
 ];
 
