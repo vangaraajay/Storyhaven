@@ -158,9 +158,9 @@ export class MainScene extends Phaser.Scene {
 
     // 5. Create Floating HUD Prompt
 
-    // 6. Debug view toggle (D key)
+    // 6. Debug view toggle (H key for Hitboxes)
     this.debugGraphics = this.add.graphics().setDepth(100).setVisible(false);
-    this.input.keyboard?.on("keydown-D", () => {
+    this.input.keyboard?.on("keydown-H", () => {
       this.isDebugVisible = !this.isDebugVisible;
       this.debugGraphics.setVisible(this.isDebugVisible);
       this.drawDebugOverlay();
