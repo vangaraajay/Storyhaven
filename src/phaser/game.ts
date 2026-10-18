@@ -12,6 +12,8 @@ export interface GameOptions {
   displayName?: string | null;
   /** Composed 32x32 character frames for the player sprite. */
   avatarFrames?: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement };
+  /** Fired whenever Phaser scales or centers the canvas. */
+  onResize?: () => void;
 }
 
 export function createGame(parent: HTMLElement, options?: GameOptions) {
@@ -30,7 +32,7 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
     }
   }
 
-  return new Phaser.Game({
+  const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
     backgroundColor: "#2b1d14",
@@ -43,4 +45,10 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
     },
     scene: [ConfiguredMainScene],
   });
+
+  if (options?.onResize) {
+    game.scale.on(Phaser.Scale.Events.RESIZE, options.onResize);
+  }
+
+  return game;
 }

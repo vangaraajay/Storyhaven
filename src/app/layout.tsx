@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={pixelFont.variable} style={{ colorScheme: "dark" }} suppressHydrationWarning>
+    <html lang="en" data-motion="full" className={pixelFont.variable} style={{ colorScheme: "dark" }} suppressHydrationWarning>
       <body>
         <MotionProvider />
         <BackgroundMusic />
