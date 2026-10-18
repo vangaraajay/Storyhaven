@@ -14,6 +14,8 @@ export type AvatarProps = {
   crop?: "full" | "head";
   /** Blink every 3-5 s. Only runs when an ancestor has data-motion="full". */
   blink?: boolean;
+  /** Where the eyes look (uses the eyes_left / eyes_right art). Default: straight ahead. */
+  look?: "open" | "left" | "right";
   body?: BodyFrame;
   /** Accessible name; omit for decorative use. */
   label?: string;
@@ -30,6 +32,7 @@ export default function Avatar({
   scale = 2,
   crop = "full",
   blink = false,
+  look = "open",
   body = "idle",
   label,
   className,
@@ -66,7 +69,7 @@ export default function Avatar({
   // Draw.
   useEffect(() => {
     let cancelled = false;
-    composeAvatar(JSON.parse(json) as AvatarData, { body, eyes })
+    composeAvatar(JSON.parse(json) as AvatarData, { body, eyes: eyes === "blink" ? "blink" : look })
       .then((layers) => {
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext("2d");
@@ -82,7 +85,7 @@ export default function Avatar({
     return () => {
       cancelled = true;
     };
-  }, [json, body, eyes, src.x, src.y, src.w, src.h]);
+  }, [json, body, eyes, look, src.x, src.y, src.w, src.h]);
 
   return (
     <canvas

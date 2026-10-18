@@ -21,7 +21,9 @@ export class Player {
   private readonly eyeRight: Phaser.GameObjects.Rectangle;
   private readonly bounds: Phaser.Geom.Rectangle;
   private sprite: Phaser.GameObjects.Image | null = null;
-  private spriteKeys: { idle: string; walk_l: string; walk_r: string } | null = null;
+  private spriteKey: ((body: string, look: string) => string) | null = null;
+  /** Which way the character's eyes point: straight ahead (up/down) or left/right. */
+  private look: "open" | "left" | "right" = "open";
   private walkClock = 0;
 
   private readonly keys: {
@@ -39,7 +41,7 @@ export class Player {
     scene: Phaser.Scene,
     startX: number,
     startY: number,
-    sprite?: { idle: string; walk_l: string; walk_r: string },
+    sprite?: (body: string, look: string) => string,
   ) {
     this.scene = scene;
     this.x = startX;
@@ -77,10 +79,10 @@ export class Player {
     // Character sprite replaces the placeholder rectangle. Art is 32x32 at 2x with feet on the hitbox bottom.
     if (sprite) {
       this.sprite = scene.add
-        .image(0, this.height / 2 + 2, sprite.idle)
+        .image(0, this.height / 2 + 2, sprite("idle", "open"))
         .setOrigin(0.5, 1)
         .setScale(2);
-      this.spriteKeys = sprite;
+      this.spriteKey = sprite;
       this.container.add(this.sprite);
       this.bodyRect.setVisible(false);
       this.eyeLeft.setVisible(false);
@@ -120,15 +122,15 @@ export class Player {
 
   /** Idle frame when still; alternates the two walk frames (every 160 ms) while moving. */
   private animate(delta: number, moving: boolean): void {
-    if (!this.sprite || !this.spriteKeys) return;
+    if (!this.sprite || !this.spriteKey) return;
     if (!moving) {
       this.walkClock = 0;
-      this.sprite.setTexture(this.spriteKeys.idle);
+      this.sprite.setTexture(this.spriteKey("idle", this.look));
       return;
     }
     this.walkClock += delta;
     const step = Math.floor(this.walkClock / 160) % 2;
-    this.sprite.setTexture(step === 0 ? this.spriteKeys.walk_l : this.spriteKeys.walk_r);
+    this.sprite.setTexture(this.spriteKey(step === 0 ? "walk_l" : "walk_r", this.look));
   }
 
   public update(delta: number, solidColliders: Phaser.Geom.Rectangle[]): void {
@@ -291,6 +293,8 @@ export class Player {
   }
 
   private updateFacing(dx: number, dy: number): void {
+    // Eyes follow horizontal travel; moving straight up or down looks ahead.
+    this.look = dx < 0 ? "left" : dx > 0 ? "right" : "open";
     if (dx < 0) {
       // Facing Left
       this.eyeLeft.setPosition(-5, -4);

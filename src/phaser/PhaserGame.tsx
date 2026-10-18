@@ -67,15 +67,18 @@ export default function PhaserGame({
 
     (async () => {
       // Compose the player's character (idle + two walk frames) before the scene starts.
-      let avatarFrames: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement } | undefined;
+      let avatarFrames: Record<string, HTMLCanvasElement> | undefined;
       try {
         const a = JSON.parse(avatarJson) as Avatar;
-        const [idle, walk_l, walk_r] = await Promise.all([
-          composeFlat(a, { body: "idle" }),
-          composeFlat(a, { body: "walk_l" }),
-          composeFlat(a, { body: "walk_r" }),
-        ]);
-        avatarFrames = { idle, walk_l, walk_r };
+        // 3 body poses x 3 looks (ahead / left / right), keyed "body|look".
+        const bodies = ["idle", "walk_l", "walk_r"] as const;
+        const looks = ["open", "left", "right"] as const;
+        const entries = await Promise.all(
+          bodies.flatMap((body) =>
+            looks.map(async (look) => [`${body}|${look}`, await composeFlat(a, { body, eyes: look })] as const),
+          ),
+        );
+        avatarFrames = Object.fromEntries(entries);
       } catch (err) {
         console.warn("Avatar failed to compose; using the placeholder player", err);
       }

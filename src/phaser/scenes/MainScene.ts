@@ -35,7 +35,7 @@ export interface MainSceneData {
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
-  avatarFrames?: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement };
+  avatarFrames?: Record<string, HTMLCanvasElement>;
 }
 
 export class MainScene extends Phaser.Scene {
@@ -134,19 +134,19 @@ export class MainScene extends Phaser.Scene {
     }
 
     // Register the composed character as nearest-filtered textures for the player sprite.
-    let spriteKeys: { idle: string; walk_l: string; walk_r: string } | undefined;
+    let spriteKey: ((body: string, look: string) => string) | undefined;
     if (this.avatarFrames) {
-      spriteKeys = { idle: "avatar-idle", walk_l: "avatar-walk-l", walk_r: "avatar-walk-r" };
-      const sources = { idle: this.avatarFrames.idle, walk_l: this.avatarFrames.walk_l, walk_r: this.avatarFrames.walk_r };
-      for (const frame of ["idle", "walk_l", "walk_r"] as const) {
-        const key = spriteKeys[frame];
+      const frames = this.avatarFrames;
+      for (const [name, canvas] of Object.entries(frames)) {
+        const key = `avatar-${name}`;
         if (this.textures.exists(key)) this.textures.remove(key);
-        const tex = this.textures.addCanvas(key, sources[frame]);
+        const tex = this.textures.addCanvas(key, canvas);
         tex?.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
+      spriteKey = (body, look) => `avatar-${body}|${look}`;
     }
 
-    this.player = new Player(this, spawnX, spawnY, spriteKeys);
+    this.player = new Player(this, spawnX, spawnY, spriteKey);
 
     this.onReady?.();
 

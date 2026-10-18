@@ -46,6 +46,7 @@
 }
 
 .slots {
+  position: relative;
   background-color: var(--shadow);
   background-size: var(--slot) var(--slot);
   image-rendering: pixelated;

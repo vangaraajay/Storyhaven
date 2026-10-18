@@ -82,7 +82,7 @@ export default function LoadingScreen({ scene = "haven", message, variant = "ful
           />
         ) : null}
         <div className={styles.walker}>
-          <Avatar avatar={avatar} scale={4} body={step ? "walk_l" : "walk_r"} />
+          <Avatar avatar={avatar} scale={4} body={step ? "walk_l" : "walk_r"} look="right" />
         </div>
       </div>
     </div>

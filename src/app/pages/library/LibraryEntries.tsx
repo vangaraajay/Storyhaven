@@ -20,6 +20,23 @@ import PixelLink from "@/components/pixel/PixelLink";
 
 const initialState: LoggingFormState = { error: null };
 
+/** Cover thumbnail for a logged entry; falls back to the media-type icon when missing or broken. */
+function EntryCover({ url, kind, name }: { url: string | null; kind: "book" | "movie" | "album"; name: string }) {
+  const [failed, setFailed] = useState(false);
+  const icon = kind === "book" ? "book" : kind === "movie" ? "film" : "vinyl";
+  const showImage = Boolean(url) && !failed;
+  return (
+    <span className={`entry-cover entry-cover-${kind}`}>
+      {showImage ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={url ?? undefined} alt={`Cover of ${name}`} loading="lazy" onError={() => setFailed(true)} />
+      ) : (
+        <Icon name={icon} size={2} />
+      )}
+    </span>
+  );
+}
+
 function BookEntry({ book }: { book: BookLog }) {
   const [editing, setEditing] = useState(false);
   const [state, action, pending] = useActionState(
@@ -30,6 +47,8 @@ function BookEntry({ book }: { book: BookLog }) {
   if (!editing) {
     return (
       <li>
+        <EntryCover url={book.cover_url} kind="book" name={book.name} />
+        <div className="entry-main">
         <p>
           {book.name}
           {book.rating != null ? ` — ${book.rating}/5` : ""}
@@ -49,6 +68,7 @@ function BookEntry({ book }: { book: BookLog }) {
           <input type="hidden" name="id" value={book.id} />
           <PixelButton type="submit">Delete</PixelButton>
         </form>
+        </div>
       </li>
     );
   }
@@ -156,6 +176,8 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
   if (!editing) {
     return (
       <li>
+        <EntryCover url={movie.cover_url} kind="movie" name={movie.name} />
+        <div className="entry-main">
         <p>
           {movie.name}
           {movie.rating != null ? ` — ${movie.rating}/5` : ""}
@@ -169,6 +191,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
           <input type="hidden" name="id" value={movie.id} />
           <PixelButton type="submit">Delete</PixelButton>
         </form>
+        </div>
       </li>
     );
   }
@@ -253,6 +276,8 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
   if (!editing) {
     return (
       <li>
+        <EntryCover url={album.cover_url} kind="album" name={album.name} />
+        <div className="entry-main">
         <p>
           {album.name}
           {album.rating != null ? ` — ${album.rating}/5` : ""}
@@ -265,6 +290,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
           <input type="hidden" name="id" value={album.id} />
           <PixelButton type="submit">Delete</PixelButton>
         </form>
+        </div>
       </li>
     );
   }

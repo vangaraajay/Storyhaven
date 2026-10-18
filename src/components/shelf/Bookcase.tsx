@@ -132,6 +132,61 @@ function layout(items: MediaItem[], minRows: number, cols: number): Position[] {
   return out;
 }
 
+type WalkState = { x: number; dir: 1 | -1; t: number };
+
+/** Character pacing along the top plank in whole-pixel steps; stands still under reduced motion. */
+function Walker({ avatar, label, S, cols }: { avatar: AvatarData | null | undefined; label: string; S: number; cols: number }) {
+  const slot = 32 * S;
+  const max = (cols - 1) * slot; // art is 32 source px wide; stay inside the row
+  const step = 2 * S; // 2 source pixels per tick
+  const [walk, setWalk] = useState<WalkState>({ x: 2 * slot, dir: 1, t: 0 });
+  const [moving, setMoving] = useState(false);
+
+  useEffect(() => {
+    if (document.documentElement.dataset.motion !== "full") return;
+    const startId = window.setTimeout(() => setMoving(true), 0);
+    const id = window.setInterval(() => {
+      setWalk((w) => {
+        let dir = w.dir;
+        let x = w.x + dir * step;
+        if (x >= max) {
+          x = max;
+          dir = -1;
+        } else if (x <= 0) {
+          x = 0;
+          dir = 1;
+        }
+        return { x, dir, t: w.t + 1 };
+      });
+    }, 130);
+    return () => {
+      window.clearTimeout(startId);
+      window.clearInterval(id);
+    };
+  }, [max, step]);
+
+  const x = Math.min(walk.x, max);
+  return (
+    <span
+      style={{
+        position: "absolute",
+        left: x,
+        bottom: 0,
+        display: "inline-flex",
+      }}
+    >
+      <Avatar
+        avatar={avatar}
+        scale={S as 2}
+        body={moving ? (walk.t % 2 === 0 ? "walk_l" : "walk_r") : "idle"}
+        look={moving ? (walk.dir < 0 ? "left" : "right") : "open"}
+        blink={!moving}
+        label={label}
+      />
+    </span>
+  );
+}
+
 export default function Bookcase({ theme: initialTheme, items, placed: initialPlaced, unlocked, minRows = 3, avatar, avatarLabel, initialDecorate = false, initialItem }: BookcaseProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   // Integer pixel scale that fills the available width (2x to 6x).
@@ -253,10 +308,8 @@ export default function Bookcase({ theme: initialTheme, items, placed: initialPl
             <div className={styles.shelf}>
               <span className={styles.post} style={art.post ? { backgroundImage: `url(${art.post})` } : undefined} aria-hidden />
               <div className={styles.slots} style={art.back ? { backgroundImage: `url(${art.back})` } : undefined}>
-                {/* The avatar sits on this row's plank, third slot from the left. */}
-                <span className={styles.slot} style={{ gridColumn: 3 }}>
-                  <Avatar avatar={avatar} scale={S as 2} blink label={avatarLabel ?? "Your character"} />
-                </span>
+                {/* The avatar walks back and forth along this row's plank. */}
+                <Walker avatar={avatar} label={avatarLabel ?? "Your character"} S={S} cols={cols} />
               </div>
               <span className={styles.post} style={art.post ? { backgroundImage: `url(${art.post})`, transform: "scaleX(-1)" } : undefined} aria-hidden />
             </div>

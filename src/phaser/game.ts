@@ -11,7 +11,7 @@ export interface GameOptions {
   needsProfile?: boolean;
   displayName?: string | null;
   /** Composed 32x32 character frames for the player sprite. */
-  avatarFrames?: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement };
+  avatarFrames?: Record<string, HTMLCanvasElement>;
 }
 
 export function createGame(parent: HTMLElement, options?: GameOptions) {

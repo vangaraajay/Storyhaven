@@ -131,7 +131,7 @@ export const SHELF_ART = {
   post: { src: "/post.png", w: 8, h: 32 },
   plank: { src: "/plank.png" }, // tiled horizontally; CSS fallback if the file is missing
   back: { src: "/back.png", w: 32, h: 32 }, // recolorable tile
-  slot: { src: "/slot.png", w: 32, h: 32 }, // empty decor slot marker
+  slot: { src: "/wood/slot.png", w: 32, h: 32 }, // empty decor slot marker
   floor: { src: "/floor.png", w: 64, h: 40 },
 } as const;
 
