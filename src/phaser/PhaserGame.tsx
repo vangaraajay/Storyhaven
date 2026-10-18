@@ -27,19 +27,40 @@ export default function PhaserGame({
   const parentRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
-  const [isCalibrated, setIsCalibrated] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [labels, setLabels] = useState<PadLabel[]>([]);
   const [prompt, setPrompt] = useState<PromptInfo | null>(null);
   const [box, setBox] = useState<CanvasBox>({ left: 0, top: 0, scale: 1 });
+  const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const resetFade = useCallback(() => {
+    if (fadeTimeoutRef.current) {
+      clearTimeout(fadeTimeoutRef.current);
+      fadeTimeoutRef.current = null;
+    }
+    setIsFadingOut(false);
+  }, []);
+
+  const startFadeOut = useCallback(() => {
+    setIsFadingOut(true);
+    if (fadeTimeoutRef.current) {
+      clearTimeout(fadeTimeoutRef.current);
+    }
+    // Safety auto-reset: ensures labels are never permanently hidden if navigation
+    // is delayed, cancelled, or user returns via browser cache
+    fadeTimeoutRef.current = setTimeout(() => {
+      setIsFadingOut(false);
+    }, 1500);
+  }, []);
 
   const measure = useCallback(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
     const canvas = wrap.querySelector("canvas");
-    if (!canvas || canvas.clientWidth === 0) return;
+    if (!canvas) return;
     const w = wrap.getBoundingClientRect();
     const c = canvas.getBoundingClientRect();
+    if (c.width <= 0) return;
     const left = Math.round(c.left - w.left);
     const top = Math.round(c.top - w.top);
     const scale = c.width / GAME_W;
@@ -55,8 +76,17 @@ export default function PhaserGame({
       }
       return { left, top, scale };
     });
-    setIsCalibrated(true);
   }, []);
+
+  // Reset fade and re-measure if page is restored from bfcache
+  useEffect(() => {
+    const handlePageShow = () => {
+      resetFade();
+      measure();
+    };
+    window.addEventListener("pageshow", handlePageShow);
+    return () => window.removeEventListener("pageshow", handlePageShow);
+  }, [resetFade, measure]);
 
   // Keep the overlay aligned with the (letterboxed, scaled) canvas.
   useEffect(() => {
@@ -94,10 +124,12 @@ export default function PhaserGame({
   useEffect(() => {
     if (ready) return;
     const timer = setTimeout(() => {
+      measure();
+      resetFade();
       setReady(true);
     }, 3000);
     return () => clearTimeout(timer);
-  }, [ready]);
+  }, [ready, measure, resetFade]);
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -147,7 +179,7 @@ export default function PhaserGame({
         },
         onPrompt: (pr) => setPrompt(pr),
         onFadeOut: () => {
-          setIsFadingOut(true);
+          startFadeOut();
         },
         onResize: () => {
           measure();
@@ -155,6 +187,7 @@ export default function PhaserGame({
         onReady: () => {
           if (!cancelled) {
             measure();
+            resetFade();
             setReady(true);
           }
         },
@@ -178,20 +211,23 @@ export default function PhaserGame({
 
     return () => {
       cancelled = true;
+      resetFade();
       game?.destroy(true);
     };
-  }, [router, isLoggedIn, needsProfile, displayName, avatarJson, measure]);
+  }, [router, isLoggedIn, needsProfile, displayName, avatarJson, measure, startFadeOut, resetFade]);
 
   return (
     <>
       <div ref={wrapRef} style={{ position: "relative", width: "100%", height: "100dvh" }}>
         <div ref={parentRef} className="phaser-root" />
-        <HavenOverlay
-          labels={labels}
-          prompt={prompt}
-          box={box}
-          visible={ready && isCalibrated && !isFadingOut}
-        />
+        {ready && (
+          <HavenOverlay
+            labels={labels}
+            prompt={prompt}
+            box={box}
+            fading={isFadingOut}
+          />
+        )}
       </div>
       {ready ? null : <LoadingScreen scene="haven" />}
     </>
