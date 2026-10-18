@@ -12,25 +12,25 @@ interface MediaBadgeProps {
 const BADGE_STYLES: Record<MediaType, { bg: string; text: string; border: string; icon: ReactNode }> = {
   book: {
     bg: "rgba(16, 185, 129, 0.12)",
-    text: "#6ee7b7",
+    text: "#3e5a2a",
     border: "rgba(16, 185, 129, 0.3)",
     icon: <Icon name="book" size={1} />,
   },
   movie: {
     bg: "rgba(244, 63, 94, 0.12)",
-    text: "#fda4af",
+    text: "#8f2f3e",
     border: "rgba(244, 63, 94, 0.3)",
     icon: <Icon name="film" size={1} />,
   },
   album: {
-    bg: "rgba(168, 85, 247, 0.12)",
-    text: "#d8b4fe",
-    border: "rgba(168, 85, 247, 0.3)",
+    bg: "rgba(232, 201, 160, 0.12)",
+    text: "#7a4a1e",
+    border: "rgba(232, 201, 160, 0.3)",
     icon: <Icon name="vinyl" size={1} />,
   },
   general: {
     bg: "rgba(217, 119, 6, 0.12)",
-    text: "#fde68a",
+    text: "#8a5a1e",
     border: "rgba(217, 119, 6, 0.3)",
     icon: "☕",
   },

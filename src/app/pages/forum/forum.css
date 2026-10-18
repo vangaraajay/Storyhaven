@@ -6,25 +6,25 @@
 
 :root {
   color-scheme: dark;
-  --forum-bg-base: #191724;
-  --forum-bg-surface: #232136;
-  --forum-bg-overlay: #2a273f;
-  --forum-bg-subtle: #1f1d2e;
-  --forum-bg-highlight: #3e2f42;
+  --forum-bg-base: #2b1d14;
+  --forum-bg-surface: #3a281c;
+  --forum-bg-overlay: #4a3426;
+  --forum-bg-subtle: #33231a;
+  --forum-bg-highlight: #5a4030;
 
-  --forum-text-primary: #e0def4;
-  --forum-text-secondary: #908caa;
-  --forum-text-muted: #6e6a86;
+  --forum-text-primary: #f3e6c8;
+  --forum-text-secondary: #c4a882;
+  --forum-text-muted: #9a7f5f;
 
   --forum-accent-gold: #f6c177;
-  --forum-accent-rose: #eb6f92;
-  --forum-accent-foam: #9ccfd8;
-  --forum-accent-iris: #c4a7e7;
-  --forum-accent-pine: #31748f;
+  --forum-accent-rose: #e08a5a;
+  --forum-accent-foam: #a9c98a;
+  --forum-accent-iris: #d9a0b0;
+  --forum-accent-pine: #5c7040;
 
-  --forum-border-subtle: rgba(235, 188, 186, 0.12);
-  --forum-border-default: rgba(235, 188, 186, 0.2);
-  --forum-border-hover: rgba(235, 188, 186, 0.35);
+  --forum-border-subtle: rgba(232, 201, 160, 0.12);
+  --forum-border-default: rgba(232, 201, 160, 0.2);
+  --forum-border-hover: rgba(232, 201, 160, 0.35);
 
   --forum-font-sans: var(--font-pixel), ui-monospace, monospace;
   --forum-font-mono: var(--font-pixel), ui-monospace, monospace;
@@ -166,7 +166,7 @@ main.forum-main {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: #e0def4 !important;
+  color: #f3e6c8 !important;
   font-family: var(--forum-font-mono);
   font-size: 0.775rem;
   font-weight: 600;
@@ -177,14 +177,14 @@ main.forum-main {
 .forum-btn-ghost:hover {
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(235, 188, 186, 0.4);
+  border-color: rgba(232, 201, 160, 0.4);
 }
 
 .forum-btn-danger {
   display: inline-flex;
   align-items: center;
   background: transparent;
-  color: #eb6f92 !important;
+  color: #e08a5a !important;
   border: none;
   font-family: var(--forum-font-mono);
   font-size: 0.75rem;
@@ -210,7 +210,7 @@ main.forum-main {
 }
 
 .forum-delete-error {
-  color: #eb6f92;
+  color: #e08a5a;
   font-size: 0.7rem;
   font-family: var(--forum-font-mono);
 }
@@ -234,7 +234,7 @@ main.forum-main {
   padding: 0.5rem 1rem;
   border: 1px solid transparent;
   background: transparent;
-  color: #c5c3ce;
+  color: #e6d5b0;
   cursor: pointer;
 }
 
@@ -252,8 +252,8 @@ main.forum-main {
 
 .forum-mode-btn.active-perbook {
   background: var(--forum-bg-overlay);
-  color: #a6e3ee !important;
-  border-color: rgba(156, 207, 216, 0.6);
+  color: #c8e0a8 !important;
+  border-color: rgba(169, 201, 138, 0.6);
   font-weight: 700;
 }
 
@@ -327,27 +327,27 @@ main.forum-main {
   font-family: var(--forum-font-mono);
   font-size: 0.75rem;
   font-weight: 600;
-  color: #e0def4;
+  color: #f3e6c8;
   cursor: pointer;
 }
 
 .forum-book-chip:hover {
-  border-color: rgba(235, 188, 186, 0.5);
+  border-color: rgba(232, 201, 160, 0.5);
   color: #ffffff;
-  background: #2a273f;
+  background: #4a3426;
 }
 
 .forum-book-chip.active {
   background: var(--forum-bg-highlight);
   border-color: var(--forum-accent-rose);
-  color: #ffb4cc !important;
+  color: #f2b8a0 !important;
   font-weight: 700;
 }
 
 /* Book Detail Header Banner */
 .forum-book-banner {
   background: var(--forum-bg-surface);
-  border: 1px solid rgba(156, 207, 216, 0.35);
+  border: 1px solid rgba(169, 201, 138, 0.35);
   padding: 1.25rem 1.5rem;
   margin-bottom: 1.5rem;
   display: flex;
@@ -445,7 +445,7 @@ main.forum-main {
   background: transparent;
   border: 1px solid transparent;
   padding: 0.45rem 0.85rem;
-  color: #c5c3ce;
+  color: #e6d5b0;
   font-weight: 600;
   cursor: pointer;
 }
@@ -479,26 +479,26 @@ main.forum-main {
   align-items: center;
   gap: 0.35rem;
   background: var(--forum-bg-base);
-  border: 1px solid rgba(235, 188, 186, 0.25);
+  border: 1px solid rgba(232, 201, 160, 0.25);
   padding: 0.35rem 0.8rem;
   font-family: var(--forum-font-mono);
   font-size: 0.775rem;
   font-weight: 600;
-  color: #c5c3ce;
+  color: #e6d5b0;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .forum-filter-chip:hover {
   color: #ffffff;
-  border-color: rgba(235, 111, 146, 0.5);
-  background: #2a273f;
+  border-color: rgba(224, 138, 90, 0.5);
+  background: #4a3426;
 }
 
 .forum-filter-chip.active {
   background: var(--forum-bg-highlight);
-  border-color: #eb6f92;
-  color: #ffb4cc !important;
+  border-color: #e08a5a;
+  color: #f2b8a0 !important;
   font-weight: 700;
 }
 
@@ -522,7 +522,7 @@ main.forum-main {
   width: 52px;
   flex-shrink: 0;
   background: var(--forum-bg-subtle);
-  border-right: 1px solid rgba(235, 188, 186, 0.08);
+  border-right: 1px solid rgba(232, 201, 160, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -553,7 +553,7 @@ main.forum-main {
   width: 22px;
   height: 22px;
   background: var(--forum-bg-overlay);
-  color: #ebbcba;
+  color: #e8c9a0;
   border: 1px solid var(--forum-border-default);
   display: inline-flex;
   align-items: center;
@@ -609,7 +609,7 @@ main.forum-main {
   align-items: center;
   gap: 0.4rem;
   padding: 0.35rem 0.65rem;
-  color: #c5c3ce;
+  color: #e6d5b0;
   text-decoration: none;
   font-weight: 600;
 }
@@ -646,7 +646,7 @@ main.forum-main {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #b0adbe;
+  color: #d2bd98;
 }
 
 .forum-vote-arrow:hover {
@@ -659,7 +659,7 @@ main.forum-main {
 }
 
 .forum-vote-arrow.down.voted {
-  color: #a6e3ee !important;
+  color: #c8e0a8 !important;
 }
 
 .forum-vote-score {
@@ -775,7 +775,7 @@ main.forum-main {
 }
 
 .forum-modal-close {
-  color: #e0def4;
+  color: #f3e6c8;
   font-size: 1.25rem;
   padding: 0.25rem 0.5rem;
   cursor: pointer;
@@ -795,7 +795,7 @@ main.forum-main {
   font-family: var(--forum-font-mono);
   font-size: 0.775rem;
   font-weight: 600;
-  color: #c5c3ce;
+  color: #e6d5b0;
   margin-bottom: 0.35rem;
 }
 
@@ -953,14 +953,14 @@ main.forum-main {
 .forum-book-banner {
   border-style: solid;
   border-width: 12px;
-  border-image: url(/frame.png) 6 stretch;
+  border-image: url(/wood/frame.png) 6 fill stretch;
   image-rendering: pixelated;
-  background: var(--forum-bg-surface);
+  background: #e8d3ae;
 }
 
 .forum-comment-card {
   border-width: 8px;
-  border-image: url(/frame.png) 6 stretch;
+  border-image: url(/wood/frame.png) 6 fill stretch;
 }
 
 .forum-input,

@@ -119,7 +119,7 @@ export default function CreateClient({
   const part: PartName | null = tab === "skin" ? null : tab;
 
   return (
-    <main className={styles.page} data-motion="full">
+    <main className={styles.page}>
       <header className={styles.header}>
         <PixelButton onClick={goBack} aria-label="Back">
           ← Back
@@ -148,6 +148,7 @@ export default function CreateClient({
           {tab === "skin" ? (
             <PixelRadioGrid
               label="Skin"
+              showNames={false}
               columns={columns}
               items={SWATCHES.skin}
               value={avatar.skin}

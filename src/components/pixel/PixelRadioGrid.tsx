@@ -34,6 +34,8 @@ export type PixelRadioGridProps = {
   /** Cell art (e.g. an <Avatar> thumbnail). */
   renderCell: (item: Item) => ReactNode;
   columns?: number;
+  /** Show the text under each cell (default true). aria-label always keeps the name. */
+  showNames?: boolean;
 };
 
 /** Radio group laid out as a grid; arrows move + select, Home/End jump. */
@@ -44,6 +46,7 @@ export function PixelRadioGrid({
   onChange,
   renderCell,
   columns = 4,
+  showNames = true,
 }: PixelRadioGridProps) {
   const { refs, onKeyDown } = useRoving(items.length, columns, (i) => onChange(items[i].id));
   const current = Math.max(0, items.findIndex((i) => i.id === value));
@@ -70,7 +73,7 @@ export function PixelRadioGrid({
           onKeyDown={(e) => onKeyDown(e, i)}
         >
           <span className={styles.cell}>{renderCell(item)}</span>
-          <span>{item.name}</span>
+          {showNames ? <span>{item.name}</span> : null}
         </button>
       ))}
     </div>

@@ -32,6 +32,9 @@ export type BookcaseProps = {
   /** Sits on the top plank. */
   avatar?: AvatarData | null;
   avatarLabel?: string;
+  /** From /pages/library?decorate=1&item=<key>: open in decorate mode with this item ready to place. */
+  initialDecorate?: boolean;
+  initialItem?: string;
 };
 
 /** Pixel scale by viewport width; the shelf then adds columns to span the full width. */
@@ -43,7 +46,7 @@ function scaleFor(width: number): number {
 function hashColor(text: string, theme: ShelfTheme): string {
   let h = 0;
   for (const ch of text) h = (h * 31 + ch.charCodeAt(0)) | 0;
-  const pal = [...THEME_PALETTES[theme], "#6fa9b5", "#c24e70", "#68995a", "#9c7cc8"];
+  const pal = [...THEME_PALETTES[theme], "#8aa86a", "#c24e70", "#68995a", "#d9a0b0"];
   return pal[Math.abs(h) % pal.length];
 }
 
@@ -83,15 +86,30 @@ function useCoverColor(url: string | null, name: string, theme: ShelfTheme): str
 
 function Media({ item, theme }: { item: MediaItem; theme: ShelfTheme }) {
   const color = useCoverColor(item.cover_url, item.name, theme);
+  const [failed, setFailed] = useState(false);
   const label = `${item.kind}: ${item.name}`;
+  const showCover = Boolean(item.cover_url) && !failed;
   return (
     <span
       className={`${styles.media} ${styles[item.kind]}`}
+      // Average color shows while the cover loads, or when there is no (working) cover.
       style={{ background: color }}
       title={item.name}
       role="img"
       aria-label={label}
-    />
+    >
+      {showCover ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.cover_url ?? undefined}
+          alt=""
+          className={styles.cover}
+          loading="lazy"
+          draggable={false}
+          onError={() => setFailed(true)}
+        />
+      ) : null}
+    </span>
   );
 }
 
@@ -114,14 +132,16 @@ function layout(items: MediaItem[], minRows: number, cols: number): Position[] {
   return out;
 }
 
-export default function Bookcase({ theme: initialTheme, items, placed: initialPlaced, unlocked, minRows = 3, avatar, avatarLabel }: BookcaseProps) {
+export default function Bookcase({ theme: initialTheme, items, placed: initialPlaced, unlocked, minRows = 3, avatar, avatarLabel, initialDecorate = false, initialItem }: BookcaseProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   // Integer pixel scale that fills the available width (2x to 6x).
   const [S, setS] = useState(2);
   const [cols, setCols] = useState(SLOTS_PER_ROW);
   const [theme, setTheme] = useState(initialTheme);
   const [placed, setPlaced] = useState(initialPlaced);
-  const [decorating, setDecorating] = useState(false);
+  const [decorating, setDecorating] = useState(initialDecorate);
+  // An unlocked item chosen from the chest: the next decor slot clicked receives it.
+  const [armed, setArmed] = useState<string | null>(initialItem && unlocked.includes(initialItem) ? initialItem : null);
   const [pickSlot, setPickSlot] = useState<number | null>(null);
   const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
   const [art, setArt] = useState<{ capL?: string; capR?: string; post?: string; back?: string; plank?: string }>({});
@@ -211,11 +231,12 @@ export default function Bookcase({ theme: initialTheme, items, placed: initialPl
   }
 
   return (
-    <div ref={hostRef} data-motion="full" className={`${styles.root} ${styles[`theme_${theme}`]} ${decorating ? styles.decorate : ""}`} style={rootStyle}>
+    <div ref={hostRef} className={`${styles.root} ${styles[`theme_${theme}`]} ${decorating ? styles.decorate : ""}`} style={rootStyle}>
       <div className={styles.toolbar}>
         <PixelButton pressed={decorating} aria-pressed={decorating} onClick={() => setDecorating((d) => !d)}>
           {decorating ? "Done decorating" : "Decorate"}
         </PixelButton>
+        {decorating && armed ? <span>Placing {armed.replace(/_/g, " ")}: pick a highlighted slot.</span> : null}
         {decorating ? (
           <PixelSwatchRow
             label="Shelf theme"
@@ -278,7 +299,14 @@ export default function Bookcase({ theme: initialTheme, items, placed: initialPl
                       type="button"
                       className={`${styles.slot} ${styles.decorSlot}`}
                       aria-label={key ? `Change decoration (${key.replace(/_/g, " ")})` : "Add a decoration"}
-                      onClick={() => setPickSlot(pos.slot)}
+                      onClick={() => {
+                        if (armed) {
+                          place(pos.slot, armed);
+                          setArmed(null);
+                        } else {
+                          setPickSlot(pos.slot);
+                        }
+                      }}
                     >
                       {img ?? (
                         // eslint-disable-next-line @next/next/no-img-element
@@ -299,9 +327,7 @@ export default function Bookcase({ theme: initialTheme, items, placed: initialPl
         ))}
       </div>
 
-      <div className={styles.floor} style={{ backgroundImage: `url(${SHELF_ART.floor.src})` }} aria-hidden>
-        <span className={styles.pouf} />
-      </div>
+      <div className={styles.floor} style={{ backgroundImage: `url(${SHELF_ART.floor.src})` }} aria-hidden></div>
 
       {pickSlot !== null ? (
         <div className={styles.pickerWrap} onClick={() => setPickSlot(null)}>

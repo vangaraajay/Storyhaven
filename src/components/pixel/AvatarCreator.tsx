@@ -110,7 +110,7 @@ export default function AvatarCreator({ name, defaultValue, onChange }: AvatarCr
   }
 
   return (
-    <div className={styles.root} data-motion="full">
+    <div className={styles.root}>
       {name ? <input type="hidden" name={name} value={JSON.stringify(avatar)} /> : null}
 
       <div className={styles.preview}>

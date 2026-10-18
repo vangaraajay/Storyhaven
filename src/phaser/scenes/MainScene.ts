@@ -13,6 +13,7 @@ export interface MainSceneData {
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
+  avatarFrames?: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement };
 }
 
 export class MainScene extends Phaser.Scene {
@@ -23,6 +24,7 @@ export class MainScene extends Phaser.Scene {
   private needsProfile = false;
   private displayName: string | null = null;
   private zones: LandmarkZone[] = [];
+  private avatarFrames?: MainSceneData["avatarFrames"];
 
   private activeZone: LandmarkZone | null = null;
   private timeInZone = 0;
@@ -46,6 +48,7 @@ export class MainScene extends Phaser.Scene {
     this.isLoggedIn = Boolean(data?.isLoggedIn);
     this.needsProfile = Boolean(data?.needsProfile);
     this.displayName = data?.displayName ?? null;
+    this.avatarFrames = data?.avatarFrames;
     this.zones = getActiveZones(this.needsProfile, this.displayName);
   }
 
@@ -95,7 +98,20 @@ export class MainScene extends Phaser.Scene {
       console.warn("Failed to restore player position from sessionStorage", err);
     }
 
-    this.player = new Player(this, spawnX, spawnY);
+    // Register the composed character as nearest-filtered textures for the player sprite.
+    let spriteKeys: { idle: string; walk_l: string; walk_r: string } | undefined;
+    if (this.avatarFrames) {
+      spriteKeys = { idle: "avatar-idle", walk_l: "avatar-walk-l", walk_r: "avatar-walk-r" };
+      const sources = { idle: this.avatarFrames.idle, walk_l: this.avatarFrames.walk_l, walk_r: this.avatarFrames.walk_r };
+      for (const frame of ["idle", "walk_l", "walk_r"] as const) {
+        const key = spriteKeys[frame];
+        if (this.textures.exists(key)) this.textures.remove(key);
+        const tex = this.textures.addCanvas(key, sources[frame]);
+        tex?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+      }
+    }
+
+    this.player = new Player(this, spawnX, spawnY, spriteKeys);
 
     // Smooth camera fade-in on entry / return to room
     this.cameras.main.fadeIn(180, 0, 0, 0);
@@ -117,7 +133,7 @@ export class MainScene extends Phaser.Scene {
         fontSize: "13px",
         color: COLORS.TEXT_MUTED,
         fontFamily: "monospace",
-        backgroundColor: "rgba(25, 23, 36, 0.7)",
+        backgroundColor: "rgba(43, 29, 20, 0.7)",
         padding: { x: 8, y: 4 },
       })
       .setOrigin(0.5)
@@ -288,7 +304,7 @@ export class MainScene extends Phaser.Scene {
   private createHUD(): void {
     this.hudPromptContainer = this.add.container(400, 560).setDepth(200).setVisible(false);
 
-    const bg = this.add.rectangle(0, 0, 360, 36, 0x191724, 0.92);
+    const bg = this.add.rectangle(0, 0, 360, 36, 0x2b1d14, 0.92);
     bg.setStrokeStyle(1.5, 0xebbcba, 0.9);
 
     this.hudPromptText = this.add

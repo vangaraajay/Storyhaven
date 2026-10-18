@@ -11,7 +11,10 @@ import CatalogSection from "./CatalogSection";
 import CreateLogForms from "./CreateLogForms";
 import LibraryEntries from "./LibraryEntries";
 
-async function LibraryContent() {
+type LibrarySearchParams = Promise<{ decorate?: string; item?: string }>;
+
+async function LibraryContent({ searchParams }: { searchParams: LibrarySearchParams }) {
+  const { decorate, item } = await searchParams;
   const session = await auth0.getSession();
   const user = session?.user;
 
@@ -46,7 +49,7 @@ async function LibraryContent() {
         <Link href="/create?returnTo=/pages/library">Edit character</Link>
       </p>
       {shelf ? (
-        <Bookcase theme={shelf.theme} items={media} placed={shelf.placed} unlocked={shelf.unlocked} avatar={profile.avatar ?? null} avatarLabel={profile.display_name ?? undefined} />
+        <Bookcase theme={shelf.theme} items={media} placed={shelf.placed} unlocked={shelf.unlocked} avatar={profile.avatar ?? null} avatarLabel={profile.display_name ?? undefined} initialDecorate={decorate === "1"} initialItem={item} />
       ) : null}
       <div className="library-body">
         {/* Friends / personal catalog with type filters, above the creation forms */}
@@ -65,7 +68,7 @@ async function LibraryContent() {
   );
 }
 
-export default function LibraryPage() {
+export default function LibraryPage({ searchParams }: { searchParams: LibrarySearchParams }) {
   return (
     <main className="library-main">
       <header className="library-header">
@@ -79,7 +82,7 @@ export default function LibraryPage() {
           </div>
         }
       >
-        <LibraryContent />
+        <LibraryContent searchParams={searchParams} />
       </Suspense>
     </main>
   );

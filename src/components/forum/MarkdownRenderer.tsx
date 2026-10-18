@@ -18,8 +18,8 @@ function SpoilerSpan({ text }: { text: string }) {
       }}
       title={revealed ? "Click to hide spoiler" : "Click to reveal spoiler"}
       style={{
-        backgroundColor: revealed ? "rgba(235, 111, 146, 0.15)" : "#3e2f42",
-        color: revealed ? "#eb6f92" : "transparent",
+        backgroundColor: revealed ? "rgba(224, 138, 90, 0.15)" : "#5a4030",
+        color: revealed ? "#e08a5a" : "transparent",
         filter: revealed ? "none" : "blur(4px)",
         userSelect: revealed ? "text" : "none",
         cursor: "pointer",
@@ -71,9 +71,9 @@ export default function MarkdownRenderer({ content, className = "" }: MarkdownRe
         <blockquote
           key={pIdx}
           style={{
-            borderLeft: "3px solid #ebbcba",
+            borderLeft: "3px solid #e8c9a0",
             paddingLeft: "0.75rem",
-            color: "#908caa",
+            color: "var(--forum-text-secondary)",
             fontStyle: "italic",
             margin: "0.5rem 0",
           }}
@@ -93,7 +93,7 @@ export default function MarkdownRenderer({ content, className = "" }: MarkdownRe
   const paragraphs = content.split("\n\n");
 
   return (
-    <div className={`text-sm ${className}`} style={{ color: "#e0def4" }}>
+    <div className={`text-sm ${className}`} style={{ color: "var(--forum-text-primary)" }}>
       {paragraphs.map((p, idx) => renderParagraph(p, idx))}
     </div>
   );

@@ -7,16 +7,16 @@ export const SPRITE_SCALE = 2;
 export type Sprite = { src: string; slice: number };
 
 export const SPRITES = {
-  frame: { src: "/frame.png", slice: 6 },
-  toast: { src: "/toast.png", slice: 6 },
-  button: { src: "/Button.png", slice: 4 },
-  buttonHover: { src: "/button_hover.png", slice: 4 },
-  buttonPressed: { src: "/button_pressed.png", slice: 4 },
-  input: { src: "/input_field.png", slice: 4 },
-  inputFocus: { src: "/input_field_focus.png", slice: 4 },
-  tab: { src: "/tab.png", slice: 4 },
-  tabActive: { src: "/tab_active.png", slice: 4 },
-  badge: { src: "/badge.png", slice: 3 },
+  frame: { src: "/wood/frame.png", slice: 6 },
+  toast: { src: "/wood/toast.png", slice: 6 },
+  button: { src: "/wood/Button.png", slice: 4 },
+  buttonHover: { src: "/wood/button_hover.png", slice: 4 },
+  buttonPressed: { src: "/wood/button_pressed.png", slice: 4 },
+  input: { src: "/wood/input_field.png", slice: 4 },
+  inputFocus: { src: "/wood/input_field_focus.png", slice: 4 },
+  tab: { src: "/wood/tab.png", slice: 4 },
+  tabActive: { src: "/wood/tab_active.png", slice: 4 },
+  badge: { src: "/wood/badge.png", slice: 3 },
   // No divider art yet: PixelDivider falls back to a 2px ink line.
   divider: null,
 } as const satisfies Record<string, Sprite | null>;
@@ -115,7 +115,6 @@ export const SHELF_ART = {
   plank: { src: "/plank.png" }, // tiled horizontally; CSS fallback if the file is missing
   back: { src: "/back.png", w: 32, h: 32 }, // recolorable tile
   slot: { src: "/slot.png", w: 32, h: 32 }, // empty decor slot marker
-  pouf: null, // no art yet
   floor: { src: "/floor.png", w: 64, h: 40 },
 } as const;
 

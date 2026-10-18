@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { Avatar } from "@/lib/avatar/types";
 
 const PhaserGame = dynamic(() => import("@/phaser/PhaserGame"), {
   ssr: false,
@@ -15,6 +16,7 @@ export type HavenAuth = {
   isLoggedIn: boolean;
   displayName: string | null;
   needsProfile: boolean;
+  avatar: Avatar | null;
 };
 
 /** Home mounts Phaser only. Auth Desk handles logout / finish profile in-world. */
@@ -24,6 +26,7 @@ export default function HavenHome({ auth }: { auth: HavenAuth }) {
       isLoggedIn={auth.isLoggedIn}
       needsProfile={auth.needsProfile}
       displayName={auth.displayName}
+      avatar={auth.avatar}
     />
   );
 }

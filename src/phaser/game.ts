@@ -6,6 +6,8 @@ export interface GameOptions {
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
+  /** Composed 32x32 character frames for the player sprite. */
+  avatarFrames?: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement };
 }
 
 export function createGame(parent: HTMLElement, options?: GameOptions) {
@@ -16,6 +18,7 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
         isLoggedIn: options?.isLoggedIn,
         needsProfile: options?.needsProfile,
         displayName: options?.displayName ?? null,
+        avatarFrames: options?.avatarFrames,
       });
     }
   }
@@ -23,7 +26,7 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
   return new Phaser.Game({
     type: Phaser.AUTO,
     parent,
-    backgroundColor: "#191724",
+    backgroundColor: "#2b1d14",
     pixelArt: true,
     scale: {
       mode: Phaser.Scale.FIT,

@@ -33,7 +33,7 @@ export default function BookDetailHeader({
               onClick={onClearBook}
               style={{
                 fontSize: "0.75rem",
-                color: "#ffd185",
+                color: "#8a5a1e",
                 fontWeight: 600,
                 fontFamily: "var(--forum-font-mono)",
                 textDecoration: "underline",

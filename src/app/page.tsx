@@ -21,6 +21,7 @@ async function Haven() {
     isLoggedIn: true,
     displayName: user.name ?? user.nickname ?? user.email ?? null,
     needsProfile: true,
+    avatar: null,
   };
 
   let needsAvatar = false;
@@ -28,6 +29,7 @@ async function Haven() {
     const profile = await getProfile(user);
     auth.needsProfile = !isProfileComplete(profile);
     auth.displayName = profile?.display_name ?? auth.displayName;
+    auth.avatar = profile?.avatar ?? null;
     needsAvatar = !auth.needsProfile && !profile?.avatar;
   } catch {
     // Profile fetch failed; still allow the haven once logged in.

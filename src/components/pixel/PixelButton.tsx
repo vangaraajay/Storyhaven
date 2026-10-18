@@ -24,6 +24,7 @@ export default function PixelButton({
       type={type}
       className={cx(
         styles.root,
+        "px-mo-button",
         !vars && styles.fallback,
         pressed && styles.pressed,
         className,

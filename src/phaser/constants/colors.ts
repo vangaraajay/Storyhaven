@@ -1,27 +1,27 @@
 export const COLORS = {
   // World
-  FLOOR: 0x232136,
-  FLOOR_GRID: 0x2a273f,
+  FLOOR: 0x3a281c,
+  FLOOR_GRID: 0x4a3426,
 
   // Furniture
   BOOKSHELF: 0x5c3d2e,
   BOOKSHELF_TOP: 0x7a523e,
   DESK: 0x6e4b3b,
-  BOARD: 0x47384e,
-  TABLE: 0x533e5c,
-  CHAIR: 0x3e3146,
+  BOARD: 0x6b4a32,
+  TABLE: 0x7a5238,
+  CHAIR: 0x5a3d2a,
 
   // Sensor zones (semi-transparent overlays for debug/hints)
-  SENSOR_PAD: 0x56949f,
-  SENSOR_ACTIVE: 0x9ccfd8,
+  SENSOR_PAD: 0x8aa86a,
+  SENSOR_ACTIVE: 0xa9c98a,
 
   // Player
   PLAYER: 0xf6c177,
-  PLAYER_DETAILS: 0xeb6f92,
+  PLAYER_DETAILS: 0xe08a5a,
 
   // UI
-  TEXT: "#e0def4",
-  TEXT_MUTED: "#908caa",
-  TEXT_BG: "#191724",
-  PROMPT_BORDER: "#ebbcba",
+  TEXT: "#f3e6c8",
+  TEXT_MUTED: "#c4a882",
+  TEXT_BG: "#2b1d14",
+  PROMPT_BORDER: "#e8c9a0",
 } as const;

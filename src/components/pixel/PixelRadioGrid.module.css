@@ -22,12 +22,12 @@
 .cell {
   display: inline-flex;
   border: 2px solid #2a202a;
-  background: #3e3a55;
+  background: #5a4030;
 }
 
 .item[aria-checked="true"] .cell {
   border-color: #f3e9d2;
-  background: #6e6a86;
+  background: #9a7f5f;
   outline: 2px solid #f3e9d2;
 }
 

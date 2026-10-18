@@ -79,7 +79,7 @@ export default function CommentItem({
           <PixelButton
             type="button"
             onClick={() => setIsCollapsed((prev) => !prev)}
-            style={{ fontSize: "0.775rem", color: "#c5c3ce", fontWeight: 700, cursor: "pointer", padding: "0 0.35rem" }}
+            style={{ fontSize: "0.775rem", color: "var(--forum-text-secondary)", fontWeight: 700, cursor: "pointer", padding: "0 0.35rem" }}
           >
             {isCollapsed ? "[+]" : "[−]"}
           </PixelButton>

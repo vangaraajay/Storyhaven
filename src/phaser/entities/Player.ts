@@ -20,6 +20,9 @@ export class Player {
   private readonly eyeLeft: Phaser.GameObjects.Rectangle;
   private readonly eyeRight: Phaser.GameObjects.Rectangle;
   private readonly bounds: Phaser.Geom.Rectangle;
+  private sprite: Phaser.GameObjects.Image | null = null;
+  private spriteKeys: { idle: string; walk_l: string; walk_r: string } | null = null;
+  private walkClock = 0;
 
   private readonly keys: {
     W: Phaser.Input.Keyboard.Key;
@@ -32,7 +35,12 @@ export class Player {
     RIGHT: Phaser.Input.Keyboard.Key;
   };
 
-  constructor(scene: Phaser.Scene, startX: number, startY: number) {
+  constructor(
+    scene: Phaser.Scene,
+    startX: number,
+    startY: number,
+    sprite?: { idle: string; walk_l: string; walk_r: string },
+  ) {
     this.scene = scene;
     this.x = startX;
     this.y = startY;
@@ -66,6 +74,19 @@ export class Player {
     this.container.add(this.eyeLeft);
     this.container.add(this.eyeRight);
 
+    // Character sprite replaces the placeholder rectangle. Art is 32x32 at 2x with feet on the hitbox bottom.
+    if (sprite) {
+      this.sprite = scene.add
+        .image(0, this.height / 2 + 2, sprite.idle)
+        .setOrigin(0.5, 1)
+        .setScale(2);
+      this.spriteKeys = sprite;
+      this.container.add(this.sprite);
+      this.bodyRect.setVisible(false);
+      this.eyeLeft.setVisible(false);
+      this.eyeRight.setVisible(false);
+    }
+
     // Setup input keys safely
     const keyboard = scene.input.keyboard;
     if (keyboard) {
@@ -97,10 +118,24 @@ export class Player {
     this.vy = 0;
   }
 
+  /** Idle frame when still; alternates the two walk frames (every 160 ms) while moving. */
+  private animate(delta: number, moving: boolean): void {
+    if (!this.sprite || !this.spriteKeys) return;
+    if (!moving) {
+      this.walkClock = 0;
+      this.sprite.setTexture(this.spriteKeys.idle);
+      return;
+    }
+    this.walkClock += delta;
+    const step = Math.floor(this.walkClock / 160) % 2;
+    this.sprite.setTexture(step === 0 ? this.spriteKeys.walk_l : this.spriteKeys.walk_r);
+  }
+
   public update(delta: number, solidColliders: Phaser.Geom.Rectangle[]): void {
     if (this.isMovementLocked) {
       this.vx = 0;
       this.vy = 0;
+      this.animate(delta, false);
       return;
     }
 
@@ -172,8 +207,10 @@ export class Player {
 
     // 6. Early exit if stationary and no input
     if (this.vx === 0 && this.vy === 0 && targetVx === 0 && targetVy === 0) {
+      this.animate(delta, false);
       return;
     }
+    this.animate(delta, true);
 
     const stepX = this.vx * dt;
     const stepY = this.vy * dt;

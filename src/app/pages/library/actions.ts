@@ -38,6 +38,16 @@ function logEvents(formData: FormData, created: boolean): UnlockEvent[] {
   return events;
 }
 
+/** Fills a missing cover_url by searching for the title, so a quick save still gets its cover. */
+async function withCover<T extends { name: string; cover_url?: string | null }>(
+  type: MediaType,
+  input: T,
+): Promise<T> {
+  if (input.cover_url && input.cover_url.trim()) return input;
+  const found = await searchMediaCover(type, input.name);
+  return found ? { ...input, cover_url: found } : input;
+}
+
 async function requireProfileId(): Promise<string> {
   const session = await auth0.getSession();
   const user = session?.user;
@@ -108,7 +118,7 @@ export async function createBookAction(
   const profileId = await requireProfileId();
 
   try {
-    await createBookLog(profileId, bookInputFromForm(formData));
+    await createBookLog(profileId, await withCover("book", bookInputFromForm(formData)));
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to save book.",
@@ -127,7 +137,7 @@ export async function createMovieAction(
   const profileId = await requireProfileId();
 
   try {
-    await createMovieLog(profileId, movieInputFromForm(formData));
+    await createMovieLog(profileId, await withCover("movie", movieInputFromForm(formData)));
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to save movie.",
@@ -146,7 +156,7 @@ export async function createAlbumAction(
   const profileId = await requireProfileId();
 
   try {
-    await createAlbumLog(profileId, albumInputFromForm(formData));
+    await createAlbumLog(profileId, await withCover("album", albumInputFromForm(formData)));
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to save album.",
@@ -166,7 +176,7 @@ export async function updateBookAction(
   const id = String(formData.get("id") ?? "");
 
   try {
-    await updateBookLog(profileId, id, bookInputFromForm(formData));
+    await updateBookLog(profileId, id, await withCover("book", bookInputFromForm(formData)));
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to update book.",
@@ -186,7 +196,7 @@ export async function updateMovieAction(
   const id = String(formData.get("id") ?? "");
 
   try {
-    await updateMovieLog(profileId, id, movieInputFromForm(formData));
+    await updateMovieLog(profileId, id, await withCover("movie", movieInputFromForm(formData)));
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to update movie.",
@@ -206,7 +216,7 @@ export async function updateAlbumAction(
   const id = String(formData.get("id") ?? "");
 
   try {
-    await updateAlbumLog(profileId, id, albumInputFromForm(formData));
+    await updateAlbumLog(profileId, id, await withCover("album", albumInputFromForm(formData)));
   } catch (error) {
     return {
       error: error instanceof Error ? error.message : "Failed to update album.",

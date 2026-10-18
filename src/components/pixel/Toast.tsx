@@ -24,7 +24,7 @@ export default function Toast({
   return (
     <div
       role={role}
-      className={cx(styles.root, !vars && styles.fallback, className)}
+      className={cx(styles.root, "px-mo-toast", !vars && styles.fallback, className)}
       style={vars ?? undefined}
     >
       <span className={styles.message}>{children}</span>

@@ -94,7 +94,7 @@ export default function VoteControls({
         disabled={isPending}
         onClick={(e) => handleVote(1, e)}
         aria-label="Upvote"
-        className={`forum-vote-arrow up ${isUpvoted ? "voted" : ""}`}
+        className={`forum-vote-arrow px-mo-vote up ${isUpvoted ? "voted" : ""}`}
       >
         <Icon name="upvote" size={1} />
       </button>
@@ -112,7 +112,7 @@ export default function VoteControls({
         disabled={isPending}
         onClick={(e) => handleVote(-1, e)}
         aria-label="Downvote"
-        className={`forum-vote-arrow down ${isDownvoted ? "voted" : ""}`}
+        className={`forum-vote-arrow px-mo-vote down ${isDownvoted ? "voted" : ""}`}
       >
         <Icon name="upvote" size={1} className="px-flip-y" />
       </button>

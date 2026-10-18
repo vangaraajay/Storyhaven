@@ -31,7 +31,7 @@ export function buildAuthDeskZone(
       sensorRect: AUTH_DESK_RECT,
       route: "/pages/profile",
       prompt: "🪪 Auth Desk — Create your profile",
-      color: 0xc4a7e7,
+      color: 0xd9a0b0,
     };
   }
 
@@ -42,7 +42,7 @@ export function buildAuthDeskZone(
     sensorRect: AUTH_DESK_RECT,
     route: "/auth/logout",
     prompt: `🚪 Auth Desk — Log out (${who})`,
-    color: 0xc4a7e7,
+    color: 0xd9a0b0,
   };
 }
 
@@ -58,7 +58,7 @@ export const LANDMARK_ZONES: LandmarkZone[] = [
     },
     route: "/pages/library",
     prompt: "📖 Library — Log books, movies & albums",
-    color: 0x9ccfd8,
+    color: 0xa9c98a,
   },
   {
     id: "daily-story",
@@ -84,7 +84,7 @@ export const LANDMARK_ZONES: LandmarkZone[] = [
     },
     route: "/pages/forum",
     prompt: "💬 Forums — Community Discussions",
-    color: 0xeb6f92,
+    color: 0xe08a5a,
   },
   {
     id: "friends",
@@ -97,7 +97,7 @@ export const LANDMARK_ZONES: LandmarkZone[] = [
     },
     route: "/pages/friends",
     prompt: "👥 Friends — Match & chat",
-    color: 0x31748f,
+    color: 0x5c7040,
   },
 ];
 

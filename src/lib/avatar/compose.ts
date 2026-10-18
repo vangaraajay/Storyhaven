@@ -113,3 +113,19 @@ export function composeAvatar(
   }
   return p;
 }
+
+/** All layers drawn in order into one 32x32 canvas (for textures). */
+export async function composeFlat(avatar: Avatar, frame: AvatarFrame = {}): Promise<HTMLCanvasElement> {
+  const layers = await composeAvatar(avatar, frame);
+  const canvas = document.createElement("canvas");
+  canvas.width = AVATAR_SIZE;
+  canvas.height = AVATAR_SIZE;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("2D canvas unavailable");
+  ctx.imageSmoothingEnabled = false;
+  for (const name of LAYER_ORDER) {
+    const layer = layers[name];
+    if (layer) ctx.drawImage(layer, 0, 0);
+  }
+  return canvas;
+}

@@ -1,4 +1,5 @@
 .root {
+  color-scheme: light; /* native date/select icons on cream */
   --ink: #2a202a;
   --cream: #f3e9d2;
   box-sizing: border-box;

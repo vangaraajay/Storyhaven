@@ -16,7 +16,7 @@ export default function PixelFrame({
   const vars = spriteVars("frame");
   return (
     <Tag
-      className={cx(styles.root, !vars && styles.fallback, className)}
+      className={cx(styles.root, "px-mo-frame", !vars && styles.fallback, className)}
       style={{ ...vars, ...style }}
       {...rest}
     />

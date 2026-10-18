@@ -16,6 +16,7 @@ import Icon from "@/components/pixel/Icon";
 import StarRating from "@/components/pixel/StarRating";
 import PixelButton from "@/components/pixel/PixelButton";
 import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
+import HeartToggle from "@/components/pixel/HeartToggle";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -28,12 +29,12 @@ function BookEntry({ book }: { book: BookLog }) {
 
   if (!editing) {
     return (
-      <li className="px-panel">
+      <li>
         <p>
           {book.name}
           {book.rating != null ? ` — ${book.rating}/5` : ""}
           {book.status ? ` — ${book.status}` : ""}
-          {book.liked ? " — liked" : ""}
+          {book.liked ? " — ♥" : ""}
         </p>
         <Link
           href={`/pages/forum?mode=per_book&book=${encodeURIComponent(book.name)}`}
@@ -53,7 +54,7 @@ function BookEntry({ book }: { book: BookLog }) {
   }
 
   return (
-    <li className="px-panel">
+    <li>
       <form action={action}>
         <input type="hidden" name="id" value={book.id} />
         <div>
@@ -122,15 +123,7 @@ function BookEntry({ book }: { book: BookLog }) {
           />
         </div>
         <div>
-          <label htmlFor={`book-liked-${book.id}`}>
-            <input
-              id={`book-liked-${book.id}`}
-              name="liked"
-              type="checkbox"
-              defaultChecked={book.liked}
-            />{" "}
-            Like
-          </label>
+          <HeartToggle name="liked" defaultChecked={book.liked} label="Favorite" />
         </div>
         <div>
           <label htmlFor={`book-review-${book.id}`}>Review / notes</label>
@@ -162,7 +155,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
 
   if (!editing) {
     return (
-      <li className="px-panel">
+      <li>
         <p>
           {movie.name}
           {movie.rating != null ? ` — ${movie.rating}/5` : ""}
@@ -181,7 +174,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
   }
 
   return (
-    <li className="px-panel">
+    <li>
       <form action={action}>
         <input type="hidden" name="id" value={movie.id} />
         <div>
@@ -227,15 +220,7 @@ function MovieEntry({ movie }: { movie: MovieLog }) {
           />
         </div>
         <div>
-          <label htmlFor={`movie-liked-${movie.id}`}>
-            <input
-              id={`movie-liked-${movie.id}`}
-              name="liked"
-              type="checkbox"
-              defaultChecked={movie.liked}
-            />{" "}
-            Like
-          </label>
+          <HeartToggle name="liked" defaultChecked={movie.liked} label="Favorite" />
         </div>
         <div>
           <label htmlFor={`movie-review-${movie.id}`}>Review / notes</label>
@@ -267,7 +252,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
 
   if (!editing) {
     return (
-      <li className="px-panel">
+      <li>
         <p>
           {album.name}
           {album.rating != null ? ` — ${album.rating}/5` : ""}
@@ -285,7 +270,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
   }
 
   return (
-    <li className="px-panel">
+    <li>
       <form action={action}>
         <input type="hidden" name="id" value={album.id} />
         <div>
@@ -321,15 +306,7 @@ function AlbumEntry({ album }: { album: AlbumLog }) {
           />
         </div>
         <div>
-          <label htmlFor={`album-liked-${album.id}`}>
-            <input
-              id={`album-liked-${album.id}`}
-              name="liked"
-              type="checkbox"
-              defaultChecked={album.liked}
-            />{" "}
-            Like
-          </label>
+          <HeartToggle name="liked" defaultChecked={album.liked} label="Favorite" />
         </div>
         <div>
           <label htmlFor={`album-review-${album.id}`}>Review / notes</label>
@@ -364,7 +341,7 @@ export default function LibraryEntries({ books, movies, albums }: LibraryEntries
       <section>
         <h2>Your Book Entries</h2>
         {books.length === 0 ? (
-          <p style={{ color: "#908caa", fontSize: "0.9rem" }}>No books logged yet.</p>
+          <p style={{ color: "#c4a882", fontSize: "0.9rem" }}>No books logged yet.</p>
         ) : (
           <ul>
             {books.map((book) => (
@@ -377,7 +354,7 @@ export default function LibraryEntries({ books, movies, albums }: LibraryEntries
       <section>
         <h2>Your Movie Entries</h2>
         {movies.length === 0 ? (
-          <p style={{ color: "#908caa", fontSize: "0.9rem" }}>No movies logged yet.</p>
+          <p style={{ color: "#c4a882", fontSize: "0.9rem" }}>No movies logged yet.</p>
         ) : (
           <ul>
             {movies.map((movie) => (
@@ -390,7 +367,7 @@ export default function LibraryEntries({ books, movies, albums }: LibraryEntries
       <section>
         <h2>Your Album Entries</h2>
         {albums.length === 0 ? (
-          <p style={{ color: "#908caa", fontSize: "0.9rem" }}>No albums logged yet.</p>
+          <p style={{ color: "#c4a882", fontSize: "0.9rem" }}>No albums logged yet.</p>
         ) : (
           <ul>
             {albums.map((album) => (

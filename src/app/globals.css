@@ -5,12 +5,12 @@
   color-scheme: dark;
   --ink: #2a202a;
   --cream: #f3e9d2;
-  --bg: #191724;
-  --bg-surface: #232136;
-  --text: #e0def4;
-  --text-muted: #908caa;
-  --link: #9ccfd8;
-  --accent-rose: #eb6f92;
+  --bg: #2b1d14;
+  --bg-surface: #3a281c;
+  --text: #f3e6c8;
+  --text-muted: #c4a882;
+  --link: #a9c98a;
+  --accent-rose: #e08a5a;
 }
 
 * {
@@ -60,9 +60,9 @@ h3 {
 .px-panel {
   border-style: solid;
   border-width: 12px;
-  border-image: url(/frame.png) 6 stretch;
+  border-image: url(/wood/frame.png) 6 fill stretch;
   image-rendering: pixelated;
-  background: var(--bg-surface);
+  background: #e8d3ae;
   color: var(--text);
   padding: 4px;
 }
@@ -280,8 +280,8 @@ main.library-main {
   padding: 0.75rem;
   border-style: solid;
   border-width: 12px;
-  border-image: url(/frame.png) 6 stretch;
-  background: var(--bg-surface);
+  border-image: url(/wood/frame.png) 6 fill stretch;
+  background: #e8d3ae;
   image-rendering: pixelated;
 }
 
@@ -333,13 +333,13 @@ main.library-main {
 .friends-bubble {
   max-width: 80%;
   padding: 0.5rem 0.75rem;
-  background: #3e3a55;
+  background: #5a4030;
   border: 2px solid var(--ink);
 }
 
 .friends-bubble.mine {
   align-self: flex-end;
-  background: #31748f;
+  background: #5c7040;
 }
 
 .friends-bubble.theirs {
@@ -380,4 +380,164 @@ main.library-main {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+}
+
+
+/* ---------- UI motion ----------
+   Only html[data-motion="full"] (set by MotionProvider; reduced-motion users get "reduced").
+   Rules: steps()/step-end timing, whole-pixel moves, no transitions. */
+@keyframes px-pop {
+  from { transform: translateY(6px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes px-slide-up {
+  from { transform: translateY(24px); }
+  to { transform: translateY(0); }
+}
+
+@keyframes px-hop {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes px-dot {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes px-shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  50% { transform: translateX(0); }
+  75% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+html[data-motion="full"] .px-mo-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+html[data-motion="full"] .px-mo-button:active:not(:disabled) {
+  transform: translateY(2px);
+}
+
+html[data-motion="full"] .px-mo-frame {
+  animation: px-pop 150ms steps(3, end) 1;
+}
+
+html[data-motion="full"] .px-mo-toast {
+  animation: px-slide-up 250ms steps(4, end) 1;
+}
+
+html[data-motion="full"] .px-mo-tab[aria-selected="true"] {
+  transform: translateY(-2px);
+}
+
+html[data-motion="full"] .px-mo-star[aria-checked="true"] img {
+  animation: px-hop 200ms steps(2, end) 1;
+}
+
+html[data-motion="full"] .px-mo-vote.voted {
+  animation: px-hop 200ms steps(2, end) 1;
+}
+
+html[data-motion="full"] .px-mo-dots span {
+  animation: px-dot 900ms steps(2, end) infinite;
+}
+
+html[data-motion="full"] .px-mo-dots span:nth-child(2) {
+  animation-delay: 300ms;
+}
+
+html[data-motion="full"] .px-mo-dots span:nth-child(3) {
+  animation-delay: 600ms;
+}
+
+html[data-motion="full"] .px-mo-shake {
+  animation: px-shake 200ms steps(1, end) 3;
+}
+
+/* Typing dots: static (all dots visible) when motion is reduced. */
+.px-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 12px;
+}
+
+.px-dots span {
+  width: 4px;
+  height: 4px;
+  background: currentColor;
+}
+
+/* ---------- Cream panels ----------
+   Every panel's center stays cream (frame sprite 9-slice with `fill`), so text inside is dark ink.
+   Variables are remapped for the forum/friends/catalog styles that read them; the :is() rule
+   catches hardcoded light text colors. Chat bubbles keep their own dark fill + light text. */
+.px-panel,
+.forum-post-card,
+.forum-empty-card,
+.forum-modal-box,
+.forum-comment-card,
+.forum-book-selector,
+.forum-book-banner,
+.friends-candidate,
+.catalog-card,
+.catalog-modal,
+.catalog-empty {
+  --text: #2a202a;
+  --text-muted: #5c4a38;
+  --link: #3e5a2a;
+  --accent-rose: #a8452a;
+  --bg-surface: #e8d3ae;
+  --forum-text-primary: #2a202a;
+  --forum-text-secondary: #4a3a2a;
+  --forum-text-muted: #6b5640;
+  --forum-bg-base: #f4e8ce;
+  --forum-bg-surface: #e8d3ae;
+  --forum-bg-overlay: #dcc59a;
+  --forum-bg-subtle: #efdfbd;
+  --forum-bg-highlight: #d4b887;
+  --forum-accent-gold: #8a5a1e;
+  --forum-accent-rose: #a8452a;
+  --forum-accent-foam: #3e5a2a;
+  --forum-accent-iris: #7a4a5a;
+  --forum-accent-pine: #3e5a2a;
+  --forum-border-subtle: rgba(42, 32, 42, 0.2);
+  --forum-border-default: rgba(42, 32, 42, 0.35);
+  --forum-border-hover: rgba(42, 32, 42, 0.55);
+  color: #2a202a;
+}
+
+:is(.px-panel, .forum-post-card, .forum-empty-card, .forum-modal-box, .forum-comment-card, .forum-book-selector, .forum-book-banner, .friends-candidate, .catalog-card, .catalog-modal, .catalog-empty)
+  :is(h1, h2, h3, h4, p, span, div, li, label, strong, em, small, time, blockquote, code, legend, a):not(.friends-bubble, .friends-bubble *, .catalog-card-badge, .catalog-card-rating-badge, [class*="Badge"], .forum-badge, .px-mo-toast, .px-mo-toast *) {
+  color: #2a202a;
+}
+
+:is(.px-panel, .forum-post-card, .forum-comment-card, .forum-book-selector, .forum-book-banner, .catalog-modal)
+  a {
+  color: #3e5a2a;
+  text-decoration: underline;
+}
+
+.catalog-card-badge,
+.catalog-card-rating-badge {
+  color: #f3e6c8;
+}
+
+.catalog-card-rating-badge {
+  color: #f6c177;
+}
+
+.friends-bubble,
+.friends-bubble * {
+  color: #f3e6c8;
+}
+
+html[data-motion="full"] .px-mo-heart {
+  animation: px-hop 200ms steps(2, end) 1;
 }

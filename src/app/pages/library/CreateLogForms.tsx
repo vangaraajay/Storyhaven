@@ -12,6 +12,7 @@ import StarRating from "@/components/pixel/StarRating";
 import PixelButton from "@/components/pixel/PixelButton";
 import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
 import UnlockToast from "@/components/pixel/UnlockToast";
+import HeartToggle from "@/components/pixel/HeartToggle";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -202,10 +203,7 @@ export default function CreateLogForms() {
               <PixelInput id="book-finished" name="finished_date" type="date" />
             </div>
             <div className="form-checkbox-col">
-              <label htmlFor="book-liked" className="form-checkbox-label">
-                <input id="book-liked" name="liked" type="checkbox" />
-                <span>❤️ Favorite</span>
-              </label>
+              <HeartToggle key={bookResetSignal} name="liked" label="Favorite" />
             </div>
           </div>
 
@@ -292,10 +290,7 @@ export default function CreateLogForms() {
           </div>
 
           <div className="form-checkbox-col">
-            <label htmlFor="movie-liked" className="form-checkbox-label">
-              <input id="movie-liked" name="liked" type="checkbox" />
-              <span>❤️ Favorite</span>
-            </label>
+            <HeartToggle key={movieResetSignal} name="liked" label="Favorite" />
           </div>
 
           <div>
@@ -375,10 +370,7 @@ export default function CreateLogForms() {
               <PixelInput id="album-finished" name="finished_date" type="date" />
             </div>
             <div className="form-checkbox-col">
-              <label htmlFor="album-liked" className="form-checkbox-label">
-                <input id="album-liked" name="liked" type="checkbox" />
-                <span>❤️ Favorite</span>
-              </label>
+              <HeartToggle key={albumResetSignal} name="liked" label="Favorite" />
             </div>
           </div>
 

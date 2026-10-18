@@ -47,6 +47,7 @@ export default function PixelTabs<T extends string>({
             onClick={() => onChange(tab.id)}
             className={cx(
               styles.tab,
+              "px-mo-tab",
               !vars && styles.fallback,
               isActive && styles.active,
             )}

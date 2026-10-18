@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Pixelify_Sans } from "next/font/google";
+import MotionProvider from "@/components/pixel/MotionProvider";
 import "./globals.css";
 
 const pixelFont = Pixelify_Sans({
@@ -22,7 +23,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={pixelFont.variable} style={{ colorScheme: "dark" }} suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <MotionProvider />
+        {children}
+      </body>
     </html>
   );
 }

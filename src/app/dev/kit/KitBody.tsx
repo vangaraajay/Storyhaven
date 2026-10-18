@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Badge from "@/components/pixel/Badge";
 import PixelButton from "@/components/pixel/PixelButton";
 import PixelDivider from "@/components/pixel/PixelDivider";
@@ -13,6 +14,8 @@ import AvatarCreator from "@/components/pixel/AvatarCreator";
 import Icon from "@/components/pixel/Icon";
 import StarRating from "@/components/pixel/StarRating";
 import Toast from "@/components/pixel/Toast";
+import TypingDots from "@/components/pixel/TypingDots";
+import UnlockChest from "@/components/pixel/UnlockChest";
 import { ICONS, SPRITES, type IconName } from "@/lib/sprites";
 import TabsDemo from "./TabsDemo";
 
@@ -31,6 +34,7 @@ function Row({ title, children }: { title: string; children: React.ReactNode }) 
 
 /** Client body: demos pass event handlers. */
 export default function KitBody() {
+  const [chest, setChest] = useState<string[] | undefined>();
 
   const missing = Object.entries(SPRITES)
     .filter(([, v]) => v === null)
@@ -40,13 +44,13 @@ export default function KitBody() {
     <main
       style={{
         padding: "1.5rem",
-        background: "#191724",
-        color: "#e0def4",
+        background: "#2b1d14",
+        color: "#f3e6c8",
         minHeight: "100dvh",
       }}
     >
       <h1 style={{ marginBottom: "0.25rem" }}>Pixel kit</h1>
-      <p style={{ marginBottom: "1.5rem", color: "#908caa" }}>
+      <p style={{ marginBottom: "1.5rem", color: "#c4a882" }}>
         Sprites at {2}x. Missing sprites (using fallback): {missing.join(", ") || "none"}.
       </p>
 
@@ -112,7 +116,7 @@ export default function KitBody() {
         <StarRating defaultValue={4} disabled aria-label="Disabled" />
       </Row>
 
-      <div data-motion="full">
+      <div>
         <Row title="Avatar: scale 1-4 / head crop / walk frame / blinking (data-motion=full)">
           <Avatar scale={1} />
           <Avatar scale={2} />
@@ -124,6 +128,12 @@ export default function KitBody() {
           <AvatarCreator />
         </Row>
       </div>
+
+      <Row title="TypingDots / UnlockChest (queue of 2)">
+        <TypingDots />
+        <PixelButton onClick={() => setChest(["candle", "cactus"])}>Open chest queue</PixelButton>
+        <UnlockChest keys={chest} onDone={() => setChest(undefined)} />
+      </Row>
 
       <Row title="PixelDivider">
         <div style={{ width: 320 }}>

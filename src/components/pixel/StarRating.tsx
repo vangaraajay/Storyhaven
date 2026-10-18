@@ -107,7 +107,7 @@ export default function StarRating({
           aria-label={`Rate ${n} of 5`}
           tabIndex={n === tabStop ? 0 : -1}
           disabled={disabled}
-          className={styles.star}
+          className={cx(styles.star, "px-mo-star")}
           onClick={() => commit(shown === n ? null : n)}
         >
           <Icon name={n <= shown ? "star_full" : "star_empty"} size={2} />
