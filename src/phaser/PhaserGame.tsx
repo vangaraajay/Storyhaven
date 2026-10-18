@@ -56,6 +56,17 @@ export default function PhaserGame({
 
   const avatarJson = JSON.stringify(avatar ?? DEFAULT_AVATAR);
 
+  // Failsafe: Ensure the loading screen is never stuck indefinitely.
+  // If Phaser asset preloading or font loading takes more than 3 seconds,
+  // dismiss the loading screen automatically.
+  useEffect(() => {
+    if (ready) return;
+    const timer = setTimeout(() => {
+      setReady(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [ready]);
+
   useEffect(() => {
     const parent = parentRef.current;
     if (!parent) {
@@ -70,18 +81,29 @@ export default function PhaserGame({
       let avatarFrames: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement } | undefined;
       try {
         const a = JSON.parse(avatarJson) as Avatar;
-        const [idle, walk_l, walk_r] = await Promise.all([
+        const composePromise = Promise.all([
           composeFlat(a, { body: "idle" }),
           composeFlat(a, { body: "walk_l" }),
           composeFlat(a, { body: "walk_r" }),
+        ]);
+        const [idle, walk_l, walk_r] = await Promise.race([
+          composePromise,
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("Avatar composition timed out")), 1500),
+          ),
         ]);
         avatarFrames = { idle, walk_l, walk_r };
       } catch (err) {
         console.warn("Avatar failed to compose; using the placeholder player", err);
       }
-      // Wait for the pixel font so Phaser text measures correctly.
+
+      // Wait for the pixel font so Phaser text measures correctly, capped at 400ms
+      // so pending or lazy webfonts never stall haven entry.
       try {
-        await document.fonts?.ready;
+        await Promise.race([
+          document.fonts?.ready ?? Promise.resolve(),
+          new Promise((resolve) => setTimeout(resolve, 400)),
+        ]);
       } catch {}
       if (cancelled) return;
 
