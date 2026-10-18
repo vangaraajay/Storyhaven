@@ -5,7 +5,15 @@ import {
   generateBotId,
   generateRandomBotAvatar,
 } from "@/lib/bots";
-import { callGemma, extractAndParseJson } from "@/lib/gemini";
+import {
+  callGemma,
+  extractAndParseJson,
+  parseDelimitedComments,
+  parseDelimitedPosts,
+  parseDelimitedUsernames,
+  type RawCommentItem,
+  type RawPostItem,
+} from "@/lib/gemini";
 import type { Avatar } from "@/lib/avatar/types";
 
 export type BotGenerationConfig = {
@@ -42,19 +50,6 @@ type BotProfile = {
   display_name: string | null;
   avatar?: Avatar | null;
   avatar_url?: string | null;
-};
-
-type RawPostItem = {
-  title: string;
-  content: string;
-  media_type: "book" | "movie" | "album" | "general";
-  media_title?: string | null;
-};
-
-type RawCommentItem = {
-  temp_id: string;
-  content: string;
-  parent_temp_id: string | null;
 };
 
 function randomInt(min: number, max: number): number {
@@ -189,19 +184,20 @@ export async function generateBotCommunity(
     });
 
     const usernamePrompt = `You are a naming engine for "Storyhaven", a cozy retro fantasy pixel library where readers, cinephiles, and vinyl listeners gather.
-Generate a JSON array of exactly ${delta} unique, creative, evocative usernames.
+Generate exactly ${delta} unique, creative, evocative usernames.
 Guidelines:
 - Themes: antique books, cozy tea, botany, vinyl grooves, cinema, constellations, quiet rain, late-night reading, candlelit shelves.
-- Formats: CamelCase or kebab-case or single words (e.g., "MossyFolio", "StarlightSpine", "TeaAndTolkien", "CinephileCat", "NocturneReader", "VelvetLoom", "QuillAndFern", "Hearthbound").
-- Output MUST be a valid JSON array of strings only with no markdown formatting:
-["Username1", "Username2", ...]`;
+- Formats: CamelCase or single evocative words (e.g., MossyFolio, StarlightSpine, TeaAndTolkien, CinephileCat, NocturneReader, VelvetLoom, QuillAndFern, Hearthbound).
+
+Format: Output ONLY the usernames separated by a pipe character (|). Do not include bullet points, numbering, or preamble.
+Example:
+MossyFolio | StarlightSpine | TeaAndTolkien | CinephileCat`;
 
     const rawNames = await callGemma(usernamePrompt, {
       reason: `Generating ${delta} bot usernames for identity pool`,
-      jsonMode: true,
       temperature: 0.85,
     });
-    const parsedNames = extractAndParseJson<string[]>(rawNames);
+    const parsedNames = parseDelimitedUsernames(rawNames, delta);
 
     // Filter and sanitize names
     const namesToInsert = parsedNames
@@ -252,30 +248,38 @@ Guidelines:
   });
 
   const postsPrompt = `You are community members posting on Storyhaven's cozy library forum.
-Generate a JSON array of exactly ${targetPostCount} realistic, authentic forum posts.
-Categories to cover: 'book', 'movie', 'album', 'general'.
-Mix insightful book reflections, warm film thoughts, vinyl record discussions, and cozy library musings.
-Requirements:
-- "title": max 200 chars, thoughtful or intriguing.
-- "content": post body in markdown (1 to 4 cozy paragraphs).
-- "media_type": one of "book", "movie", "album", "general".
-- "media_title": optional exact title of work if media_type is book/movie/album, or null.
-Output MUST be a valid JSON array of objects:
-[
-  {
-    "title": "A quiet reflection on Piranesi",
-    "content": "There is something about the halls of Piranesi that resonates with the quiet rhythm of our library...",
-    "media_type": "book",
-    "media_title": "Piranesi"
-  }
-]`;
+Generate exactly ${targetPostCount} authentic, engaging forum posts across categories: book, movie, album, general.
+Mix book reflections, film thoughts, vinyl record discussions, and cozy library musings.
+
+Format each post using the exact delimiter "===POST===" like this:
+
+===POST===
+TITLE: Post title here
+MEDIA_TYPE: book
+MEDIA_TITLE: Title of Work
+CONTENT:
+Post body in markdown (1 to 3 cozy paragraphs).
+
+===POST===
+TITLE: Rainy Day in the Reading Lounge
+MEDIA_TYPE: general
+MEDIA_TITLE: None
+CONTENT:
+The sound of rain against the stained glass windows makes the library feel like an enclave away from time...`;
 
   const rawPosts = await callGemma(postsPrompt, {
     reason: `Batch generating ${targetPostCount} forum posts across categories`,
-    jsonMode: true,
     temperature: 0.8,
   });
-  const parsedPosts = extractAndParseJson<RawPostItem[]>(rawPosts);
+
+  let parsedPosts = parseDelimitedPosts(rawPosts);
+  if (parsedPosts.length === 0) {
+    try {
+      parsedPosts = extractAndParseJson<RawPostItem[]>(rawPosts);
+    } catch {
+      // keep fallback
+    }
+  }
 
   type InsertedPost = {
     id: string;
@@ -384,26 +388,24 @@ Output MUST be a valid JSON array of objects:
   const commentsPrompt = `Here is a list of ${insertedPosts.length} forum posts from Storyhaven:
 ${postsSummary}
 
-Generate a total of approximately ${targetCommentCount} thoughtful comments and conversational replies distributed across these posts.
-Requirements:
-1. Include both initial reactions (top-level) and conversational replies (subcomments).
-2. Target approximately ${Math.round(nestedRatio * 100)}% of comments to be replies to preceding comments on the same post.
-3. Assign each comment a temporary ID ("temp_id": "c1", "c2", ...). For top-level comments, "parent_temp_id": null. For subcomments, set "parent_temp_id" to the "temp_id" of the preceding comment it is responding to.
-Output MUST be a JSON object mapping each post index ("post_0", "post_1", ...) to its array of comments:
-{
-  "post_0": [
-    {
-      "temp_id": "c1",
-      "content": "This captured the atmosphere so beautifully.",
-      "parent_temp_id": null
-    },
-    {
-      "temp_id": "c2",
-      "content": "I completely agree with c1! Especially the part about the quiet halls.",
-      "parent_temp_id": "c1"
-    }
-  ]
-}`;
+Generate approximately ${targetCommentCount} thoughtful comments and replies distributed across these posts.
+Target approximately ${Math.round(nestedRatio * 100)}% of comments to be replies to preceding comments on the same post.
+
+Format each comment using the exact delimiter "===COMMENT===" like this:
+
+===COMMENT===
+POST_INDEX: 0
+TEMP_ID: c1
+PARENT_TEMP_ID: NONE
+CONTENT:
+First reaction or observation...
+
+===COMMENT===
+POST_INDEX: 0
+TEMP_ID: c2
+PARENT_TEMP_ID: c1
+CONTENT:
+Reply responding specifically to c1...`;
 
   let commentsInserted = 0;
   const insertedCommentIds: Array<{ id: string; profile_id: string }> = [];
@@ -411,11 +413,18 @@ Output MUST be a JSON object mapping each post index ("post_0", "post_1", ...) t
   try {
     const rawComments = await callGemma(commentsPrompt, {
       reason: `Batch generating ${targetCommentCount} threaded comments & replies`,
-      jsonMode: true,
       temperature: 0.8,
     });
-    const parsedCommentsMap =
-      extractAndParseJson<Record<string, RawCommentItem[]>>(rawComments);
+
+    let parsedCommentsMap = parseDelimitedComments(rawComments);
+    if (Object.keys(parsedCommentsMap).length === 0) {
+      try {
+        parsedCommentsMap =
+          extractAndParseJson<Record<string, RawCommentItem[]>>(rawComments);
+      } catch {
+        // fallback
+      }
+    }
 
     for (let pIdx = 0; pIdx < insertedPosts.length; pIdx++) {
       const post = insertedPosts[pIdx];
