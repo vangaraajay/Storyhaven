@@ -450,28 +450,28 @@ Executing this single query instantly and atomically removes:
 
 ## 10. Step-by-Step Implementation Roadmap
 
-- [ ] **Step 1: Bot Identity Module (`src/lib/bots.ts`)**
+- [x] **Step 1: Bot Identity Module (`src/lib/bots.ts`)**
   - Implement `isBotId()`, `generateBotId()`, `isBotProfile()`, `generateRandomBotAvatar()`.
-- [ ] **Step 2: Matching Exclusion Filters**
+- [x] **Step 2: Matching Exclusion Filters**
   - Update `src/lib/match-drop.ts` (`runMatchDrop`, `getActiveProfiles`, `getAdminMatchStatus`) to filter out `isBotId`.
   - Update `src/lib/friends.ts` (`listMatchCandidates`) to exclude `isBotId`.
-- [ ] **Step 3: Friend Request Auto-Accept & Automated DM Replies**
+- [x] **Step 3: Friend Request Auto-Accept & Automated DM Replies**
   - In `src/lib/friends.ts` (`sendFriendRequest`), check `if (isBotId(addresseeId))`: automatically set `status: 'accepted'`.
   - In `src/lib/friends.ts` (`sendDmMessage`), check `if (isBotId(recipientId))`: generate automated in-character DM reply via Gemma 4 and save to `dm_messages`.
-- [ ] **Step 4: Gemini Client (`src/lib/gemini.ts`)**
+- [x] **Step 4: Gemini Client (`src/lib/gemini.ts`)**
   - Implement API caller targeting `gemma-4-31b-it` using `process.env.GEMINI_API_KEY`.
   - Implement robust `extractAndParseJson()` with markdown code fence stripping.
   - Implement `generateDmReply()` for conversational one-on-one replies.
-- [ ] **Step 5: Bot Generation Service (`src/lib/bot-generator.ts`)**
+- [x] **Step 5: Bot Generation Service (`src/lib/bot-generator.ts`)**
   - Implement pool query & delta username generation.
   - Implement post generation & automatic media catalog log population (`book_logs`, `movie_logs`, `album_logs`).
   - Implement topological comment insertion (Tier 0 root comments -> Tier 1 subcomments).
   - Implement vote simulation with de-duplication.
   - Implement purge function.
-- [ ] **Step 6: Admin Route Handler & Actions (`src/app/api/admin/bots/generate/route.ts` & `src/app/admin/bot-actions.ts`)**
+- [x] **Step 6: Admin Route Handler & Actions (`src/app/api/admin/bots/generate/route.ts` & `src/app/admin/bot-actions.ts`)**
   - Implement SSE streaming route for live generation progress.
   - Implement `purgeBotsAction` and `getBotStatsAction`.
-- [ ] **Step 7: Admin UI Panel (`src/app/admin/BotGeneratorPanel.tsx` & `page.tsx`)**
+- [x] **Step 7: Admin UI Panel (`src/app/admin/BotGeneratorPanel.tsx` & `page.tsx`)**
   - Build configuration controls, live progress stepper, stats banner, and purge modal.
 - [ ] **Step 8: End-to-End Verification**
   - Run test generation with 4 bots, 2 posts, 6 comments.

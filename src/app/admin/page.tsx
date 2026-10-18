@@ -9,6 +9,7 @@ import {
   verifyAdminPasswordAction,
 } from "./actions";
 import type { AdminStatus, MatchDropResult } from "@/lib/match-drop";
+import BotGeneratorPanel from "./BotGeneratorPanel";
 import "./admin.css";
 import Icon from "@/components/pixel/Icon";
 import PixelLink from "@/components/pixel/PixelLink";
@@ -250,6 +251,9 @@ export default function AdminPage() {
             <span className="admin-stat-subtext">Eligible for pairings</span>
           </div>
         </section>
+
+        {/* Autonomous Bot Community Generator Panel */}
+        <BotGeneratorPanel adminPassword={password} />
 
         {/* Controls Toolbar */}
         <section className="admin-panel">

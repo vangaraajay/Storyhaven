@@ -1,0 +1,147 @@
+/**
+ * Storyhaven Gemini API Integration
+ * Strictly uses Google's gemma-4-31b-it model via the Gemini API.
+ */
+
+const GEMMA_MODEL = "gemma-4-31b-it";
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMMA_MODEL}:generateContent`;
+
+export type ChatHistoryItem = {
+  sender: string;
+  body: string;
+};
+
+/**
+ * Extracts and parses JSON from LLM output, handling markdown code fences
+ * and introductory/trailing conversational prose.
+ */
+export function extractAndParseJson<T>(rawText: string): T {
+  let cleaned = rawText.trim();
+
+  // Strip markdown code fences (e.g. ```json ... ```)
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  }
+
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch {
+    // Fallback: extract substring between first [ / { and last ] / }
+    const firstBracket = cleaned.search(/[\[\{]/);
+    const lastBracket = Math.max(cleaned.lastIndexOf("]"), cleaned.lastIndexOf("}"));
+
+    if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+      const candidate = cleaned.slice(firstBracket, lastBracket + 1);
+      return JSON.parse(candidate) as T;
+    }
+
+    throw new Error(
+      `Failed to parse JSON response from Gemma 4: ${rawText.slice(0, 200)}...`,
+    );
+  }
+}
+
+/**
+ * Executes a prompt against Google's gemma-4-31b-it model via the Gemini API.
+ */
+export async function callGemma(
+  prompt: string,
+  options?: {
+    systemInstruction?: string;
+    jsonMode?: boolean;
+    temperature?: number;
+  },
+): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) {
+    throw new Error(
+      "GEMINI_API_KEY is not defined in environment variables. Please add it to your .env file.",
+    );
+  }
+
+  const endpoint = `${GEMINI_API_URL}?key=${encodeURIComponent(apiKey)}`;
+
+  const bodyPayload: Record<string, unknown> = {
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: prompt }],
+      },
+    ],
+    generationConfig: {
+      temperature: options?.temperature ?? 0.7,
+      ...(options?.jsonMode ? { responseMimeType: "application/json" } : {}),
+    },
+  };
+
+  if (options?.systemInstruction) {
+    bodyPayload.systemInstruction = {
+      parts: [{ text: options.systemInstruction }],
+    };
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bodyPayload),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    let parsedMessage = errorBody;
+    try {
+      const parsed = JSON.parse(errorBody);
+      if (parsed.error?.message) {
+        parsedMessage = parsed.error.message;
+      }
+    } catch {
+      // Keep raw body
+    }
+    throw new Error(
+      `Gemma API request failed (${response.status} ${response.statusText}): ${parsedMessage}`,
+    );
+  }
+
+  const data = await response.json();
+  const textOutput =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+
+  if (!textOutput) {
+    throw new Error("Gemma API returned an empty completion.");
+  }
+
+  return textOutput;
+}
+
+/**
+ * Generates an automated in-character DM response from a bot friend.
+ */
+export async function generateDmReply(
+  botName: string,
+  botFavoriteMedia: string,
+  userMessage: string,
+  history: ChatHistoryItem[] = [],
+): Promise<string> {
+  let historySnippet = "";
+  if (history.length > 0) {
+    historySnippet =
+      "Recent conversation:\n" +
+      history
+        .slice(-5)
+        .map((h) => `${h.sender}: ${h.body}`)
+        .join("\n") +
+      "\n\n";
+  }
+
+  const prompt = `You are ${botName}, a quiet and thoughtful patron of Storyhaven, a cozy retro pixel library.
+You love ${botFavoriteMedia || "antique books, vintage cinema, and warm tea"} and enjoy discussing books, films, and music with fellow haven members.
+${historySnippet}A fellow reader in your haven circle just sent you this message:
+"${userMessage}"
+
+Reply warmly and conversationally in 1 to 3 cozy sentences. Maintain your persona. Do not break character. Do not use hashtags or emojis in excess. Output only the message reply itself.`;
+
+  const raw = await callGemma(prompt, { temperature: 0.8 });
+  return raw.trim().replace(/^["']|["']$/g, "");
+}

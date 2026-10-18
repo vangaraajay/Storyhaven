@@ -1,5 +1,6 @@
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import type { PublicProfile } from "@/lib/friends";
+import { isBotId } from "@/lib/bots";
 
 export type SharedMediaType = "book" | "movie" | "album";
 
@@ -152,6 +153,10 @@ export type HavenMatchState =
 export async function getHavenMatchStateForProfile(
   profileId: string,
 ): Promise<HavenMatchState> {
+  if (isBotId(profileId)) {
+    return { mode: "waiting", match: null };
+  }
+
   const supabase = createServiceSupabaseClient();
 
   // Find the latest round with active matches
@@ -450,7 +455,8 @@ export async function getAdminMatchStatus(): Promise<AdminStatus> {
   ]);
 
   const matches = (matchesRes.data ?? []) as PeriodicMatchRow[];
-  const activeLoggersCount = loggersRes.data?.length ?? 0;
+  const activeLoggersCount =
+    loggersRes.data?.filter((p) => !isBotId(p.id)).length ?? 0;
 
   const latestRoundId = matches[0]?.round_id ?? null;
   const latestRoundCreatedAt = matches[0]?.created_at ?? null;
@@ -538,7 +544,9 @@ export async function runMatchDrop(
       supabase.from("friendships").select("requester_id, addressee_id, status"),
     ]);
 
-  const profiles = (profilesRes.data ?? []) as PublicProfile[];
+  const profiles = ((profilesRes.data ?? []) as PublicProfile[]).filter(
+    (p) => !isBotId(p.id),
+  );
   const profileMap = new Map<string, PublicProfile>(profiles.map((p) => [p.id, p]));
 
   // Build media title sets for each user
@@ -583,9 +591,9 @@ export async function runMatchDrop(
     u.albums.set(key, { liked: Boolean(a.liked) });
   }
 
-  // Active user IDs (who have at least 1 logged media item)
-  const activeUserIds = Array.from(userMediaMap.keys()).filter((id) =>
-    profileMap.has(id),
+  // Active user IDs (who have at least 1 logged media item and are not bots)
+  const activeUserIds = Array.from(userMediaMap.keys()).filter(
+    (id) => profileMap.has(id) && !isBotId(id),
   );
 
   if (activeUserIds.length < 2) {
@@ -639,6 +647,9 @@ export async function runMatchDrop(
     for (let j = i + 1; j < activeUserIds.length; j++) {
       const u1 = activeUserIds[i];
       const u2 = activeUserIds[j];
+      if (isBotId(u1) || isBotId(u2)) {
+        continue;
+      }
       const key = getPairKey(u1, u2);
 
       // STRICT EXCLUSION: If users are already mutual accepted friends, never pair them
@@ -714,11 +725,11 @@ export async function runMatchDrop(
 
   for (let i = 0; i < unpairedUsers.length; i++) {
     const u1 = unpairedUsers[i];
-    if (pairedUserIds.has(u1)) continue;
+    if (pairedUserIds.has(u1) || isBotId(u1)) continue;
 
     for (let j = i + 1; j < unpairedUsers.length; j++) {
       const u2 = unpairedUsers[j];
-      if (pairedUserIds.has(u2)) continue;
+      if (pairedUserIds.has(u2) || isBotId(u2)) continue;
 
       const key = getPairKey(u1, u2);
       if (acceptedFriendsPairs.has(key)) {
@@ -753,7 +764,9 @@ export async function runMatchDrop(
 
   // Leftover unpaired users become Haven Scouts for this cycle
   let leftoverProfile: PublicProfile | null = null;
-  const remainingScouts = activeUserIds.filter((id) => !pairedUserIds.has(id));
+  const remainingScouts = activeUserIds.filter(
+    (id) => !pairedUserIds.has(id) && !isBotId(id),
+  );
   if (remainingScouts.length > 0) {
     leftoverProfile = profileMap.get(remainingScouts[0]) ?? null;
   }
