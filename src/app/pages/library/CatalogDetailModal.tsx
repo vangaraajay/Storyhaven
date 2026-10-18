@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useTransition } from "react";
-import Link from "next/link";
 import type { CatalogItem } from "@/lib/catalog";
 import {
   deleteBookAction,
@@ -10,6 +9,7 @@ import {
 } from "./actions";
 import PixelButton from "@/components/pixel/PixelButton";
 import Icon from "@/components/pixel/Icon";
+import PixelLink from "@/components/pixel/PixelLink";
 
 type CatalogDetailModalProps = {
   item: CatalogItem | null;
@@ -115,7 +115,7 @@ export default function CatalogDetailModal({
           onClick={onClose}
           aria-label="Close details"
         >
-          ✕
+          <Icon name="close" size={1} />
         </PixelButton>
 
         <div className="catalog-modal-body">
@@ -152,7 +152,7 @@ export default function CatalogDetailModal({
               <div className="catalog-meta-item">
                 <span className="catalog-meta-label">Logged By</span>
                 <span className="catalog-meta-value">
-                  👤 {item.owner.isSelf ? "You" : item.owner.display_name}
+                  <Icon name="user" size={1} /> {item.owner.isSelf ? "You" : item.owner.display_name}
                 </span>
               </div>
 
@@ -216,13 +216,12 @@ export default function CatalogDetailModal({
 
             <div className="catalog-modal-actions">
               {item.type === "book" && (
-                <Link
+                <PixelLink
                   href={`/pages/forum?mode=per_book&book=${encodeURIComponent(item.name)}`}
-                  className="catalog-modal-btn-forum"
                   onClick={onClose}
                 >
-                  <Icon name="chat" size={1} /> Discuss in Forum →
-                </Link>
+                  <Icon name="chat" size={1} /> Discuss in Forum <Icon name="arrow_right" size={1} />
+                </PixelLink>
               )}
 
               {item.owner.isSelf && (
@@ -232,7 +231,7 @@ export default function CatalogDetailModal({
                   onClick={handleDelete}
                   disabled={isDeleting}
                 >
-                  {isDeleting ? "Deleting…" : "🗑️ Delete Entry"}
+                  {isDeleting ? "Deleting…" : <><Icon name="trash" size={1} /> Delete Entry</>}
                 </PixelButton>
               )}
             </div>

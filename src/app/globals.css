@@ -524,12 +524,12 @@ html[data-motion="full"] .px-mo-shake {
 }
 
 :is(.px-panel, .forum-post-card, .forum-empty-card, .forum-modal-box, .forum-comment-card, .forum-book-selector, .forum-book-banner, .friends-candidate, .catalog-card, .catalog-modal, .catalog-empty, .match-drop-card)
-  :is(h1, h2, h3, h4, p, span, div, li, label, strong, em, small, time, blockquote, code, legend, a):not(.friends-bubble, .friends-bubble *, .catalog-card-badge, .catalog-card-rating-badge, [class*="Badge"], .forum-badge, .px-mo-toast, .px-mo-toast *) {
+  :is(h1, h2, h3, h4, p, span, div, li, label, strong, em, small, time, blockquote, code, legend, a):not(.friends-bubble, .friends-bubble *, .catalog-card-badge, .catalog-card-rating-badge, [class*="Badge"], [class*="PixelButton"], [class*="PixelButton"] *, .forum-badge, .px-mo-toast, .px-mo-toast *) {
   color: #2a202a;
 }
 
 :is(.px-panel, .forum-post-card, .forum-comment-card, .forum-book-selector, .forum-book-banner, .catalog-modal)
-  a {
+  a:not([class*="PixelButton"]) {
   color: #3e5a2a;
   text-decoration: underline;
 }

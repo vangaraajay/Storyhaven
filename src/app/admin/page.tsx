@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   clearActiveMatchesAction,
   dryRunMatchDropAction,
@@ -11,6 +10,8 @@ import {
 } from "./actions";
 import type { AdminStatus, MatchDropResult } from "@/lib/match-drop";
 import "./admin.css";
+import Icon from "@/components/pixel/Icon";
+import PixelLink from "@/components/pixel/PixelLink";
 
 export default function AdminPage() {
   const [password, setPassword] = useState("");
@@ -149,7 +150,7 @@ export default function AdminPage() {
       <main className="admin-viewport">
         <div className="admin-gate-container">
           <div className="admin-gate-card">
-            <div className="admin-gate-icon">🏰</div>
+            <div className="admin-gate-icon"><Icon name="door" size={2} /></div>
             <h1 className="admin-gate-title">Storyhaven Gatekeeper</h1>
             <p className="admin-gate-subtitle">
               Enter the master admin password to access the Haven Match
@@ -177,13 +178,13 @@ export default function AdminPage() {
                 disabled={loading}
                 className="admin-gate-button"
               >
-                {loading ? "Authenticating…" : "Enter Console 🔑"}
+                {loading ? "Authenticating…" : <>Enter Console <Icon name="lock" size={1} /></>}
               </button>
             </form>
 
-            <Link href="/pages/friends" className="admin-gate-back">
-              ← Return to Friends Lounge
-            </Link>
+            <PixelLink href="/pages/friends">
+              <Icon name="arrow_left" size={1} /> Return to Friends Lounge
+            </PixelLink>
           </div>
         </div>
       </main>
@@ -194,11 +195,11 @@ export default function AdminPage() {
     <main className="admin-viewport">
       <header className="admin-header">
         <div className="admin-branding">
-          <span>🏰</span>
+          <span><Icon name="door" size={1} /></span>
           <h1>Storyhaven Admin Console</h1>
         </div>
         <button onClick={handleLock} className="admin-lock-btn">
-          🔒 Lock Console
+          <Icon name="lock" size={1} /> Lock Console
         </button>
       </header>
 
@@ -266,21 +267,21 @@ export default function AdminPage() {
               disabled={loading}
               className="admin-btn admin-btn-primary"
             >
-              ⚡ Trigger Global Match Drop
+              Trigger Global Match Drop
             </button>
             <button
               onClick={handleDryRun}
               disabled={loading}
               className="admin-btn admin-btn-secondary"
             >
-              🧪 Simulate / Dry-Run
+              Simulate / Dry-Run
             </button>
             <button
               onClick={handleClearMatches}
               disabled={loading}
               className="admin-btn admin-btn-danger"
             >
-              🗑️ Clear Active Matches
+              <Icon name="trash" size={1} /> Clear Active Matches
             </button>
           </div>
         </section>
@@ -289,11 +290,11 @@ export default function AdminPage() {
         {simulation && (
           <section className="admin-panel">
             <h2 className="admin-panel-title">
-              🧪 Projected Pairings Simulation ({simulation.pairsCreated} Pairs)
+              Projected Pairings Simulation ({simulation.pairsCreated} Pairs)
             </h2>
             {simulation.leftoverProfile && (
               <p style={{ color: "#f6c177", fontSize: "0.85rem", margin: 0 }}>
-                🏕️ Leftover Haven Scout:{" "}
+                <Icon name="user" size={1} /> Leftover Haven Scout:{" "}
                 <strong>{simulation.leftoverProfile.display_name}</strong> (first
                 in line for next cycle).
               </p>
@@ -328,11 +329,13 @@ export default function AdminPage() {
                         {p.sharedTitles.length > 0 ? (
                           p.sharedTitles.map((st, sIdx) => (
                             <span key={sIdx} className="admin-media-pill">
-                              {st.type === "book"
-                                ? "📚"
-                                : st.type === "movie"
-                                  ? "🎬"
-                                  : "🎵"}{" "}
+                              {st.type === "book" ? (
+                      <Icon name="book" size={1} />
+                    ) : st.type === "movie" ? (
+                      <Icon name="film" size={1} />
+                    ) : (
+                      <Icon name="vinyl" size={1} />
+                    )}{" "}
                               {st.name}
                             </span>
                           ))
@@ -370,7 +373,7 @@ export default function AdminPage() {
                   {status.recentMatches.map((m) => {
                     const optInLabel =
                       m.userAConnected && m.userBConnected
-                        ? "Both Connected ✨"
+                        ? "Both Connected"
                         : m.userAConnected
                           ? `Waiting on ${m.userB.display_name}`
                           : m.userBConnected
@@ -400,11 +403,13 @@ export default function AdminPage() {
                           {m.sharedTitles.length > 0 ? (
                             m.sharedTitles.map((st, idx) => (
                               <span key={idx} className="admin-media-pill">
-                                {st.type === "book"
-                                  ? "📚"
-                                  : st.type === "movie"
-                                    ? "🎬"
-                                    : "🎵"}{" "}
+                                {st.type === "book" ? (
+                      <Icon name="book" size={1} />
+                    ) : st.type === "movie" ? (
+                      <Icon name="film" size={1} />
+                    ) : (
+                      <Icon name="vinyl" size={1} />
+                    )}{" "}
                                 {st.name}
                               </span>
                             ))

@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { cx, spriteVars } from "@/lib/sprites";
 import styles from "./Toast.module.css";
+import Icon from "@/components/pixel/Icon";
 
 export type ToastProps = {
   children: ReactNode;
@@ -30,7 +31,7 @@ export default function Toast({
       <span className={styles.message}>{children}</span>
       {onClose ? (
         <button type="button" className={styles.close} onClick={onClose} aria-label="Dismiss">
-          ×
+          <Icon name="close" size={1} />
         </button>
       ) : null}
     </div>

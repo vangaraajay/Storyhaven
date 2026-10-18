@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useActionState, useState } from "react";
 import type { AlbumLog, BookLog, MovieLog } from "@/lib/logging";
 import {
@@ -17,6 +16,7 @@ import StarRating from "@/components/pixel/StarRating";
 import PixelButton from "@/components/pixel/PixelButton";
 import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
 import HeartToggle from "@/components/pixel/HeartToggle";
+import PixelLink from "@/components/pixel/PixelLink";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -36,12 +36,12 @@ function BookEntry({ book }: { book: BookLog }) {
           {book.status ? ` — ${book.status}` : ""}
           {book.liked ? <> — <Icon name="heart" size={1} /></> : ""}
         </p>
-        <Link
+        <PixelLink
           href={`/pages/forum?mode=per_book&book=${encodeURIComponent(book.name)}`}
           className="text-xs text-amber-300 hover:underline inline-block mr-3"
         >
-          <Icon name="chat" size={1} /> Discuss in Forum →
-        </Link>
+          <Icon name="chat" size={1} /> Discuss in Forum <Icon name="arrow_right" size={1} />
+        </PixelLink>
         <PixelButton type="button" onClick={() => setEditing(true)}>
           Update
         </PixelButton>

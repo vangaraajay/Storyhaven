@@ -169,7 +169,7 @@ export default function MatchDropCard({
             kindred spirits will be revealed!
           </p>
           <div className="match-drop-countdown">
-            <span>⏱️ Next Drop in:</span>
+            <span><Icon name="hourglass" size={1} /> Next Drop in:</span>
             <strong>{countdownText || "Calculating…"}</strong>
           </div>
         </PixelFrame>
@@ -185,7 +185,7 @@ export default function MatchDropCard({
     return (
       <div className="match-drop-container">
         <PixelFrame className="match-drop-card match-drop-card-scout">
-          <div className="match-drop-scout-icon">🏕️</div>
+          <div className="match-drop-scout-icon"><Icon name="user" size={2} /></div>
           <div className="match-drop-scout-content">
             <h2 className="match-drop-scout-title">Haven Lounge Scout</h2>
             <p className="match-drop-scout-body">
@@ -254,17 +254,19 @@ export default function MatchDropCard({
               {match.sharedTitles.length > 0 ? (
                 match.sharedTitles.map((title, idx) => (
                   <Badge key={idx} className="match-drop-pill">
-                    {title.type === "book"
-                      ? "📚"
-                      : title.type === "movie"
-                        ? "🎬"
-                        : "🎵"}{" "}
+                    {title.type === "book" ? (
+                      <Icon name="book" size={1} />
+                    ) : title.type === "movie" ? (
+                      <Icon name="film" size={1} />
+                    ) : (
+                      <Icon name="vinyl" size={1} />
+                    )}{" "}
                     {title.name}
                   </Badge>
                 ))
               ) : (
                 <Badge className="match-drop-pill match-drop-pill-discovery">
-                  🌟 Lounge Explorer
+                  <Icon name="sparkle" size={1} /> Lounge Explorer
                 </Badge>
               )}
             </div>
@@ -293,7 +295,7 @@ export default function MatchDropCard({
         {/* Mutual Match Banner */}
         {isMutualConnected && (
           <div className="match-drop-celebration">
-            <span>🎉</span>
+            <span><Icon name="sparkle" size={1} /></span>
             <div>
               <strong>It&apos;s a Match!</strong> You and{" "}
               {match.partner.display_name ?? "your match"} are connected.
@@ -308,18 +310,18 @@ export default function MatchDropCard({
               <PixelLink
                 href={`/pages/friends?with=${encodeURIComponent(match.partner.id)}&draft=${encodeURIComponent(match.icebreaker)}`}
               >
-                Open Direct Chat 💬
+                Open Direct Chat <Icon name="chat" size={1} />
               </PixelLink>
             ) : match.myConnected ? (
               <span className="match-drop-waiting-pill">
-                ⏳ Waiting for {match.partner.display_name ?? "them"} to connect back…
+                <Icon name="hourglass" size={1} /> Waiting for {match.partner.display_name ?? "them"} to connect back…
               </span>
             ) : (
               <PixelButton
                 onClick={handleConnect}
                 disabled={loading}
               >
-                {loading ? "Connecting…" : "Connect 👋"}
+                {loading ? "Connecting…" : <>Connect <Icon name="match" size={1} /></>}
               </PixelButton>
             )}
           </div>

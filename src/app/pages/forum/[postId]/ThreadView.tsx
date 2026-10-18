@@ -10,6 +10,7 @@ import DeleteControl from "../DeleteControl";
 import type { ForumPost, CommentNode } from "@/lib/forum";
 import Icon from "@/components/pixel/Icon";
 import Avatar from "@/components/pixel/Avatar";
+import PixelLink from "@/components/pixel/PixelLink";
 
 interface ThreadViewProps {
   post: ForumPost;
@@ -48,9 +49,9 @@ export default function ThreadView({
     <div className="forum-thread-container">
       {/* Navigation Breadcrumb */}
       <div className="forum-breadcrumb" style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-        <Link href="/" className="forum-back-btn" style={{ marginBottom: 0 }}>
-          <span aria-hidden="true">←</span> Return to Haven
-        </Link>
+        <PixelLink href="/" style={{ marginBottom: 0 }}>
+          <Icon name="arrow_left" size={1} /> Return to Haven
+        </PixelLink>
         <span style={{ color: "var(--forum-border-subtle)" }}>•</span>
         <Link href="/pages/forum" className="forum-breadcrumb-link">
           Back to Discussions
@@ -101,14 +102,13 @@ export default function ThreadView({
           <div className="forum-post-footer" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.06)", paddingTop: "0.75rem" }}>
             <span><Icon name="chat" size={1} /> {post.comments_count} comments</span>
             {post.media_title && post.media_type === "book" && (
-              <Link
+              <PixelLink
                 href={`/pages/forum?mode=per_book&book=${encodeURIComponent(
                   post.media_title
                 )}`}
-                style={{ color: "var(--forum-accent-foam)", textDecoration: "underline" }}
               >
-                More on &quot;{post.media_title}&quot; →
-              </Link>
+                More on &quot;{post.media_title}&quot; <Icon name="arrow_right" size={1} />
+              </PixelLink>
             )}
             {isOwner && <DeleteControl kind="post" postId={post.id} />}
           </div>

@@ -13,6 +13,7 @@ import ChatPanel from "./ChatPanel";
 import MatchDropCard from "./MatchDropCard";
 import MatchPanel from "./MatchPanel";
 import NewGroupForm from "./NewGroupForm";
+import PixelLink from "@/components/pixel/PixelLink";
 
 export type FriendsShellProps = {
   myId: string;
@@ -109,9 +110,9 @@ export default function FriendsShell({
           </Link>
         </div>
 
-        <Link href="/pages/friends" className="friends-find-btn">
+        <PixelLink href="/pages/friends">
           Find friends
-        </Link>
+        </PixelLink>
       </aside>
 
       <div className="friends-main">
