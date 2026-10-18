@@ -407,10 +407,11 @@ export default function BotGeneratorPanel({
             value={botCount}
             disabled={isGenerating}
             onChange={(e) => setBotCount(Math.max(2, Math.min(50, Number(e.target.value) || 2)))}
+            onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
             className="admin-input"
           />
           <span style={{ fontSize: "0.75rem", color: "#908caa", display: "block", marginTop: "0.25rem" }}>
-            Reuses existing bots first; prompts Gemma only for delta.
+            Reuses existing bots first; prompts Gemini only for delta.
           </span>
         </div>
 
@@ -433,6 +434,7 @@ export default function BotGeneratorPanel({
             value={postCount}
             disabled={isGenerating}
             onChange={(e) => setPostCount(Math.max(1, Math.min(25, Number(e.target.value) || 1)))}
+            onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
             className="admin-input"
           />
           <span style={{ fontSize: "0.75rem", color: "#908caa", display: "block", marginTop: "0.25rem" }}>
@@ -459,6 +461,7 @@ export default function BotGeneratorPanel({
             value={commentCount}
             disabled={isGenerating}
             onChange={(e) => setCommentCount(Math.max(2, Math.min(80, Number(e.target.value) || 2)))}
+            onKeyDown={(e) => { if (e.key === "Enter") e.preventDefault(); }}
             className="admin-input"
           />
           <span style={{ fontSize: "0.75rem", color: "#908caa", display: "block", marginTop: "0.25rem" }}>

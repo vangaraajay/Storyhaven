@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   clearActiveMatchesAction,
   dryRunMatchDropAction,
@@ -27,26 +27,55 @@ export default function AdminPage() {
   const [roundIdInput, setRoundIdInput] = useState("");
   const [simulation, setSimulation] = useState<MatchDropResult | null>(null);
 
-  async function handleUnlock(e: React.FormEvent) {
-    e.preventDefault();
-    if (!passwordInput.trim()) return;
+  // Auto-restore admin session from sessionStorage if previously unlocked
+  useEffect(() => {
+    const saved =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("storyhaven_admin_token")
+        : null;
+    if (saved) {
+      void (async () => {
+        setLoading(true);
+        const res = await verifyAdminPasswordAction(saved);
+        if (res.success) {
+          setPassword(saved);
+          setIsAuthenticated(true);
+          const statusRes = await getAdminStatusAction(saved);
+          if (statusRes.success && statusRes.data) {
+            setStatus(statusRes.data);
+          }
+        } else {
+          sessionStorage.removeItem("storyhaven_admin_token");
+        }
+        setLoading(false);
+      })();
+    }
+  }, []);
+
+  async function handleUnlock(e?: React.FormEvent) {
+    if (e) e.preventDefault();
+    const passToTest = passwordInput.trim();
+    if (!passToTest) return;
 
     setLoading(true);
     setBanner(null);
 
-    const res = await verifyAdminPasswordAction(passwordInput);
+    const res = await verifyAdminPasswordAction(passToTest);
     if (!res.success) {
       setBanner({ type: "error", text: res.error || "Authentication failed." });
       setLoading(false);
       return;
     }
 
-    setPassword(passwordInput);
+    setPassword(passToTest);
     setIsAuthenticated(true);
     setPasswordInput("");
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("storyhaven_admin_token", passToTest);
+    }
 
     // Load initial admin status
-    const statusRes = await getAdminStatusAction(passwordInput);
+    const statusRes = await getAdminStatusAction(passToTest);
     if (statusRes.success && statusRes.data) {
       setStatus(statusRes.data);
     } else {
@@ -65,6 +94,9 @@ export default function AdminPage() {
     setStatus(null);
     setBanner(null);
     setSimulation(null);
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("storyhaven_admin_token");
+    }
   }
 
   async function handleTriggerDrop() {
@@ -164,12 +196,25 @@ export default function AdminPage() {
               </div>
             )}
 
-            <form onSubmit={handleUnlock} className="admin-gate-form">
+            <form
+              action="javascript:void(0);"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void handleUnlock();
+              }}
+              className="admin-gate-form"
+            >
               <input
                 type="password"
                 placeholder="Admin password"
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    void handleUnlock();
+                  }
+                }}
                 className="admin-input"
                 autoFocus
                 required
@@ -264,6 +309,12 @@ export default function AdminPage() {
               placeholder="Round ID (optional)"
               value={roundIdInput}
               onChange={(e) => setRoundIdInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  void handleTriggerDrop();
+                }
+              }}
               className="admin-input admin-round-input"
             />
             <button
