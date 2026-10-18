@@ -31,18 +31,27 @@
   gap: 12px;
   text-align: center;
   padding: 16px 24px;
-  min-width: 240px;
+  min-width: 280px;
+  animation: none !important;
+  transform: none !important;
 }
 
 .title {
   font-size: 1.5rem;
   letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1.2;
 }
 
 .label {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-height: 32px;
+}
+
+.label img {
+  flex-shrink: 0;
 }
 
 .bar {
@@ -53,16 +62,17 @@
   overflow: hidden;
 }
 
-/* A block that steps across the bar; static (full) when motion is reduced. */
+/* A block that steps across the bar */
 .fill {
-  width: 100%;
+  width: 25%;
   height: 100%;
   background: #b97d45;
+  animation: bar-run 1200ms steps(8, end) infinite;
 }
 
-html[data-motion="full"] .fill {
-  width: 25%;
-  animation: bar-run 1200ms steps(8, end) infinite;
+html[data-motion="reduced"] .fill {
+  width: 100%;
+  animation: none;
 }
 
 @keyframes bar-run {
@@ -84,14 +94,11 @@ html[data-motion="full"] .fill {
   position: absolute;
   bottom: calc(100% - 4px);
   left: 0;
-  /* Walks left to right across the floor in whole-pixel steps. */
-}
-
-html[data-motion="full"] .walker {
   animation: walk-across 6s steps(48, end) infinite;
 }
 
-html:not([data-motion="full"]) .walker {
+html[data-motion="reduced"] .walker {
+  animation: none;
   left: 50%;
   margin-left: -64px;
 }

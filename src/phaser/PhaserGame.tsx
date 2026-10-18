@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LoadingScreen from "@/components/pixel/LoadingScreen";
 import { useRouter } from "next/navigation";
 import { composeFlat } from "@/lib/avatar/compose";
@@ -27,34 +27,76 @@ export default function PhaserGame({
   const parentRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
+  const [isCalibrated, setIsCalibrated] = useState(false);
   const [labels, setLabels] = useState<PadLabel[]>([]);
   const [prompt, setPrompt] = useState<PromptInfo | null>(null);
   const [box, setBox] = useState<CanvasBox>({ left: 0, top: 0, scale: 1 });
+
+  const measure = useCallback(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const canvas = wrap.querySelector("canvas");
+    if (!canvas || canvas.clientWidth === 0) return;
+    const w = wrap.getBoundingClientRect();
+    const c = canvas.getBoundingClientRect();
+    const left = Math.round(c.left - w.left);
+    const top = Math.round(c.top - w.top);
+    const scale = c.width / GAME_W;
+    if (scale <= 0) return;
+
+    setBox((prev) => {
+      if (
+        Math.abs(prev.left - left) < 0.5 &&
+        Math.abs(prev.top - top) < 0.5 &&
+        Math.abs(prev.scale - scale) < 0.002
+      ) {
+        return prev;
+      }
+      return { left, top, scale };
+    });
+    setIsCalibrated(true);
+  }, []);
 
   // Keep the overlay aligned with the (letterboxed, scaled) canvas.
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
-    const measure = () => {
-      const canvas = wrap.querySelector("canvas");
-      if (!canvas) return;
-      const w = wrap.getBoundingClientRect();
-      const c = canvas.getBoundingClientRect();
-      setBox({ left: c.left - w.left, top: c.top - w.top, scale: c.width / GAME_W });
-    };
+
     measure();
-    const ro = new ResizeObserver(measure);
+    const ro = new ResizeObserver(() => measure());
     ro.observe(wrap);
+
+    const checkCanvas = () => {
+      const canvas = wrap.querySelector("canvas");
+      if (canvas) {
+        ro.observe(canvas);
+        measure();
+      }
+    };
+    checkCanvas();
+
     window.addEventListener("resize", measure);
-    const poll = window.setInterval(measure, 500); // canvas is created asynchronously and can be resized by Phaser
+    const poll = window.setInterval(checkCanvas, 200);
+
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", measure);
       window.clearInterval(poll);
     };
-  }, []);
+  }, [measure]);
 
   const avatarJson = JSON.stringify(avatar ?? DEFAULT_AVATAR);
+
+  // Failsafe: Ensure the loading screen is never stuck indefinitely.
+  // If Phaser asset preloading or font loading takes more than 3 seconds,
+  // dismiss the loading screen automatically.
+  useEffect(() => {
+    if (ready) return;
+    const timer = setTimeout(() => {
+      setReady(true);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [ready]);
 
   useEffect(() => {
     const parent = parentRef.current;
@@ -70,18 +112,29 @@ export default function PhaserGame({
       let avatarFrames: { idle: HTMLCanvasElement; walk_l: HTMLCanvasElement; walk_r: HTMLCanvasElement } | undefined;
       try {
         const a = JSON.parse(avatarJson) as Avatar;
-        const [idle, walk_l, walk_r] = await Promise.all([
+        const composePromise = Promise.all([
           composeFlat(a, { body: "idle" }),
           composeFlat(a, { body: "walk_l" }),
           composeFlat(a, { body: "walk_r" }),
+        ]);
+        const [idle, walk_l, walk_r] = await Promise.race([
+          composePromise,
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("Avatar composition timed out")), 1500),
+          ),
         ]);
         avatarFrames = { idle, walk_l, walk_r };
       } catch (err) {
         console.warn("Avatar failed to compose; using the placeholder player", err);
       }
-      // Wait for the pixel font so Phaser text measures correctly.
+
+      // Wait for the pixel font so Phaser text measures correctly, capped at 400ms
+      // so pending or lazy webfonts never stall haven entry.
       try {
-        await document.fonts?.ready;
+        await Promise.race([
+          document.fonts?.ready ?? Promise.resolve(),
+          new Promise((resolve) => setTimeout(resolve, 400)),
+        ]);
       } catch {}
       if (cancelled) return;
 
@@ -90,10 +143,19 @@ export default function PhaserGame({
         needsProfile,
         displayName,
         avatarFrames,
-        onZones: (l) => setLabels(l),
+        onZones: (l) => {
+          setLabels(l);
+          measure();
+        },
         onPrompt: (pr) => setPrompt(pr),
+        onResize: () => {
+          measure();
+        },
         onReady: () => {
-          if (!cancelled) setReady(true);
+          if (!cancelled) {
+            measure();
+            setReady(true);
+          }
         },
         onNavigate: (route) => {
           if (route === "/auth/logout" || route.startsWith("/auth/logout?")) {
@@ -117,13 +179,13 @@ export default function PhaserGame({
       cancelled = true;
       game?.destroy(true);
     };
-  }, [router, isLoggedIn, needsProfile, displayName, avatarJson]);
+  }, [router, isLoggedIn, needsProfile, displayName, avatarJson, measure]);
 
   return (
     <>
       <div ref={wrapRef} style={{ position: "relative", width: "100%", height: "100dvh" }}>
         <div ref={parentRef} className="phaser-root" />
-        <HavenOverlay labels={labels} prompt={prompt} box={box} />
+        <HavenOverlay labels={labels} prompt={prompt} box={box} visible={ready && isCalibrated} />
       </div>
       {ready ? null : <LoadingScreen scene="haven" />}
     </>
