@@ -109,8 +109,8 @@ export default function CatalogSection({
         <div className="catalog-title-col">
           <h2 className="catalog-heading">
             {mode === "friends"
-              ? "👥 Friends & Community Catalog"
-              : "👤 My Personal Catalog"}
+              ? <><Icon name="match" size={1} /> Friends &amp; Community Catalog</>
+              : "My Personal Catalog"}
           </h2>
           <span className="catalog-subheading">
             {mode === "friends"
@@ -153,7 +153,7 @@ export default function CatalogSection({
       >
         {displayItems.length === 0 ? (
           <div className="catalog-empty">
-            <span className="catalog-empty-icon">📖</span>
+            <span className="catalog-empty-icon"><Icon name="book" size={2} /></span>
             {mode === "friends" && !feed.hasFriends ? (
               <>
                 <p>
@@ -161,7 +161,7 @@ export default function CatalogSection({
                   friends in the Haven lounge to see their shared media logs!
                 </p>
                 <Link href="/pages/friends" className="catalog-empty-action">
-                  👥 Go to Friends Lounge →
+                  <Icon name="match" size={1} /> Go to Friends Lounge →
                 </Link>
               </>
             ) : (

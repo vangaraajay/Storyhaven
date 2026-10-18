@@ -9,6 +9,7 @@ import {
   deleteAlbumAction,
 } from "./actions";
 import PixelButton from "@/components/pixel/PixelButton";
+import Icon from "@/components/pixel/Icon";
 
 type CatalogDetailModalProps = {
   item: CatalogItem | null;
@@ -50,14 +51,25 @@ export default function CatalogDetailModal({
   const typeName =
     item.type === "book" ? "Book" : item.type === "movie" ? "Movie" : "Album";
   const typeIcon =
-    item.type === "book" ? "📚" : item.type === "movie" ? "🎬" : "🎵";
+    item.type === "book" ? (
+      <Icon name="book" size={1} />
+    ) : item.type === "movie" ? (
+      <Icon name="film" size={1} />
+    ) : (
+      <Icon name="vinyl" size={1} />
+    );
 
   const renderStars = (rating: number | null) => {
     if (rating == null) return "Unrated";
     const stars = Math.round(rating);
-    const filled = "★".repeat(stars);
-    const empty = "☆".repeat(Math.max(0, 5 - stars));
-    return `${filled}${empty} (${rating}/5)`;
+    return (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 2 }}>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <Icon key={n} name={n <= stars ? "star_full" : "star_empty"} size={1} />
+        ))}
+        <span style={{ marginLeft: 6 }}>({rating}/5)</span>
+      </span>
+    );
   };
 
   const handleDelete = () => {
@@ -191,7 +203,7 @@ export default function CatalogDetailModal({
               {item.liked && (
                 <div className="catalog-meta-item">
                   <span className="catalog-meta-label">Favorite</span>
-                  <span className="catalog-meta-value">❤️ Favorited</span>
+                  <span className="catalog-meta-value"><Icon name="heart" size={1} /> Favorited</span>
                 </div>
               )}
             </div>
@@ -209,7 +221,7 @@ export default function CatalogDetailModal({
                   className="catalog-modal-btn-forum"
                   onClick={onClose}
                 >
-                  💬 Discuss in Forum →
+                  <Icon name="chat" size={1} /> Discuss in Forum →
                 </Link>
               )}
 

@@ -13,6 +13,7 @@ import PixelButton from "@/components/pixel/PixelButton";
 import PixelInput, { PixelSelect, PixelTextarea } from "@/components/pixel/PixelInput";
 import UnlockToast from "@/components/pixel/UnlockToast";
 import HeartToggle from "@/components/pixel/HeartToggle";
+import Icon from "@/components/pixel/Icon";
 
 const initialState: LoggingFormState = { error: null };
 
@@ -103,7 +104,7 @@ export default function CreateLogForms() {
             className={`create-log-tab ${activeTab === "book" ? "active" : ""}`}
             onClick={() => setActiveTab("book")}
           >
-            📚 Log a Book
+            <Icon name="book" size={1} /> Log a Book
           </PixelButton>
           <PixelButton
             type="button"
@@ -112,7 +113,7 @@ export default function CreateLogForms() {
             className={`create-log-tab ${activeTab === "movie" ? "active" : ""}`}
             onClick={() => setActiveTab("movie")}
           >
-            🎬 Log a Movie
+            <Icon name="film" size={1} /> Log a Movie
           </PixelButton>
           <PixelButton
             type="button"
@@ -121,7 +122,7 @@ export default function CreateLogForms() {
             className={`create-log-tab ${activeTab === "album" ? "active" : ""}`}
             onClick={() => setActiveTab("album")}
           >
-            🎵 Log an Album
+            <Icon name="vinyl" size={1} /> Log an Album
           </PixelButton>
         </div>
       </div>

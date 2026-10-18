@@ -1,6 +1,7 @@
 "use client";
 
 import type { CatalogItem } from "@/lib/catalog";
+import Icon from "@/components/pixel/Icon";
 
 type CatalogCardProps = {
   item: CatalogItem;
@@ -9,7 +10,13 @@ type CatalogCardProps = {
 
 export default function CatalogCard({ item, onClick }: CatalogCardProps) {
   const categoryBadge =
-    item.type === "book" ? "📚" : item.type === "movie" ? "🎬" : "🎵";
+    item.type === "book" ? (
+      <Icon name="book" size={1} />
+    ) : item.type === "movie" ? (
+      <Icon name="film" size={1} />
+    ) : (
+      <Icon name="vinyl" size={1} />
+    );
 
   return (
     <button
@@ -41,7 +48,7 @@ export default function CatalogCard({ item, onClick }: CatalogCardProps) {
         </span>
 
         {item.rating != null && (
-          <span className="catalog-card-rating-badge">★ {item.rating}</span>
+          <span className="catalog-card-rating-badge"><Icon name="star_full" size={1} /> {item.rating}</span>
         )}
       </div>
 
@@ -50,7 +57,6 @@ export default function CatalogCard({ item, onClick }: CatalogCardProps) {
         <div
           className={`catalog-card-owner ${item.owner.isSelf ? "is-self" : ""}`}
         >
-          <span>👤</span>
           <span>{item.owner.isSelf ? "You" : item.owner.display_name}</span>
         </div>
       </div>

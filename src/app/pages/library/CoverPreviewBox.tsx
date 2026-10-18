@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchMediaCoverAction } from "./actions";
 import type { MediaType } from "@/lib/media-search";
+import Icon from "@/components/pixel/Icon";
 
 type CoverPreviewBoxProps = {
   type: MediaType;
@@ -102,7 +103,9 @@ export default function CoverPreviewBox({
     };
   }, [title]);
 
-  const defaultIcon = type === "book" ? "📚" : type === "movie" ? "🎬" : "🎵";
+  const defaultIcon = (
+    <Icon name={type === "book" ? "book" : type === "movie" ? "film" : "vinyl"} size={2} />
+  );
 
   return (
     <div
