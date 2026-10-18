@@ -142,6 +142,7 @@
   text-align: left;
   padding: 0;
   color: inherit;
+  font-family: var(--font-pixel), ui-monospace, monospace;
 }
 
 .catalog-card:hover {
