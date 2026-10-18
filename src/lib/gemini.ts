@@ -1,10 +1,10 @@
 /**
  * Storyhaven Gemini API Integration
- * Strictly uses Google's gemma-4-31b-it model via the Gemini API.
+ * Uses Google's gemini-3.1-flash-lite model via the Gemini API.
  */
 
-const GEMMA_MODEL = "gemma-4-31b-it";
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMMA_MODEL}:generateContent`;
+const GEMINI_MODEL = "gemini-3.1-flash-lite";
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
 export type ChatHistoryItem = {
   sender: string;
@@ -195,9 +195,9 @@ export function extractAndParseJson<T>(rawText: string): T {
 }
 
 /**
- * Executes a prompt against Google's gemma-4-31b-it model via the Gemini API.
+ * Executes a prompt against Google's gemini-3.1-flash-lite model via the Gemini API.
  */
-export async function callGemma(
+export async function callGemini(
   prompt: string,
   options?: {
     reason?: string;
@@ -210,7 +210,7 @@ export async function callGemma(
   const start = Date.now();
 
   console.log(
-    `[Gemini API] 🚀 Invoking ${GEMMA_MODEL} | Reason: "${reason}" | Prompt Length: ${prompt.length} chars`,
+    `[Gemini API] 🚀 Invoking ${GEMINI_MODEL} | Reason: "${reason}" | Prompt Length: ${prompt.length} chars`,
   );
 
   const apiKey = process.env.GEMINI_API_KEY?.trim();
@@ -280,7 +280,7 @@ export async function callGemma(
     );
 
     throw new Error(
-      `Gemma API request failed (${response.status} ${response.statusText}): ${parsedMessage}`,
+      `Gemini API request failed (${response.status} ${response.statusText}): ${parsedMessage}`,
     );
   }
 
@@ -292,7 +292,7 @@ export async function callGemma(
     console.error(
       `[Gemini API] ❌ Empty Completion after ${elapsed}ms | Reason: "${reason}"`,
     );
-    throw new Error("Gemma API returned an empty completion.");
+    throw new Error("Gemini API returned an empty completion.");
   }
 
   console.log(
@@ -301,6 +301,9 @@ export async function callGemma(
 
   return textOutput;
 }
+
+// Backward-compatible alias
+export const callGemma = callGemini;
 
 /**
  * Generates an automated in-character DM response from a bot friend.

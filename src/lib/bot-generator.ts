@@ -180,7 +180,7 @@ export async function generateBotCommunity(
     await onProgress?.({
       step: 1,
       totalSteps: 4,
-      message: `Reusing ${existingBots.length} existing bots; generating ${delta} new usernames via Gemma 4 31B...`,
+      message: `Reusing ${existingBots.length} existing bots; generating ${delta} new usernames via Gemini 3.1 Flash Lite...`,
     });
 
     const usernamePrompt = `You are a naming engine for "Storyhaven", a cozy retro fantasy pixel library where readers, cinephiles, and vinyl listeners gather.
@@ -244,7 +244,7 @@ MossyFolio | StarlightSpine | TeaAndTolkien | CinephileCat`;
   await onProgress?.({
     step: 2,
     totalSteps: 4,
-    message: `Authoring ${targetPostCount} forum posts via Gemma 4 31B...`,
+    message: `Authoring ${targetPostCount} forum posts via Gemini 3.1 Flash Lite...`,
   });
 
   const postsPrompt = `You are community members posting on Storyhaven's cozy library forum.
@@ -375,7 +375,7 @@ The sound of rain against the stained glass windows makes the library feel like 
   await onProgress?.({
     step: 3,
     totalSteps: 4,
-    message: `Generating ${targetCommentCount} threaded comments & replies via Gemma 4 31B...`,
+    message: `Generating ${targetCommentCount} threaded comments & replies via Gemini 3.1 Flash Lite...`,
   });
 
   const postsSummary = insertedPosts

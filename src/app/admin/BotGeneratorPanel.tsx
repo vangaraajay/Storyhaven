@@ -182,7 +182,7 @@ export default function BotGeneratorPanel({
       >
         <div>
           <h2 className="admin-panel-title" style={{ margin: 0 }}>
-            🤖 Autonomous Bot Community Engine (Gemma 4 31B)
+            🤖 Autonomous Bot Community Engine (Gemini 3.1 Flash Lite)
           </h2>
           <p
             style={{
@@ -525,7 +525,7 @@ export default function BotGeneratorPanel({
           className="admin-btn admin-btn-primary"
           style={{ minWidth: 220 }}
         >
-          {isGenerating ? "⚡ Generating via Gemma 4 31B..." : "⚡ Generate Bots & Content"}
+          {isGenerating ? "⚡ Generating via Gemini 3.1 Flash Lite..." : "⚡ Generate Bots & Content"}
         </button>
 
         <button
