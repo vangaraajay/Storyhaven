@@ -488,7 +488,8 @@ html[data-motion="full"] .px-mo-shake {
 .friends-candidate,
 .catalog-card,
 .catalog-modal,
-.catalog-empty {
+.catalog-empty,
+.match-drop-card {
   --text: #2a202a;
   --text-muted: #5c4a38;
   --link: #3e5a2a;
@@ -513,7 +514,7 @@ html[data-motion="full"] .px-mo-shake {
   color: #2a202a;
 }
 
-:is(.px-panel, .forum-post-card, .forum-empty-card, .forum-modal-box, .forum-comment-card, .forum-book-selector, .forum-book-banner, .friends-candidate, .catalog-card, .catalog-modal, .catalog-empty)
+:is(.px-panel, .forum-post-card, .forum-empty-card, .forum-modal-box, .forum-comment-card, .forum-book-selector, .forum-book-banner, .friends-candidate, .catalog-card, .catalog-modal, .catalog-empty, .match-drop-card)
   :is(h1, h2, h3, h4, p, span, div, li, label, strong, em, small, time, blockquote, code, legend, a):not(.friends-bubble, .friends-bubble *, .catalog-card-badge, .catalog-card-rating-badge, [class*="Badge"], .forum-badge, .px-mo-toast, .px-mo-toast *) {
   color: #2a202a;
 }

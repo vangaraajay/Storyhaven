@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import {
   connectMatchDropAction,
@@ -12,6 +11,11 @@ import {
   getNextDropTarget,
   type HavenMatchState,
 } from "@/lib/match-drop";
+import PixelFrame from "@/components/pixel/PixelFrame";
+import PixelButton from "@/components/pixel/PixelButton";
+import PixelLink from "@/components/pixel/PixelLink";
+import Badge from "@/components/pixel/Badge";
+import Icon from "@/components/pixel/Icon";
 import "./match-drop.css";
 
 type MatchDropCardProps = {
@@ -148,8 +152,17 @@ export default function MatchDropCard({
   if (state.mode === "waiting") {
     return (
       <div className="match-drop-container">
-        <div className="match-drop-card match-drop-card-empty">
-          <div className="match-drop-empty-icon">🕯️</div>
+        <PixelFrame className="match-drop-card match-drop-card-empty">
+          <div className="match-drop-empty-icon">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/candle.png"
+              alt="Candle"
+              width={32}
+              height={32}
+              className="px-art"
+            />
+          </div>
           <h2 className="match-drop-empty-title">Haven Match Lounge</h2>
           <p className="match-drop-empty-desc">
             The Haven elders are consulting the archives. When the drop arrives,
@@ -159,7 +172,7 @@ export default function MatchDropCard({
             <span>⏱️ Next Drop in:</span>
             <strong>{countdownText || "Calculating…"}</strong>
           </div>
-        </div>
+        </PixelFrame>
       </div>
     );
   }
@@ -171,7 +184,7 @@ export default function MatchDropCard({
   if (!state.hasMatch || !state.match) {
     return (
       <div className="match-drop-container">
-        <div className="match-drop-card match-drop-card-scout">
+        <PixelFrame className="match-drop-card match-drop-card-scout">
           <div className="match-drop-scout-icon">🏕️</div>
           <div className="match-drop-scout-content">
             <h2 className="match-drop-scout-title">Haven Lounge Scout</h2>
@@ -185,7 +198,7 @@ export default function MatchDropCard({
               friends. Explore the library catalogs or check back when new travelers arrive!
             </p>
           </div>
-        </div>
+        </PixelFrame>
       </div>
     );
   }
@@ -200,11 +213,11 @@ export default function MatchDropCard({
 
   return (
     <div className="match-drop-container">
-      <div className="match-drop-card">
+      <PixelFrame className="match-drop-card">
         {/* Header without countdown timer */}
         <div className="match-drop-header">
           <div className="match-drop-title-group">
-            <span className="match-drop-sparkle">✨</span>
+            <Icon name="sparkle" size={1} />
             <h2 className="match-drop-title">Haven Match Drop</h2>
           </div>
         </div>
@@ -216,8 +229,8 @@ export default function MatchDropCard({
               <Image
                 src={match.partner.avatar_url}
                 alt={match.partner.display_name ?? "Partner"}
-                width={54}
-                height={54}
+                width={52}
+                height={52}
                 className="match-drop-avatar"
               />
             ) : (
@@ -240,19 +253,19 @@ export default function MatchDropCard({
             <div className="match-drop-media-list">
               {match.sharedTitles.length > 0 ? (
                 match.sharedTitles.map((title, idx) => (
-                  <span key={idx} className="match-drop-pill">
+                  <Badge key={idx} className="match-drop-pill">
                     {title.type === "book"
                       ? "📚"
                       : title.type === "movie"
                         ? "🎬"
                         : "🎵"}{" "}
                     {title.name}
-                  </span>
+                  </Badge>
                 ))
               ) : (
-                <span className="match-drop-pill match-drop-pill-discovery">
+                <Badge className="match-drop-pill match-drop-pill-discovery">
                   🌟 Lounge Explorer
-                </span>
+                </Badge>
               )}
             </div>
           </div>
@@ -267,11 +280,13 @@ export default function MatchDropCard({
         {/* Inbound Notice if partner connected first */}
         {!match.myConnected && match.otherConnected && (
           <div className="match-drop-inbound-banner">
-            <span>✨</span>
-            <strong>
-              {match.partner.display_name ?? "This reader"} clicked Connect!
-            </strong>{" "}
-            Click Connect below to unlock your direct chat.
+            <Icon name="sparkle" size={1} />
+            <div>
+              <strong>
+                {match.partner.display_name ?? "This reader"} clicked Connect!
+              </strong>{" "}
+              Click Connect below to unlock your direct chat.
+            </div>
           </div>
         )}
 
@@ -279,8 +294,10 @@ export default function MatchDropCard({
         {isMutualConnected && (
           <div className="match-drop-celebration">
             <span>🎉</span>
-            <strong>It&apos;s a Match!</strong> You and{" "}
-            {match.partner.display_name ?? "your match"} are connected.
+            <div>
+              <strong>It&apos;s a Match!</strong> You and{" "}
+              {match.partner.display_name ?? "your match"} are connected.
+            </div>
           </div>
         )}
 
@@ -288,29 +305,28 @@ export default function MatchDropCard({
         <div className="match-drop-actions">
           <div className="match-drop-buttons">
             {isMutualConnected ? (
-              <Link
+              <PixelLink
                 href={`/pages/friends?with=${encodeURIComponent(match.partner.id)}&draft=${encodeURIComponent(match.icebreaker)}`}
-                className="match-drop-btn-chat"
               >
                 Open Direct Chat 💬
-              </Link>
+              </PixelLink>
             ) : match.myConnected ? (
               <span className="match-drop-waiting-pill">
                 ⏳ Waiting for {match.partner.display_name ?? "them"} to connect back…
               </span>
             ) : (
-              <button
+              <PixelButton
                 onClick={handleConnect}
                 disabled={loading}
-                className="match-drop-btn-connect"
               >
                 {loading ? "Connecting…" : "Connect 👋"}
-              </button>
+              </PixelButton>
             )}
           </div>
 
           {!isMutualConnected && (
             <button
+              type="button"
               onClick={handleDismiss}
               disabled={loading}
               className="match-drop-btn-pass"
@@ -319,7 +335,8 @@ export default function MatchDropCard({
             </button>
           )}
         </div>
-      </div>
+      </PixelFrame>
     </div>
   );
 }
+
