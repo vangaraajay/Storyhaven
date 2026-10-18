@@ -9,11 +9,13 @@ type DeleteControlProps =
   | {
       kind: "post";
       postId: string;
+      onDeleted?: () => void;
     }
   | {
       kind: "comment";
       commentId: string;
       postId: string;
+      onDeleted?: () => void;
     };
 
 export default function DeleteControl(props: DeleteControlProps) {
@@ -44,6 +46,8 @@ export default function DeleteControl(props: DeleteControlProps) {
         setError(result.error);
         return;
       }
+
+      props.onDeleted?.();
 
       if (props.kind === "post") {
         router.push("/pages/forum");

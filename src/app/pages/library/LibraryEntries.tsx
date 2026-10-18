@@ -360,11 +360,11 @@ type LibraryEntriesProps = {
 
 export default function LibraryEntries({ books, movies, albums }: LibraryEntriesProps) {
   return (
-    <>
+    <div className="library-entries-wrapper">
       <section>
-        <h2>Your books</h2>
+        <h2>Your Book Entries</h2>
         {books.length === 0 ? (
-          <p>No books logged yet.</p>
+          <p style={{ color: "#908caa", fontSize: "0.9rem" }}>No books logged yet.</p>
         ) : (
           <ul>
             {books.map((book) => (
@@ -375,9 +375,9 @@ export default function LibraryEntries({ books, movies, albums }: LibraryEntries
       </section>
 
       <section>
-        <h2>Your movies</h2>
+        <h2>Your Movie Entries</h2>
         {movies.length === 0 ? (
-          <p>No movies logged yet.</p>
+          <p style={{ color: "#908caa", fontSize: "0.9rem" }}>No movies logged yet.</p>
         ) : (
           <ul>
             {movies.map((movie) => (
@@ -388,9 +388,9 @@ export default function LibraryEntries({ books, movies, albums }: LibraryEntries
       </section>
 
       <section>
-        <h2>Your albums</h2>
+        <h2>Your Album Entries</h2>
         {albums.length === 0 ? (
-          <p>No albums logged yet.</p>
+          <p style={{ color: "#908caa", fontSize: "0.9rem" }}>No albums logged yet.</p>
         ) : (
           <ul>
             {albums.map((album) => (
@@ -399,6 +399,6 @@ export default function LibraryEntries({ books, movies, albums }: LibraryEntries
           </ul>
         )}
       </section>
-    </>
+    </div>
   );
 }
