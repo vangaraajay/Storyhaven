@@ -47,16 +47,26 @@ export function extractAndParseJson<T>(rawText: string): T {
 export async function callGemma(
   prompt: string,
   options?: {
+    reason?: string;
     systemInstruction?: string;
     jsonMode?: boolean;
     temperature?: number;
   },
 ): Promise<string> {
+  const reason = options?.reason ?? "General text generation";
+  const start = Date.now();
+
+  console.log(
+    `[Gemini API] 🚀 Invoking ${GEMMA_MODEL} | Reason: "${reason}" | Prompt Length: ${prompt.length} chars`,
+  );
+
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) {
-    throw new Error(
+    const err = new Error(
       "GEMINI_API_KEY is not defined in environment variables. Please add it to your .env file.",
     );
+    console.error(`[Gemini API] ❌ Configuration Error: ${err.message}`);
+    throw err;
   }
 
   const endpoint = `${GEMINI_API_URL}?key=${encodeURIComponent(apiKey)}`;
@@ -80,13 +90,25 @@ export async function callGemma(
     };
   }
 
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(bodyPayload),
-  });
+  let response: Response;
+  try {
+    response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyPayload),
+    });
+  } catch (netErr: unknown) {
+    const elapsed = Date.now() - start;
+    const msg = netErr instanceof Error ? netErr.message : "Network error";
+    console.error(
+      `[Gemini API] ❌ Network Failure after ${elapsed}ms | Reason: "${reason}" | ${msg}`,
+    );
+    throw netErr;
+  }
+
+  const elapsed = Date.now() - start;
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -99,6 +121,11 @@ export async function callGemma(
     } catch {
       // Keep raw body
     }
+
+    console.error(
+      `[Gemini API] ❌ HTTP ${response.status} ${response.statusText} after ${elapsed}ms | Reason: "${reason}" | ${parsedMessage}`,
+    );
+
     throw new Error(
       `Gemma API request failed (${response.status} ${response.statusText}): ${parsedMessage}`,
     );
@@ -109,8 +136,15 @@ export async function callGemma(
     data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
   if (!textOutput) {
+    console.error(
+      `[Gemini API] ❌ Empty Completion after ${elapsed}ms | Reason: "${reason}"`,
+    );
     throw new Error("Gemma API returned an empty completion.");
   }
+
+  console.log(
+    `[Gemini API] ✅ Success after ${elapsed}ms | Reason: "${reason}" | Output Length: ${textOutput.length} chars`,
+  );
 
   return textOutput;
 }
@@ -142,6 +176,7 @@ ${historySnippet}A fellow reader in your haven circle just sent you this message
 
 Reply warmly and conversationally in 1 to 3 cozy sentences. Maintain your persona. Do not break character. Do not use hashtags or emojis in excess. Output only the message reply itself.`;
 
-  const raw = await callGemma(prompt, { temperature: 0.8 });
+  const reason = `Automated DM reply from bot @${botName} responding to: "${userMessage.slice(0, 35)}..."`;
+  const raw = await callGemma(prompt, { reason, temperature: 0.8 });
   return raw.trim().replace(/^["']|["']$/g, "");
 }

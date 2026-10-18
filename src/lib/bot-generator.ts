@@ -182,6 +182,7 @@ Guidelines:
 ["Username1", "Username2", ...]`;
 
     const rawNames = await callGemma(usernamePrompt, {
+      reason: `Generating ${delta} bot usernames for identity pool`,
       jsonMode: true,
       temperature: 0.85,
     });
@@ -255,6 +256,7 @@ Output MUST be a valid JSON array of objects:
 ]`;
 
   const rawPosts = await callGemma(postsPrompt, {
+    reason: `Batch generating ${targetPostCount} forum posts across categories`,
     jsonMode: true,
     temperature: 0.8,
   });
@@ -393,6 +395,7 @@ Output MUST be a JSON object mapping each post index ("post_0", "post_1", ...) t
 
   try {
     const rawComments = await callGemma(commentsPrompt, {
+      reason: `Batch generating ${targetCommentCount} threaded comments & replies`,
       jsonMode: true,
       temperature: 0.8,
     });
