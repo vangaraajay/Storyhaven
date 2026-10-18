@@ -139,9 +139,14 @@ main.library-main {
   margin: 0 auto;
 }
 
-.daily-story-back {
+.daily-story-back,
+.daily-story-forum-link {
   color: var(--link);
   text-decoration: underline;
+}
+
+.daily-story-forum-link:hover {
+  color: var(--cream);
 }
 
 .daily-story {
@@ -163,6 +168,10 @@ main.library-main {
 
 .daily-story-author {
   color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.daily-story-forum {
   margin-bottom: 1.75rem;
 }
 

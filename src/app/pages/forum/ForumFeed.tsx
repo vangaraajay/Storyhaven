@@ -28,6 +28,7 @@ interface ForumFeedProps {
   bookStats?: { postCount: number; commentCount: number };
   isLoggedIn: boolean;
   currentProfileId: string | null;
+  fromDailyStory?: boolean;
 }
 
 export default function ForumFeed({
@@ -43,6 +44,7 @@ export default function ForumFeed({
   bookStats,
   isLoggedIn,
   currentProfileId,
+  fromDailyStory = false,
 }: ForumFeedProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -228,6 +230,7 @@ export default function ForumFeed({
               postCount={bookStats?.postCount}
               commentCount={bookStats?.commentCount}
               onClearBook={handleClearBook}
+              fromDailyStory={fromDailyStory}
             />
           )}
         </>
@@ -316,6 +319,7 @@ export default function ForumFeed({
 
       {/* Create Post Modal */}
       <CreatePostModal
+        key={isPerBook ? `book:${selectedBook ?? ""}` : "universal"}
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         isLoggedIn={isLoggedIn}
