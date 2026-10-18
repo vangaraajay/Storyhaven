@@ -23,22 +23,25 @@ export default function HavenOverlay({
   labels,
   prompt,
   box,
+  fading = false,
   visible = true,
 }: {
   labels: PadLabel[];
   prompt: PromptInfo | null;
   box: CanvasBox;
+  fading?: boolean;
   visible?: boolean;
 }) {
   // Text grows with the canvas but never gets smaller than 14px.
   const font = Math.max(14, Math.round(14 * box.scale * 1.15));
   const iconPx = (px: number) => px * Math.max(1, Math.round(box.scale));
+  const isHidden = fading || !visible;
 
   return (
     <div
-      className={`${styles.overlay} ${visible ? styles.visible : ""}`}
+      className={`${styles.overlay} ${isHidden ? styles.fadingOut : ""}`}
       style={{ fontSize: font }}
-      aria-hidden={!visible}
+      aria-hidden={isHidden}
     >
       <div className={styles.hint} style={{ top: box.top + 6 }}>
         Use WASD or Arrows • Library for logs • Auth Desk to log out

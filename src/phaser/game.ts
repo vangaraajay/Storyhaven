@@ -7,11 +7,14 @@ export interface GameOptions {
   onReady?: () => void;
   onZones?: (labels: PadLabel[]) => void;
   onPrompt?: (prompt: PromptInfo | null) => void;
+  onFadeOut?: () => void;
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
   /** Composed 32x32 character frames for the player sprite. */
   avatarFrames?: Record<string, HTMLCanvasElement>;
+  /** Fired whenever Phaser scales or centers the canvas. */
+  onResize?: () => void;
 }
 
 export function createGame(parent: HTMLElement, options?: GameOptions) {
@@ -24,6 +27,7 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
         displayName: options?.displayName ?? null,
         avatarFrames: options?.avatarFrames,
         onReady: options?.onReady,
+        onFadeOut: options?.onFadeOut,
         onZones: options?.onZones,
         onPrompt: options?.onPrompt,
       });

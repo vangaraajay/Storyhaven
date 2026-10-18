@@ -7,7 +7,6 @@ import {
   type LandmarkZone,
 } from "../constants/zones";
 import { COLORS } from "../constants/colors";
-import { ICONS } from "@/lib/sprites";
 
 /** Where a sensor pad's label goes (game coordinates); rendered as crisp DOM text by HavenOverlay. */
 export interface PadLabel {
@@ -32,6 +31,7 @@ export interface MainSceneData {
   onPrompt?: (prompt: PromptInfo | null) => void;
   onNavigate?: (route: string) => void;
   onReady?: () => void;
+  onFadeOut?: () => void;
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
@@ -43,6 +43,7 @@ export class MainScene extends Phaser.Scene {
   private furnitureManager!: FurnitureManager;
   private onNavigate?: (route: string) => void;
   private onReady?: () => void;
+  private onFadeOut?: () => void;
   private onZones?: (labels: PadLabel[]) => void;
   private onPrompt?: (prompt: PromptInfo | null) => void;
   private isLoggedIn = false;
@@ -73,12 +74,14 @@ export class MainScene extends Phaser.Scene {
     this.displayName = data?.displayName ?? null;
     this.avatarFrames = data?.avatarFrames;
     this.onReady = data?.onReady;
+    this.onFadeOut = data?.onFadeOut;
     this.onZones = data?.onZones;
     this.onPrompt = data?.onPrompt;
     this.zones = getActiveZones(this.needsProfile, this.displayName);
   }
 
   public preload(): void {
+    this.load.maxParallelDownloads = 16;
     const art: Record<string, string> = {
       floor: "/floor_soft.png",
       rug: "/rug.png",
@@ -98,8 +101,6 @@ export class MainScene extends Phaser.Scene {
       console.warn(`[Phaser] Asset load error: ${file?.key} (${file?.url})`);
     });
     for (const [key, url] of Object.entries(art)) this.load.image(key, url);
-    // Pixel icons for the zone prompts.
-    for (const [name, url] of Object.entries(ICONS)) this.load.image(`icon-${name}`, url);
   }
 
   public create(): void {
@@ -138,15 +139,20 @@ export class MainScene extends Phaser.Scene {
 
     // Register the composed character as nearest-filtered textures for the player sprite.
     let spriteKey: ((body: string, look: string) => string) | undefined;
-    if (this.avatarFrames) {
-      const frames = this.avatarFrames;
-      for (const [name, canvas] of Object.entries(frames)) {
-        const key = `avatar-${name}`;
-        if (this.textures.exists(key)) this.textures.remove(key);
-        const tex = this.textures.addCanvas(key, canvas);
-        tex?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    try {
+      if (this.avatarFrames) {
+        const frames = this.avatarFrames;
+        for (const [name, canvas] of Object.entries(frames)) {
+          const key = `avatar-${name}`;
+          if (this.textures.exists(key)) this.textures.remove(key);
+          const tex = this.textures.addCanvas(key, canvas);
+          tex?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        }
+        spriteKey = (body, look) => `avatar-${body}|${look}`;
       }
-      spriteKey = (body, look) => `avatar-${body}|${look}`;
+    } catch (err) {
+      console.warn("Failed to register avatar textures, using placeholder player", err);
+      spriteKey = undefined;
     }
 
     this.player = new Player(this, spawnX, spawnY, spriteKey);
@@ -158,9 +164,9 @@ export class MainScene extends Phaser.Scene {
 
     // 5. Create Floating HUD Prompt
 
-    // 6. Debug view toggle (D key)
+    // 6. Debug view toggle (H key for Hitboxes)
     this.debugGraphics = this.add.graphics().setDepth(100).setVisible(false);
-    this.input.keyboard?.on("keydown-D", () => {
+    this.input.keyboard?.on("keydown-H", () => {
       this.isDebugVisible = !this.isDebugVisible;
       this.debugGraphics.setVisible(this.isDebugVisible);
       this.drawDebugOverlay();
@@ -275,6 +281,7 @@ export class MainScene extends Phaser.Scene {
     const destination = this.resolveRoute(zone);
 
     // Quick camera fade out transition
+    this.onFadeOut?.();
     this.cameras.main.fade(180, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
       if (this.onNavigate) {
