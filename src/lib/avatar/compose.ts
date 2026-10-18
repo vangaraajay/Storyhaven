@@ -36,8 +36,16 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   if (!p) {
     p = new Promise((resolve, reject) => {
       const img = new Image();
-      img.onload = () => resolve(img);
+      const timer = setTimeout(() => {
+        images.delete(src);
+        reject(new Error(`Timeout loading ${src}`));
+      }, 1500);
+      img.onload = () => {
+        clearTimeout(timer);
+        resolve(img);
+      };
       img.onerror = () => {
+        clearTimeout(timer);
         images.delete(src);
         reject(new Error(`Failed to load ${src}`));
       };

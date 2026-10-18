@@ -13,7 +13,7 @@ function getAudio(): HTMLAudioElement {
   if (!shared) {
     shared = new Audio(TRACK);
     shared.loop = true;
-    shared.preload = "auto";
+    shared.preload = "none";
     shared.volume = VOLUME;
   }
   return shared;

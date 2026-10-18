@@ -7,7 +7,6 @@ import {
   type LandmarkZone,
 } from "../constants/zones";
 import { COLORS } from "../constants/colors";
-import { ICONS } from "@/lib/sprites";
 
 /** Where a sensor pad's label goes (game coordinates); rendered as crisp DOM text by HavenOverlay. */
 export interface PadLabel {
@@ -82,6 +81,7 @@ export class MainScene extends Phaser.Scene {
   }
 
   public preload(): void {
+    this.load.maxParallelDownloads = 16;
     const art: Record<string, string> = {
       floor: "/floor_soft.png",
       rug: "/rug.png",
@@ -101,8 +101,6 @@ export class MainScene extends Phaser.Scene {
       console.warn(`[Phaser] Asset load error: ${file?.key} (${file?.url})`);
     });
     for (const [key, url] of Object.entries(art)) this.load.image(key, url);
-    // Pixel icons for the zone prompts.
-    for (const [name, url] of Object.entries(ICONS)) this.load.image(`icon-${name}`, url);
   }
 
   public create(): void {
@@ -141,15 +139,20 @@ export class MainScene extends Phaser.Scene {
 
     // Register the composed character as nearest-filtered textures for the player sprite.
     let spriteKey: ((body: string, look: string) => string) | undefined;
-    if (this.avatarFrames) {
-      const frames = this.avatarFrames;
-      for (const [name, canvas] of Object.entries(frames)) {
-        const key = `avatar-${name}`;
-        if (this.textures.exists(key)) this.textures.remove(key);
-        const tex = this.textures.addCanvas(key, canvas);
-        tex?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    try {
+      if (this.avatarFrames) {
+        const frames = this.avatarFrames;
+        for (const [name, canvas] of Object.entries(frames)) {
+          const key = `avatar-${name}`;
+          if (this.textures.exists(key)) this.textures.remove(key);
+          const tex = this.textures.addCanvas(key, canvas);
+          tex?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+        }
+        spriteKey = (body, look) => `avatar-${body}|${look}`;
       }
-      spriteKey = (body, look) => `avatar-${body}|${look}`;
+    } catch (err) {
+      console.warn("Failed to register avatar textures, using placeholder player", err);
+      spriteKey = undefined;
     }
 
     this.player = new Player(this, spawnX, spawnY, spriteKey);

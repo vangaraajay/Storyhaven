@@ -13,6 +13,8 @@ export interface GameOptions {
   displayName?: string | null;
   /** Composed 32x32 character frames for the player sprite. */
   avatarFrames?: Record<string, HTMLCanvasElement>;
+  /** Fired whenever Phaser scales or centers the canvas. */
+  onResize?: () => void;
 }
 
 export function createGame(parent: HTMLElement, options?: GameOptions) {
