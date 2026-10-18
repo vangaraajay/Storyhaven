@@ -89,7 +89,7 @@ Crafted with the soothing **Rosé Pine Dark** aesthetic, Storyhaven balances pla
 | **Game Engine** | **Phaser 4** (`phaser`) | 2D canvas/WebGL rendering, arcade physics, tile animations |
 | **Database** | **Supabase** (PostgreSQL) | Managed Postgres with RLS policies, triggers, and indices |
 | **Authentication** | **Auth0** (`@auth0/nextjs-auth0`) | Secure OAuth2 session management with profile auto-sync |
-| **Styling** | **Custom CSS & Rosé Pine Dark** | Glassmorphism, tailored tokens (`#191724`, `#232136`, `#eb6f92`, `#f6c177`) |
+| **Styling** | **Custom CSS** | Glassmorphism, tailored tokens (`#191724`, `#232136`, `#eb6f92`, `#f6c177`) |
 | **Public APIs** | **Open Library**, **IMDb**, **iTunes** | Zero-config, keyless media metadata and cover retrieval |
 
 ---
