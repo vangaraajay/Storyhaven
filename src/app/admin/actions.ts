@@ -1,6 +1,5 @@
 "use server";
 
-import crypto from "crypto";
 import {
   clearActiveMatches,
   getAdminMatchStatus,
@@ -8,19 +7,7 @@ import {
   type AdminStatus,
   type MatchDropResult,
 } from "@/lib/match-drop";
-
-/**
- * Constant-time password verification resistant to timing attacks.
- */
-function isPasswordValid(input: string): boolean {
-  const adminPass = process.env.ADMIN_PASSWORD;
-  if (!adminPass || typeof adminPass !== "string" || !adminPass.trim()) {
-    return false;
-  }
-  const inputHash = crypto.createHash("sha256").update(input.trim()).digest();
-  const targetHash = crypto.createHash("sha256").update(adminPass.trim()).digest();
-  return crypto.timingSafeEqual(inputHash, targetHash);
-}
+import { isPasswordValid } from "@/lib/admin-auth";
 
 export async function verifyAdminPasswordAction(
   password: string,

@@ -94,6 +94,9 @@ export class MainScene extends Phaser.Scene {
       podiumupper: "/podiumupper.png",
       board: "/board.png",
     };
+    this.load.on("loaderror", (file: { key?: string; url?: string }) => {
+      console.warn(`[Phaser] Asset load error: ${file?.key} (${file?.url})`);
+    });
     for (const [key, url] of Object.entries(art)) this.load.image(key, url);
     // Pixel icons for the zone prompts.
     for (const [name, url] of Object.entries(ICONS)) this.load.image(`icon-${name}`, url);

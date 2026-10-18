@@ -30,7 +30,7 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
     }
   }
 
-  return new Phaser.Game({
+  const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
     backgroundColor: "#2b1d14",
@@ -43,4 +43,10 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
     },
     scene: [ConfiguredMainScene],
   });
+
+  if (options?.onResize) {
+    game.scale.on(Phaser.Scale.Events.RESIZE, options.onResize);
+  }
+
+  return game;
 }
