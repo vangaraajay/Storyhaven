@@ -6,7 +6,7 @@ export const THEME_PALETTES: Record<ShelfTheme, Palette> = {
   oak: ["#D9A36A", "#B97D45", "#8A5A2E"],
   walnut: ["#9A6A4A", "#74482F", "#4F2F1D"],
   birch: ["#F0E2C4", "#D6C29A", "#A8956C"],
-  rose: ["#F2A0B8", "#D9708F", "#A84A68"],
+  rose: ["#D4A5A0", "#B07C7A", "#80524F"],
 };
 
 const KEYS: Array<[number, number, number]> = [
