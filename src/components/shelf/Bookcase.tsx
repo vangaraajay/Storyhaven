@@ -180,7 +180,7 @@ function Walker({ avatar, label, S, cols }: { avatar: AvatarData | null | undefi
         scale={S as 2}
         body={moving ? (walk.t % 2 === 0 ? "walk_l" : "walk_r") : "idle"}
         look={moving ? (walk.dir < 0 ? "left" : "right") : "open"}
-        blink={!moving}
+        blink
         label={label}
       />
     </span>

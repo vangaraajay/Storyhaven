@@ -55,7 +55,7 @@ export default function Avatar({
         close = setTimeout(() => {
           setEyes("open");
           schedule();
-        }, 140);
+        }, 220);
       }, 3000 + Math.random() * 2000);
     };
     schedule();
