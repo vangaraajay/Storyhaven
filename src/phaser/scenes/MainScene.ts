@@ -81,6 +81,7 @@ export class MainScene extends Phaser.Scene {
   public preload(): void {
     const art: Record<string, string> = {
       floor: "/floor_soft.png",
+      rug: "/rug.png",
       counter: "/counter.png",
       fireplace1: "/fireplace1.png",
       fireplace2: "/fireplace2.png",
@@ -293,6 +294,7 @@ export class MainScene extends Phaser.Scene {
         .setOrigin(0, 0)
         .setDepth(-9)
         .setTileScale(ART_SCALE, ART_SCALE);
+      this.addRug();
       return;
     }
 
@@ -306,6 +308,12 @@ export class MainScene extends Phaser.Scene {
         }
       }
     }
+  }
+
+  /** Center rug: above the floor, below the sensor pads, furniture and player (depth -8). */
+  private addRug(): void {
+    if (!this.textures.exists("rug")) return;
+    this.add.image(400, 395, "rug").setScale(6).setDepth(-8);
   }
 
   private pads = new Map<string, { fill: Phaser.GameObjects.Rectangle; border: Phaser.GameObjects.Rectangle; color: number }>();
