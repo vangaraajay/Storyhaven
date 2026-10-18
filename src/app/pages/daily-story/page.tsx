@@ -12,6 +12,8 @@ async function DailyStoryGate({ children }: { children: ReactNode }) {
   return children;
 }
 
+const forumHref = `/pages/forum?mode=per_book&book=${encodeURIComponent(DAILY_STORY.title)}&from=daily-story`;
+
 export default function DailyStoryPage() {
   return (
     <main className="daily-story-page">
@@ -26,6 +28,11 @@ export default function DailyStoryPage() {
             <p className="daily-story-label">Daily Story</p>
             <h1>{DAILY_STORY.title}</h1>
             <p className="daily-story-author">by {DAILY_STORY.author}</p>
+            <p className="daily-story-forum">
+              <Link href={forumHref} className="daily-story-forum-link">
+                Discuss &quot;{DAILY_STORY.title}&quot; in the Forum →
+              </Link>
+            </p>
             {DAILY_STORY.paragraphs.map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}

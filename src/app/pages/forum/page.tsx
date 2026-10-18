@@ -20,6 +20,7 @@ interface PageProps {
     book?: string;
     sort?: string;
     filter?: string;
+    from?: string;
   }>;
 }
 
@@ -29,6 +30,7 @@ async function ForumContent({ searchParams }: PageProps) {
   const mode =
     resolvedParams.mode === "per_book" ? "per_book" : "universal";
   const book = resolvedParams.book?.trim() || undefined;
+  const fromDailyStory = resolvedParams.from === "daily-story";
 
   const validSorts: FeedSort[] = ["discover", "top", "new"];
   const sort: FeedSort = validSorts.includes(resolvedParams.sort as FeedSort)
@@ -102,6 +104,7 @@ async function ForumContent({ searchParams }: PageProps) {
       bookStats={bookStats}
       isLoggedIn={isLoggedIn}
       currentProfileId={isLoggedIn ? profile?.id ?? null : null}
+      fromDailyStory={fromDailyStory}
     />
   );
 }

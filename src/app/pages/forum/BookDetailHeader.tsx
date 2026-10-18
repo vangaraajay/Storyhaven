@@ -9,6 +9,7 @@ interface BookDetailHeaderProps {
   postCount?: number;
   commentCount?: number;
   onClearBook: () => void;
+  fromDailyStory?: boolean;
 }
 
 export default function BookDetailHeader({
@@ -16,6 +17,7 @@ export default function BookDetailHeader({
   postCount = 0,
   commentCount = 0,
   onClearBook,
+  fromDailyStory = false,
 }: BookDetailHeaderProps) {
   return (
     <div className="forum-book-banner">
@@ -26,14 +28,14 @@ export default function BookDetailHeader({
         <div>
           <div className="forum-book-banner-meta">
             <span className="forum-book-banner-tag">
-              Book Discussion Hub
+              {fromDailyStory ? "Daily Story Discussion" : "Book Discussion Hub"}
             </span>
             <PixelButton
               type="button"
               onClick={onClearBook}
               style={{
                 fontSize: "0.75rem",
-                color: "#8a5a1e",
+                color: "var(--forum-accent-gold)",
                 fontWeight: 600,
                 fontFamily: "var(--forum-font-mono)",
                 textDecoration: "underline",
@@ -53,14 +55,24 @@ export default function BookDetailHeader({
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <Link
-          href="/pages/library"
-          className="forum-btn-secondary"
-          style={{ color: "var(--forum-accent-gold)" }}
-        >
-          View in Library →
-        </Link>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+        {fromDailyStory ? (
+          <Link
+            href="/pages/daily-story"
+            className="forum-btn-secondary"
+            style={{ color: "var(--forum-accent-foam)" }}
+          >
+            ← Back to Daily Story
+          </Link>
+        ) : (
+          <Link
+            href="/pages/library"
+            className="forum-btn-secondary"
+            style={{ color: "var(--forum-accent-gold)" }}
+          >
+            View in Library →
+          </Link>
+        )}
       </div>
     </div>
   );
