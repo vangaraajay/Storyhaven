@@ -14,6 +14,7 @@ import {
   listOutgoingRequests,
 } from "@/lib/friends";
 import { getProfile, isProfileComplete } from "@/lib/profiles";
+import { getHavenMatchStateForProfile } from "@/lib/match-drop";
 import FriendsShell from "./FriendsShell";
 
 type FriendsPageProps = {
@@ -21,6 +22,7 @@ type FriendsPageProps = {
     with?: string;
     group?: string;
     newGroup?: string;
+    draft?: string;
   }>;
 };
 
@@ -41,13 +43,15 @@ async function FriendsContent({ searchParams }: FriendsPageProps) {
   const withId = params.with?.trim() || null;
   const groupId = params.group?.trim() || null;
   const showNewGroup = params.newGroup === "1";
+  const draft = params.draft?.trim() || null;
 
-  const [friends, groups, incoming, outgoing, matches] = await Promise.all([
+  const [friends, groups, incoming, outgoing, matches, havenState] = await Promise.all([
     listAcceptedFriends(profile.id),
     listMyGroups(profile.id),
     listIncomingRequests(profile.id),
     listOutgoingRequests(profile.id),
     listMatchCandidates(profile.id),
+    getHavenMatchStateForProfile(profile.id),
   ]);
 
   let mode: "match" | "dm" | "group" = "match";
@@ -99,6 +103,8 @@ async function FriendsContent({ searchParams }: FriendsPageProps) {
       incoming={incoming}
       outgoing={outgoing}
       matches={matches}
+      havenState={havenState}
+      initialDraft={draft}
       dm={dm}
       group={group}
       showNewGroup={showNewGroup}

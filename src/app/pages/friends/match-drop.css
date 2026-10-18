@@ -1,0 +1,316 @@
+/* Haven Match Drop Stylesheet — Pixel UI Wood Theme */
+
+.match-drop-container {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* Base Card — 9-slice Wood Frame with Warm Cream Interior */
+.match-drop-card {
+  position: relative;
+  border-style: solid;
+  border-width: 12px;
+  border-image: url(/wood/frame.png) 6 fill stretch;
+  image-rendering: pixelated;
+  background: #e8d3ae;
+  color: #2a202a;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-sizing: border-box;
+}
+
+/* Header */
+.match-drop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 0.75rem;
+}
+
+.match-drop-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-drop-sparkle {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.match-drop-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2a202a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.match-drop-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid var(--ink);
+  background: #dcc59a;
+  padding: 6px 14px;
+  font-size: 0.875rem;
+  color: #2a202a;
+  font-variant-numeric: tabular-nums;
+  image-rendering: pixelated;
+}
+
+.match-drop-countdown strong {
+  color: #2a202a;
+  font-weight: 700;
+}
+
+/* Kindred Spirit Profile Row */
+.match-drop-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.match-drop-avatar-wrap {
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--ink);
+  background: #dcc59a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  overflow: hidden;
+}
+
+.match-drop-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.match-drop-avatar-placeholder {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2a202a;
+  font-family: var(--font-pixel), ui-monospace, monospace;
+}
+
+.match-drop-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.match-drop-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #2a202a;
+  margin: 0;
+}
+
+.match-drop-subline {
+  font-size: 0.85rem;
+  color: #5c4a38;
+  margin: 0;
+}
+
+/* Shared Media Badges */
+.match-drop-media-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+
+.match-drop-pill {
+  font-size: 0.8rem;
+  color: #2a202a;
+}
+
+.match-drop-pill-discovery {
+  color: #8a5a1e;
+  font-weight: 700;
+}
+
+/* Icebreaker Quote Box — Warm Inset Dialogue Box */
+.match-drop-icebreaker {
+  background: #dfcbb2;
+  border: 2px solid var(--ink);
+  padding: 0.75rem 1rem;
+  font-size: 0.925rem;
+  color: #2a202a;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.match-drop-icebreaker-label {
+  display: block;
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: #a8452a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+  font-style: normal;
+}
+
+/* Action Rows & Buttons */
+.match-drop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.25rem;
+}
+
+.match-drop-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.match-drop-btn-pass {
+  background: none;
+  border: none;
+  color: #5c4a38;
+  font-family: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.match-drop-btn-pass:hover:not(:disabled) {
+  color: #a8452a;
+}
+
+/* Inbound Waiting / Prompt Banners */
+.match-drop-inbound-banner {
+  background: #fbf3df;
+  border: 2px solid var(--ink);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #2a202a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-drop-waiting-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 2px solid var(--ink);
+  background: #dfcbb2;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  color: #4a3a2a;
+  font-weight: 600;
+}
+
+.match-drop-celebration {
+  background: #dbead2;
+  border: 2px solid #3e5a2a;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: #233e14;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ========================================================= */
+/* WAITING STATE: Empty Lounge Card with Countdown            */
+/* ========================================================= */
+.match-drop-card-empty {
+  text-align: center;
+  align-items: center;
+  padding: 2.25rem 1.5rem;
+}
+
+.match-drop-empty-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.match-drop-empty-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2a202a;
+  margin: 0 0 0.5rem;
+}
+
+.match-drop-empty-desc {
+  font-size: 0.925rem;
+  color: #4a3a2a;
+  max-width: 500px;
+  margin: 0 auto 1.25rem;
+  line-height: 1.55;
+}
+
+/* ========================================================= */
+/* ACTIVE STATE (UNMATCHED): Scout Card                       */
+/* ========================================================= */
+.match-drop-card-scout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: 2.25rem 1.5rem;
+}
+
+.match-drop-scout-icon {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.match-drop-scout-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-drop-scout-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #2a202a;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.match-drop-scout-body {
+  font-size: 1rem;
+  color: #2a202a;
+  line-height: 1.6;
+  max-width: 620px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.match-drop-scout-subtext {
+  font-size: 0.85rem;
+  color: #5c4a38;
+  max-width: 580px;
+  margin: 0;
+  line-height: 1.5;
+}
+

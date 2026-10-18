@@ -8,7 +8,9 @@ import type {
   MatchCandidate,
   PublicProfile,
 } from "@/lib/friends";
+import type { HavenMatchState } from "@/lib/match-drop";
 import ChatPanel from "./ChatPanel";
+import MatchDropCard from "./MatchDropCard";
 import MatchPanel from "./MatchPanel";
 import NewGroupForm from "./NewGroupForm";
 
@@ -20,6 +22,8 @@ export type FriendsShellProps = {
   incoming: MatchCandidate[];
   outgoing: MatchCandidate[];
   matches: MatchCandidate[];
+  havenState?: HavenMatchState;
+  initialDraft?: string | null;
   dm?: {
     friendshipId: string;
     other: PublicProfile;
@@ -40,6 +44,8 @@ export default function FriendsShell({
   incoming,
   outgoing,
   matches,
+  havenState,
+  initialDraft = null,
   dm,
   group,
   showNewGroup = false,
@@ -119,6 +125,7 @@ export default function FriendsShell({
             otherId={dm.other.id}
             myId={myId}
             messages={dm.messages}
+            initialDraft={initialDraft}
           />
         ) : mode === "group" && group ? (
           <ChatPanel
@@ -129,11 +136,14 @@ export default function FriendsShell({
             messages={group.messages}
           />
         ) : (
-          <MatchPanel
-            incoming={incoming}
-            outgoing={outgoing}
-            matches={matches}
-          />
+          <>
+            <MatchDropCard initialState={havenState} myId={myId} />
+            <MatchPanel
+              incoming={incoming}
+              outgoing={outgoing}
+              matches={matches}
+            />
+          </>
         )}
       </div>
     </div>
