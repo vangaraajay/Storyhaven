@@ -1,5 +1,7 @@
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/profiles";
+import { isBotId } from "@/lib/bots";
+import { generateDmReply } from "@/lib/gemini";
 
 export type FriendshipStatus = "pending" | "accepted" | "declined";
 
@@ -370,7 +372,9 @@ export async function listMatchCandidates(
     .map((row) => publicProfile(row as Profile))
     .filter(
       (p) =>
-        Boolean(p.display_name?.trim()) && !acceptedOtherIds.has(p.id),
+        Boolean(p.display_name?.trim()) &&
+        !acceptedOtherIds.has(p.id) &&
+        !isBotId(p.id),
     );
 
   if (candidates.length === 0) return [];
@@ -445,6 +449,11 @@ export async function sendFriendRequest(
     throw new Error("You cannot friend yourself.");
   }
 
+  // If the addressee is a bot, auto-accept immediately!
+  const isTargetBot = isBotId(addresseeId);
+  const initialStatus: FriendshipStatus = isTargetBot ? "accepted" : "pending";
+  const acceptedAt = isTargetBot ? new Date().toISOString() : null;
+
   const supabase = createServiceSupabaseClient();
   const existing = await findPairFriendship(requesterId, addresseeId);
 
@@ -461,6 +470,21 @@ export async function sendFriendRequest(
       return acceptFriendRequest(existing.id, requesterId);
     }
     if (existing.status === "pending") {
+      if (isTargetBot) {
+        const { data, error } = await supabase
+          .from("friendships")
+          .update({
+            status: "accepted",
+            accepted_at: acceptedAt,
+          })
+          .eq("id", existing.id)
+          .select("*")
+          .single();
+        if (error) {
+          throw new Error(`Failed to accept bot friendship: ${error.message}`);
+        }
+        return data as Friendship;
+      }
       return existing;
     }
     // declined → allow new request by updating row
@@ -469,8 +493,8 @@ export async function sendFriendRequest(
       .update({
         requester_id: requesterId,
         addressee_id: addresseeId,
-        status: "pending",
-        accepted_at: null,
+        status: initialStatus,
+        accepted_at: acceptedAt,
       })
       .eq("id", existing.id)
       .select("*")
@@ -487,7 +511,8 @@ export async function sendFriendRequest(
     .insert({
       requester_id: requesterId,
       addressee_id: addresseeId,
-      status: "pending",
+      status: initialStatus,
+      accepted_at: acceptedAt,
     })
     .select("*")
     .single();
@@ -739,6 +764,75 @@ export async function sendDmMessage(
   const [withSender] = await attachSenders([
     data as Omit<ChatMessage, "sender">,
   ]);
+
+  // Automated In-Character Bot DM Reply
+  const partnerId = f.requester_id === senderId ? f.addressee_id : f.requester_id;
+  if (isBotId(partnerId)) {
+    try {
+      const [botProfileRes, botBookRes, botMovieRes, botAlbumRes, recentMessagesRes] =
+        await Promise.all([
+          supabase
+            .from("profiles")
+            .select("display_name")
+            .eq("id", partnerId)
+            .maybeSingle(),
+          supabase
+            .from("book_logs")
+            .select("name")
+            .eq("profile_id", partnerId)
+            .limit(1)
+            .maybeSingle(),
+          supabase
+            .from("movie_logs")
+            .select("name")
+            .eq("profile_id", partnerId)
+            .limit(1)
+            .maybeSingle(),
+          supabase
+            .from("album_logs")
+            .select("name")
+            .eq("profile_id", partnerId)
+            .limit(1)
+            .maybeSingle(),
+          supabase
+            .from("dm_messages")
+            .select("sender_id, body")
+            .eq("friendship_id", friendshipId)
+            .order("created_at", { ascending: false })
+            .limit(6),
+        ]);
+
+      const botName = botProfileRes.data?.display_name || "A fellow reader";
+      const favorite =
+        botBookRes.data?.name
+          ? `the book "${botBookRes.data.name}"`
+          : botMovieRes.data?.name
+            ? `the movie "${botMovieRes.data.name}"`
+            : botAlbumRes.data?.name
+              ? `the album "${botAlbumRes.data.name}"`
+              : "antique books and quiet reading";
+
+      const historyItems = (recentMessagesRes.data ?? [])
+        .reverse()
+        .map((m) => ({
+          sender: m.sender_id === partnerId ? botName : "You",
+          body: m.body,
+        }));
+
+      const replyText = await generateDmReply(botName, favorite, text, historyItems);
+
+      if (replyText?.trim()) {
+        await supabase.from("dm_messages").insert({
+          friendship_id: friendshipId,
+          sender_id: partnerId,
+          body: replyText.trim(),
+        });
+      }
+    } catch (botErr) {
+      console.error("Failed to generate bot DM reply:", botErr);
+    }
+  }
+
   return withSender;
 }
 
