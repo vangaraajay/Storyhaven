@@ -28,6 +28,7 @@ export default function PhaserGame({
   const wrapRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
   const [isCalibrated, setIsCalibrated] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
   const [labels, setLabels] = useState<PadLabel[]>([]);
   const [prompt, setPrompt] = useState<PromptInfo | null>(null);
   const [box, setBox] = useState<CanvasBox>({ left: 0, top: 0, scale: 1 });
@@ -145,6 +146,9 @@ export default function PhaserGame({
           measure();
         },
         onPrompt: (pr) => setPrompt(pr),
+        onFadeOut: () => {
+          setIsFadingOut(true);
+        },
         onResize: () => {
           measure();
         },
@@ -182,7 +186,12 @@ export default function PhaserGame({
     <>
       <div ref={wrapRef} style={{ position: "relative", width: "100%", height: "100dvh" }}>
         <div ref={parentRef} className="phaser-root" />
-        <HavenOverlay labels={labels} prompt={prompt} box={box} visible={ready && isCalibrated} />
+        <HavenOverlay
+          labels={labels}
+          prompt={prompt}
+          box={box}
+          visible={ready && isCalibrated && !isFadingOut}
+        />
       </div>
       {ready ? null : <LoadingScreen scene="haven" />}
     </>

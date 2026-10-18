@@ -32,6 +32,7 @@ export interface MainSceneData {
   onPrompt?: (prompt: PromptInfo | null) => void;
   onNavigate?: (route: string) => void;
   onReady?: () => void;
+  onFadeOut?: () => void;
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
@@ -43,6 +44,7 @@ export class MainScene extends Phaser.Scene {
   private furnitureManager!: FurnitureManager;
   private onNavigate?: (route: string) => void;
   private onReady?: () => void;
+  private onFadeOut?: () => void;
   private onZones?: (labels: PadLabel[]) => void;
   private onPrompt?: (prompt: PromptInfo | null) => void;
   private isLoggedIn = false;
@@ -73,6 +75,7 @@ export class MainScene extends Phaser.Scene {
     this.displayName = data?.displayName ?? null;
     this.avatarFrames = data?.avatarFrames;
     this.onReady = data?.onReady;
+    this.onFadeOut = data?.onFadeOut;
     this.onZones = data?.onZones;
     this.onPrompt = data?.onPrompt;
     this.zones = getActiveZones(this.needsProfile, this.displayName);
@@ -275,6 +278,7 @@ export class MainScene extends Phaser.Scene {
     const destination = this.resolveRoute(zone);
 
     // Quick camera fade out transition
+    this.onFadeOut?.();
     this.cameras.main.fade(180, 0, 0, 0);
     this.cameras.main.once("camerafadeoutcomplete", () => {
       if (this.onNavigate) {

@@ -7,6 +7,7 @@ export interface GameOptions {
   onReady?: () => void;
   onZones?: (labels: PadLabel[]) => void;
   onPrompt?: (prompt: PromptInfo | null) => void;
+  onFadeOut?: () => void;
   isLoggedIn?: boolean;
   needsProfile?: boolean;
   displayName?: string | null;
@@ -24,6 +25,7 @@ export function createGame(parent: HTMLElement, options?: GameOptions) {
         displayName: options?.displayName ?? null,
         avatarFrames: options?.avatarFrames,
         onReady: options?.onReady,
+        onFadeOut: options?.onFadeOut,
         onZones: options?.onZones,
         onPrompt: options?.onPrompt,
       });
