@@ -22,6 +22,7 @@ type ChatPanelProps =
       otherId: string;
       myId: string;
       messages: ChatMessage[];
+      initialDraft?: string | null;
     }
   | {
       kind: "group";
@@ -29,6 +30,7 @@ type ChatPanelProps =
       groupId: string;
       myId: string;
       messages: ChatMessage[];
+      initialDraft?: string | null;
     };
 
 function threadKey(props: ChatPanelProps): string {
@@ -39,24 +41,37 @@ export default function ChatPanel(props: ChatPanelProps) {
   const action = props.kind === "dm" ? sendDmAction : sendGroupMessageAction;
   const [state, formAction, pending] = useActionState(action, initial);
   const [messages, setMessages] = useState(props.messages);
+  const [bodyText, setBodyText] = useState(props.initialDraft ?? "");
   const formRef = useRef<HTMLFormElement>(null);
   const threadRef = useRef<HTMLDivElement>(null);
   const key = threadKey(props);
   const lastMessageId = messages[messages.length - 1]?.id ?? "empty";
 
-  useEffect(() => {
+  // Synchronize incoming messages when thread key or props change
+  const [prevKey, setPrevKey] = useState(key);
+  const [prevMessages, setPrevMessages] = useState(props.messages);
+  if (key !== prevKey || props.messages !== prevMessages) {
+    setPrevKey(key);
+    setPrevMessages(props.messages);
     setMessages(props.messages);
-  }, [key, props.messages]);
+  }
 
-  useEffect(() => {
-    if (state.message) {
-      setMessages((prev) => {
-        if (prev.some((m) => m.id === state.message!.id)) return prev;
-        return [...prev, state.message!];
-      });
-      formRef.current?.reset();
+  // Synchronize draft prop changes
+  const [prevDraft, setPrevDraft] = useState(props.initialDraft);
+  if (props.initialDraft !== prevDraft) {
+    setPrevDraft(props.initialDraft);
+    setBodyText(props.initialDraft ?? "");
+  }
+
+  // Append newly sent message from form action
+  const [lastSentMessage, setLastSentMessage] = useState(state.message);
+  if (state.message && state.message !== lastSentMessage) {
+    setLastSentMessage(state.message);
+    if (!messages.some((m) => m.id === state.message!.id)) {
+      setMessages([...messages, state.message]);
     }
-  }, [state.message]);
+    setBodyText("");
+  }
 
   const friendshipId = props.kind === "dm" ? props.friendshipId : null;
   const groupId = props.kind === "group" ? props.groupId : null;
@@ -134,6 +149,8 @@ export default function ChatPanel(props: ChatPanelProps) {
           name="body"
           type="text"
           placeholder="Write a message…"
+          value={bodyText}
+          onChange={(e) => setBodyText(e.target.value)}
           required
           maxLength={4000}
           autoComplete="off"

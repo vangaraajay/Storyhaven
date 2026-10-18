@@ -1,0 +1,395 @@
+/* Haven Match Drop Stylesheet — Rosé Pine Cozy Lounge Theme */
+
+.match-drop-container {
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+/* Base Card — Solid, Opaque Dark Shape with High-Contrast Text */
+.match-drop-card {
+  position: relative;
+  background: linear-gradient(145deg, #1f1d2e 0%, #191724 100%);
+  border: 1px solid rgba(246, 193, 119, 0.3);
+  border-radius: 18px;
+  padding: 1.75rem 2rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), 0 0 24px rgba(246, 193, 119, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: #f4f2ff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.match-drop-card:hover {
+  border-color: rgba(246, 193, 119, 0.45);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6), 0 0 28px rgba(246, 193, 119, 0.12);
+}
+
+/* Countdown Header */
+.match-drop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(156, 207, 216, 0.2);
+  padding-bottom: 0.85rem;
+}
+
+.match-drop-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-drop-sparkle {
+  font-size: 1.25rem;
+  animation: pulse-glow 2.5s infinite ease-in-out;
+}
+
+.match-drop-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f6c177;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.match-drop-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #26233a;
+  border: 1px solid rgba(156, 207, 216, 0.3);
+  border-radius: 9999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.875rem;
+  color: #9ccfd8;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* Kindred Spirit Profile Row */
+.match-drop-profile-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.match-drop-avatar-wrap {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #eb6f92, #f6c177);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.match-drop-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #26233a;
+}
+
+.match-drop-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #26233a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ebbcba;
+}
+
+.match-drop-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.match-drop-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.match-drop-subline {
+  font-size: 0.875rem;
+  color: #9ccfd8;
+  margin: 0;
+}
+
+/* Shared Media Pills */
+.match-drop-media-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.match-drop-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #26233a;
+  border: 1px solid rgba(156, 207, 216, 0.3);
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.825rem;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.match-drop-pill-discovery {
+  background: rgba(246, 193, 119, 0.18);
+  border-color: rgba(246, 193, 119, 0.45);
+  color: #f6c177;
+  font-weight: 600;
+}
+
+/* Icebreaker Quote Box */
+.match-drop-icebreaker {
+  background: #26233a;
+  border-left: 4px solid #eb6f92;
+  border-radius: 0 12px 12px 0;
+  padding: 0.9rem 1.15rem;
+  font-size: 0.925rem;
+  color: #f4f2ff;
+  line-height: 1.5;
+  font-style: italic;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.match-drop-icebreaker-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #eb6f92;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
+  font-style: normal;
+}
+
+/* Action Rows & Buttons */
+.match-drop-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.35rem;
+}
+
+.match-drop-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.match-drop-btn-connect {
+  background: linear-gradient(135deg, #eb6f92 0%, #f6c177 100%);
+  color: #191724;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.35rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 14px rgba(235, 111, 146, 0.35);
+}
+
+.match-drop-btn-connect:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 0.95;
+  box-shadow: 0 6px 18px rgba(235, 111, 146, 0.5);
+}
+
+.match-drop-btn-chat {
+  background: #31748f;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.7rem 1.35rem;
+  border-radius: 10px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 14px rgba(49, 116, 143, 0.4);
+}
+
+.match-drop-btn-chat:hover {
+  transform: translateY(-1px);
+  background: #3e8ca8;
+  box-shadow: 0 6px 18px rgba(49, 116, 143, 0.6);
+}
+
+.match-drop-btn-pass {
+  background: transparent;
+  color: #908caa;
+  border: none;
+  font-size: 0.825rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0.4rem 0.6rem;
+  transition: color 0.15s;
+}
+
+.match-drop-btn-pass:hover:not(:disabled) {
+  color: #eb6f92;
+}
+
+/* Inbound Waiting / Prompt Banners */
+.match-drop-inbound-banner {
+  background: rgba(246, 193, 119, 0.18);
+  border: 1px solid rgba(246, 193, 119, 0.45);
+  border-radius: 10px;
+  padding: 0.75rem 1.15rem;
+  font-size: 0.9rem;
+  color: #f6c177;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-drop-waiting-pill {
+  background: #26233a;
+  border: 1px solid rgba(156, 207, 216, 0.35);
+  border-radius: 9999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.875rem;
+  color: #9ccfd8;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 500;
+}
+
+.match-drop-celebration {
+  background: rgba(49, 116, 143, 0.25);
+  border: 1px solid rgba(49, 116, 143, 0.5);
+  border-radius: 10px;
+  padding: 0.85rem 1.15rem;
+  font-size: 0.925rem;
+  color: #9ccfd8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ========================================================= */
+/* WAITING STATE: Empty Lounge Card with Countdown            */
+/* ========================================================= */
+.match-drop-card-empty {
+  text-align: center;
+  padding: 2.25rem 2rem;
+  background: linear-gradient(160deg, #1f1d2e 0%, #191724 100%);
+  border: 1px dashed rgba(246, 193, 119, 0.35);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+.match-drop-empty-icon {
+  font-size: 2.75rem;
+  line-height: 1;
+  margin-bottom: 0.65rem;
+}
+
+.match-drop-empty-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #f6c177;
+  margin: 0 0 0.5rem;
+}
+
+.match-drop-empty-desc {
+  font-size: 0.95rem;
+  color: #f4f2ff;
+  max-width: 520px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.55;
+}
+
+/* ========================================================= */
+/* ACTIVE STATE (UNMATCHED): Solid Dark Scout Card with Light Text */
+/* ========================================================= */
+.match-drop-card-scout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.85rem;
+  background: linear-gradient(160deg, #26233a 0%, #191724 100%);
+  border: 1px solid rgba(246, 193, 119, 0.4);
+  border-radius: 18px;
+  padding: 2.25rem 2rem;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6), 0 0 24px rgba(246, 193, 119, 0.08);
+}
+
+.match-drop-scout-icon {
+  font-size: 3.25rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  animation: pulse-glow 3s infinite ease-in-out;
+}
+
+.match-drop-scout-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.match-drop-scout-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f6c177;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.match-drop-scout-body {
+  font-size: 1.025rem;
+  color: #ffffff;
+  line-height: 1.6;
+  max-width: 620px;
+  margin: 0;
+  font-weight: 400;
+}
+
+.match-drop-scout-subtext {
+  font-size: 0.875rem;
+  color: #9ccfd8;
+  max-width: 580px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(246, 193, 119, 0.4));
+  }
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 6px rgba(246, 193, 119, 0.8));
+  }
+}

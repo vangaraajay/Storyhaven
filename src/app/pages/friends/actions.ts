@@ -245,3 +245,80 @@ export async function createGroupAction(
   revalidateFriends();
   redirect(`/pages/friends?group=${encodeURIComponent(groupId)}`);
 }
+
+export async function connectMatchDropAction(
+  matchId: string,
+): Promise<{
+  success: boolean;
+  isMutual?: boolean;
+  friendshipId?: string;
+  error?: string;
+}> {
+  const profileId = await requireProfileId();
+  try {
+    const { connectMatch } = await import("@/lib/match-drop");
+    const res = await connectMatch(matchId, profileId);
+    revalidateFriends();
+    return {
+      success: true,
+      isMutual: res.isMutual,
+      friendshipId: res.friendshipId,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to connect.",
+    };
+  }
+}
+
+export async function dismissMatchDropAction(
+  matchId: string,
+): Promise<{ success: boolean; error?: string }> {
+  const profileId = await requireProfileId();
+  try {
+    const { dismissMatch } = await import("@/lib/match-drop");
+    await dismissMatch(matchId, profileId);
+    revalidateFriends();
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to dismiss.",
+    };
+  }
+}
+
+export async function pollActiveMatchAction(): Promise<{
+  activeMatch: import("@/lib/match-drop").ActiveMatchView | null;
+  error?: string;
+}> {
+  const profileId = await requireProfileId();
+  try {
+    const { getActiveMatchForProfile } = await import("@/lib/match-drop");
+    const activeMatch = await getActiveMatchForProfile(profileId);
+    return { activeMatch };
+  } catch (error) {
+    return {
+      activeMatch: null,
+      error: error instanceof Error ? error.message : "Failed to poll match.",
+    };
+  }
+}
+
+export async function pollHavenMatchStateAction(): Promise<{
+  state: import("@/lib/match-drop").HavenMatchState;
+  error?: string;
+}> {
+  const profileId = await requireProfileId();
+  try {
+    const { getHavenMatchStateForProfile } = await import("@/lib/match-drop");
+    const state = await getHavenMatchStateForProfile(profileId);
+    return { state };
+  } catch (error) {
+    return {
+      state: { mode: "waiting", match: null },
+      error: error instanceof Error ? error.message : "Failed to poll match state.",
+    };
+  }
+}
